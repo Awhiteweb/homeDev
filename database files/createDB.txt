@@ -1,0 +1,25 @@
+CREATE TABLE `main` (
+	`id` INT NOT NULL auto_increment, 
+    `title` VARCHAR (255) NOT NULL,
+    `path` VARCHAR (255) NOT NULL,
+    `genre` VARCHAR (20),
+    `group` VARCHAR (20),
+    `type` INT NOT NULL,
+    `series_num` INT,
+    PRIMARY KEY (`id`)
+    );
+CREATE TABLE `type` (
+	`id` INT NOT NULL auto_increment, 
+    `genre` VARCHAR (20) NOT NULL,
+    PRIMARY KEY (`id`)
+    );
+CREATE TABLE `genres` (
+	`id` INT NOT NULL auto_increment, 
+    `genre` VARCHAR (255) NOT NULL,
+    PRIMARY KEY (`id`)
+    );
+CREATE TABLE `groups` (
+	`id` INT NOT NULL auto_increment, 
+    `group` VARCHAR (255) NOT NULL,
+    PRIMARY KEY (`id`)
+    );
