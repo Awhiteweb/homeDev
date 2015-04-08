@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<key>Major Version</key><integer>1</integer>
+	<key>Minor Version</key><integer>1</integer>
+	<key>Date</key><date>2015-03-24T19:07:23Z</date>
+	<key>Application Version</key><string>12.0.1.26</string>
+	<key>Features</key><integer>5</integer>
+	<key>Show Content Ratings</key><true/>
+	<key>Music Folder</key><string>file:///Volumes/Public/Shared%20Music/iTunes/</string>
+	<key>Library Persistent ID</key><string>0708D29FA28BF225</string>
+	<key>Tracks</key>
+	<dict>
+		<key>7572</key>
+		<dict>
+			<key>Track ID</key><integer>7572</integer>
+			<key>Name</key><string>Sung Bird</string>
+			<key>Album Artist</key><string>Various Artists</string>
+			<key>Album</key><string>Love Actually</string>
+			<key>Genre</key><string>Pop</string>
+			<key>Kind</key><string>AAC audio file</string>
+			<key>Size</key><integer>4022127</integer>
+			<key>Total Time</key><integer>225394</integer>
+			<key>Track Number</key><integer>7</integer>
+			<key>Track Count</key><integer>20</integer>
+			<key>Date Modified</key><date>2012-01-25T12:55:06Z</date>
+			<key>Date Added</key><date>2005-11-10T11:45:44Z</date>
+			<key>Bit Rate</key><integer>128</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>8</integer>
+			<key>Play Date</key><integer>3500132820</integer>
+			<key>Play Date UTC</key><date>2014-11-29T19:07:00Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>6595B1C01E078133</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Music/Unknown%20Artist/Love%20Actually/07%20Sung%20Bird.m4a</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>7574</key>
+		<dict>
+			<key>Track ID</key><integer>7574</integer>
+			<key>Name</key><string>Both Sides Now</string>
+			<key>Album Artist</key><string>Various Artists</string>
+			<key>Album</key><string>Love Actually</string>
+			<key>Genre</key><string>Pop</string>
+			<key>Kind</key><string>AAC audio file</string>
+			<key>Size</key><integer>5992180</integer>
+			<key>Total Time</key><integer>347624</integer>
+			<key>Track Number</key><integer>11</integer>
+			<key>Track Count</key><integer>20</integer>
+			<key>Date Modified</key><date>2012-01-25T12:56:37Z</date>
+			<key>Date Added</key><date>2005-11-10T11:45:44Z</date>
+			<key>Bit Rate</key><integer>128</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>3</integer>
+			<key>Play Date</key><integer>3500133895</integer>
+			<key>Play Date UTC</key><date>2014-11-29T19:24:55Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>6595B1C01E078134</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Music/Unknown%20Artist/Love%20Actually/11%20Both%20Sides%20Now.m4a</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>28008</key>
+		<dict>
+			<key>Track ID</key><integer>28008</integer>
+			<key>Name</key><string>TRANSFORMERS - Dark of the Moon</string>
+			<key>Grouping</key><string>Film</string>
+			<key>Genre</key><string>Sci-Fi &#38; Fantasy</string>
+			<key>Kind</key><string>MPEG-4 video file</string>
+			<key>Size</key><integer>3082946132</integer>
+			<key>Total Time</key><integer>8884044</integer>
+			<key>Year</key><integer>2011</integer>
+			<key>Date Modified</key><date>2014-01-04T18:33:32Z</date>
+			<key>Date Added</key><date>2012-04-24T08:02:59Z</date>
+			<key>Bit Rate</key><integer>160</integer>
+			<key>Play Count</key><integer>2</integer>
+			<key>Play Date</key><integer>3495267175</integer>
+			<key>Play Date UTC</key><date>2014-10-04T11:32:55Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Series</key><string>Transformers</string>
+			<key>Episode Order</key><integer>3</integer>
+			<key>Sort Album</key><string>Transformers</string>
+			<key>Persistent ID</key><string>423343E7352322CB</string>
+			<key>Track Type</key><string>File</string>
+			<key>Has Video</key><true/>
+			<key>HD</key><false/>
+			<key>Video Width</key><integer>720</integer>
+			<key>Video Height</key><integer>432</integer>
+			<key>Movie</key><true/>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Movies/TRANSFORMERS%20-%20Dark%20of%20the%20Moon/TRANSFORMERS%20-%20Dark%20of%20the%20Moon.m4v</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>25412</key>
+		<dict>
+			<key>Track ID</key><integer>25412</integer>
+			<key>Name</key><string>Original Song</string>
+			<key>Grouping</key><string>TV Show</string>
+			<key>Genre</key><string>Musical</string>
+			<key>Kind</key><string>MPEG-4 video file</string>
+			<key>Size</key><integer>287415329</integer>
+			<key>Total Time</key><integer>2662016</integer>
+			<key>Date Modified</key><date>2013-03-06T08:28:21Z</date>
+			<key>Date Added</key><date>2011-03-23T06:30:13Z</date>
+			<key>Bit Rate</key><integer>159</integer>
+			<key>Play Count</key><integer>2</integer>
+			<key>Play Date</key><integer>3410340129</integer>
+			<key>Play Date UTC</key><date>2012-01-25T12:42:09Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Series</key><string>Glee</string>
+			<key>Season</key><integer>2</integer>
+			<key>Episode Order</key><integer>16</integer>
+			<key>Persistent ID</key><string>884E2955C9DBEBCA</string>
+			<key>Track Type</key><string>File</string>
+			<key>Has Video</key><true/>
+			<key>HD</key><false/>
+			<key>Video Width</key><integer>624</integer>
+			<key>Video Height</key><integer>352</integer>
+			<key>TV Show</key><true/>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Glee/Season%202/Original%20Song.m4v</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>7576</key>
+		<dict>
+			<key>Track ID</key><integer>7576</integer>
+			<key>Name</key><string>White Chrsitmas</string>
+			<key>Album Artist</key><string>Various Artists</string>
+			<key>Album</key><string>Love Actually</string>
+			<key>Genre</key><string>Pop</string>
+			<key>Kind</key><string>AAC audio file</string>
+			<key>Size</key><integer>3438848</integer>
+			<key>Total Time</key><integer>188939</integer>
+			<key>Track Number</key><integer>12</integer>
+			<key>Track Count</key><integer>20</integer>
+			<key>Date Modified</key><date>2012-01-25T12:56:42Z</date>
+			<key>Date Added</key><date>2005-11-10T11:45:44Z</date>
+			<key>Bit Rate</key><integer>128</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>6</integer>
+			<key>Play Date</key><integer>3500134084</integer>
+			<key>Play Date UTC</key><date>2014-11-29T19:28:04Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>6595B1C01E078135</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Music/Unknown%20Artist/Love%20Actually/12%20White%20Chrsitmas.m4a</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>7578</key>
+		<dict>
+			<key>Track ID</key><integer>7578</integer>
+			<key>Name</key><string>All You Need Is Love</string>
+			<key>Album Artist</key><string>Various Artists</string>
+			<key>Album</key><string>Love Actually</string>
+			<key>Genre</key><string>Pop</string>
+			<key>Kind</key><string>AAC audio file</string>
+			<key>Size</key><integer>3796255</integer>
+			<key>Total Time</key><integer>211276</integer>
+			<key>Track Number</key><integer>16</integer>
+			<key>Track Count</key><integer>20</integer>
+			<key>Date Modified</key><date>2012-01-25T12:57:01Z</date>
+			<key>Date Added</key><date>2005-11-10T11:45:44Z</date>
+			<key>Bit Rate</key><integer>128</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>8</integer>
+			<key>Play Date</key><integer>3488469766</integer>
+			<key>Play Date UTC</key><date>2014-07-17T19:22:46Z</date>
+			<key>Skip Count</key><integer>1</integer>
+			<key>Skip Date</key><date>2014-08-25T13:06:41Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>6595B1C01E078136</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Music/Unknown%20Artist/Love%20Actually/16%20All%20You%20Need%20Is%20Love.m4a</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>7580</key>
+		<dict>
+			<key>Track ID</key><integer>7580</integer>
+			<key>Name</key><string>White Mans World</string>
+			<key>Artist</key><string>2Pac</string>
+			<key>Album Artist</key><string>Various Artists</string>
+			<key>Album</key><string>Death Row Greatest Hits - Volume Two</string>
+			<key>Genre</key><string>Hip Hop/Rap</string>
+			<key>Kind</key><string>AAC audio file</string>
+			<key>Size</key><integer>5276474</integer>
+			<key>Total Time</key><integer>316927</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>2</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>12</integer>
+			<key>Date Modified</key><date>2012-02-21T10:10:14Z</date>
+			<key>Date Added</key><date>2005-11-10T11:45:44Z</date>
+			<key>Bit Rate</key><integer>128</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Play Count</key><integer>3</integer>
+			<key>Play Date</key><integer>3432815773</integer>
+			<key>Play Date UTC</key><date>2012-10-11T15:56:13Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>6595B1C01E078138</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file:///Volumes/2TB%20Drive/iTunes/Music/Various%20Artists/Death%20Row%20Greatest%20Hits%20-%20Volume%20Two/1-01%20White%20Mans%20World.m4a</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+	</dict>
+</plist>

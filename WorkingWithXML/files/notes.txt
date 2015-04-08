@@ -1,0 +1,5 @@
+successfully searches for movies, adds genres, groups and links into main table.
+added tv shows
+
+next:
+update tv shows to add season numbers.
