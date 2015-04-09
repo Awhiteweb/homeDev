@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 //import com.mysql.jdbc.Connection;
 //import com.mysql.jdbc.Statement;
@@ -39,6 +41,9 @@ public class MysqlTransfer {
 	{
 	}
 
+	/**
+	 * send new movies and tv shows to database
+	 */
 	public void writeVideo() {
 		
 		try {
@@ -62,9 +67,6 @@ public class MysqlTransfer {
 		}
 		
 	}
-
-
-
 
 	private void writeMovie() throws Exception
 	{
@@ -110,26 +112,6 @@ public class MysqlTransfer {
 		}
 	}
 	
-	public void updateMovie( String column, String update, int id ) throws Exception
-	{
-		connectMysql();
-		
-		statement = connect.createStatement();
-		
-		preparedStatement = connect.prepareStatement
-				(
-						"UPDATE `movie_db`.`main` "
-								+ "SET ? = ? "
-								+ "WHERE `id` LIKE ?"
-				);
-		preparedStatement.setString(1, column);
-		preparedStatement.setString(2, update);
-		preparedStatement.setInt(3, id);
-		preparedStatement.executeUpdate();
-
-				
-	}
-
 	private void writeTV() throws Exception
 	{
 		
@@ -175,7 +157,38 @@ public class MysqlTransfer {
 
 	}
 
-	
+	/**
+	 * updates movies in the main table 1 column at a time
+	 * @param column of type String, the column you want to update
+	 * @param update of type String, the update value
+	 * @param id of type int, the movie id you want to update
+	 * @throws Exception
+	 */
+	public void updateMovie( String column, String update, int id ) throws Exception
+	{
+		connectMysql();
+		
+		statement = connect.createStatement();
+		
+		preparedStatement = connect.prepareStatement
+				(
+						"UPDATE `movie_db`.`main` "
+								+ "SET ? = ? "
+								+ "WHERE `id` LIKE ?"
+				);
+		preparedStatement.setString(1, column);
+		preparedStatement.setString(2, update);
+		preparedStatement.setInt(3, id);
+		preparedStatement.executeUpdate();
+
+				
+	}
+
+	/**
+	 * inserts new genres into the genre table
+	 * @param genre of type String
+	 * @throws Exception
+	 */
 	public void writeGenre( String genre ) throws Exception {
 		
 		genre = genre.toLowerCase();
@@ -218,7 +231,7 @@ public class MysqlTransfer {
 			preparedStatement.setString( 1, genre );
 			resultSet = preparedStatement.executeQuery();
 			
-			genreInt = writeResultSet( resultSet );
+			genreInt = readAResult( resultSet );
 			
 			return genreInt;
 
@@ -230,6 +243,11 @@ public class MysqlTransfer {
 
 	}
 
+	/**
+	 * inserts new groups into the groups table
+	 * @param group of type String
+	 * @throws Exception
+	 */
 	public void writeGroup( String group ) throws Exception {
 		
 		group = group.toLowerCase();
@@ -272,7 +290,7 @@ public class MysqlTransfer {
 			preparedStatement.setString( 1, group );
 			resultSet = preparedStatement.executeQuery();
 			
-			groupInt = writeResultSet( resultSet );
+			groupInt = readAResult( resultSet );
 			
 			return groupInt;
 
@@ -285,7 +303,53 @@ public class MysqlTransfer {
 
 	}
 
-	private int writeResultSet(ResultSet resultSet) throws SQLException {
+	/**
+	 * queries database and returns all database entries
+	 * @return a List<String[]>
+	 * @throws Exception
+	 */
+	private List<String[]> returnAll() throws Exception
+	{
+		
+		
+		connectMysql();
+		
+		statement = connect.createStatement();
+		
+		preparedStatement = connect
+				.prepareStatement("SELECT * FROM `movie_db`.`main`");
+		resultSet = preparedStatement.executeQuery();
+		
+		List<String[]> result = readResults( resultSet );
+
+		return result;
+
+	}
+	
+	private List<String[]> readResults( ResultSet resultSet2 ) throws SQLException
+	{
+		List<String[]> result = new ArrayList<String[]>();
+		
+
+		while ( resultSet.next() )
+		{
+			String[] results = new String [8];
+			results[0] = resultSet.getString( "id" );
+			results[1] = resultSet.getString( "title" );
+			results[2] = resultSet.getString( "path" );
+			results[3] = resultSet.getString( "genre" );
+			results[4] = resultSet.getString( "group" );
+			results[5] = resultSet.getString( "type" );
+			results[6] = resultSet.getString( "series_num" );
+			results[7] = resultSet.getString( "tv_season" );
+			result.add( results );
+		}
+		
+		return result;
+	}
+
+	private int readAResult(ResultSet resultSet) throws SQLException 
+	{
 		int result = 0;
 		// ResultSet is initially before the first data set
 		while (resultSet.next()) {
@@ -297,7 +361,6 @@ public class MysqlTransfer {
 		}
 		return result;
 	}
-
 
 	private void connectMysql() throws ClassNotFoundException, SQLException
 	{

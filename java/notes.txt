@@ -1,0 +1,7 @@
+mysql queries needed:
+
+- join tables so main searches return genre names and group names and type name.
+
+- if updating, filter genre, group and type to update relevant tables first before updating main.
+
+- search query for multiple paramaters.

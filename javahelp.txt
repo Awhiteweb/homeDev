@@ -1,0 +1,102 @@
+-------------
+Your model
+-------------
+
+class MySQLDbContext
+{
+    ResultSet Query( String request)
+    {
+        // Do SQL Query
+    }
+}
+
+
+
+interface IUnitOfWork
+{
+    IMovieRepository MovieRepository;
+}
+
+interface IMovieRepository
+{
+    List<Movie> GetMovies();
+}
+
+
+class MySQLUnitOfWork implements IUnitOfWork
+{
+    private MySQLDbContext context;
+
+    private MySQLMovieRepository movieRepository;
+
+    public MySQLUnitOfWork()
+    {
+        this.context = new MySQLDbContext();
+    }
+
+    public MySQLMovieRepository MovieRepository()
+    {
+        if( this.movieRepository == null )
+        {
+            this.movieRepository = new MySQLMovieRepository( this.context );
+            return this.movieRepository;
+        }
+        
+        return this.movieRepository;
+    }
+}
+
+class XMLMovieRepository implements IMovieRepository
+{
+    public List<Movie> GetMovies()
+    {
+        throw new Exception( "Not yet implemented" );
+    }
+}
+
+class MySQLMovieRepository implements IMovieRepository
+{
+    private MySQLDbContext context;
+
+    public MySQLMovieRepository( MySQLDbContext ctx)
+    { 
+        context = ctx;
+    }
+
+    public List<Movie> GetMovies()
+    {
+        String query = "SELECT * FROM movies";
+        ResultSet results = context.Query( query );    
+
+        List<Movie> movies = new List<Movie>();
+
+        for( result : results )
+        {
+            Movie movie = new Movie();
+            movie.Title = result.Title;
+            movies.Add( movie );
+        }    
+
+        return movies;
+    }
+}
+
+-------------
+Your application:
+-------------
+
+class Application
+{
+    private IUnitOfWork unitOfWork;    
+
+    public Application()
+    {
+        this.unitOfWork = new SQLUnitOfWork();       
+    }
+
+    public ShowMovies()
+    {
+        List<Movie> movies = unitOfWork.MovieRepository.GetMovies();
+        // Do stuff with the movies
+    }
+}
