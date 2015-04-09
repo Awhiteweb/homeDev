@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 08, 2015 at 03:52 PM
+-- Generation Time: Apr 09, 2015 at 06:07 PM
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `main` (
 --
 
 INSERT INTO `main` (`id`, `title`, `path`, `genre`, `group`, `type`, `series_num`, `tv_season`) VALUES
-(1, 'TRANSFORMERS - Dark of the Moon', 'file:///Volumes/2TB%20Drive/iTunes/Movies/TRANSFORMERS%20-%20Dark%20of%20the%20Moon/TRANSFORMERS%20-%20Dark%20of%20the%20Moon.m4v', '1', '1', 1, 3, NULL),
+(1, 'TRANSFORMERS - Dark of the Moon', 'file:///Volumes/2TB%20Drive/iTunes/Movies/TRANSFORMERS%20-%20Dark%20of%20the%20Moon/TRANSFORMERS%20-%20Dark%20of%20the%20Moon.m4v', '1', '3', 1, 3, NULL),
 (8, 'Fast and Furious 4', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Fast%20and%20Furious%204/Fast%20and%20Furious%204.m4v', '18', '10', 1, 4, NULL),
 (9, 'Rocky I', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Rocky%20I/Rocky%20I.mp4', '40', '11', 1, 1, NULL),
 (10, 'Rocky II', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Rocky%20II/Rocky%20II.mp4', '40', '11', 1, 2, NULL),
@@ -315,7 +315,7 @@ INSERT INTO `main` (`id`, `title`, `path`, `genre`, `group`, `type`, `series_num
 (295, 'Blade Runner', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Blade%20Runner/Blade%20Runner.m4v', '25', '0', 1, 0, NULL),
 (296, 'The Negotiator', 'file:///Volumes/2TB%20Drive/iTunes/Movies/The%20Negotiator/The%20Negotiator.m4v', '25', '0', 1, 0, NULL),
 (297, 'The Patriot', 'file:///Volumes/2TB%20Drive/iTunes/Movies/The%20Patriot/The%20Patriot.m4v', '332', '0', 1, 0, NULL),
-(298, 'TRANSFORMERS', 'file:///Volumes/2TB%20Drive/iTunes/Movies/TRANSFORMERS/TRANSFORMERS.m4v', '1', '0', 1, 0, NULL),
+(298, 'TRANSFORMERS', 'file:///Volumes/2TB%20Drive/iTunes/Movies/TRANSFORMERS/TRANSFORMERS.m4v', '1', '3', 1, 0, NULL),
 (299, 'Oceans Eleven', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Oceans%20Eleven/Oceans%20Eleven.m4v', '667', '0', 1, 0, NULL),
 (300, 'The Dark Knight', 'file:///Volumes/2TB%20Drive/iTunes/Movies/The%20Dark%20Knight/The%20Dark%20Knight.m4v', '56', '0', 1, 0, NULL),
 (301, 'Star Wars - VI - Return of the Jedi', 'file:///Volumes/2TB%20Drive/iTunes/Movies/Star%20Wars%20-%20VI%20-%20Return%20of%20the%20Jedi/Star%20Wars%20-%20VI%20-%20Return%20of%20the%20Jedi.m4v', '85', '0', 1, 0, NULL),

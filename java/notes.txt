@@ -5,3 +5,30 @@ mysql queries needed:
 - if updating, filter genre, group and type to update relevant tables first before updating main.
 
 - search query for multiple paramaters.
+
+
+for multiple queries:
+"jdbc:mysql://localhost:3306/testdb?allowMultiQueries=true"
+
+String query = "SELECT Id, Name FROM Authors WHERE Id=1;"
+             + "SELECT Id, Name FROM Authors WHERE Id=2;"
+             + "SELECT Id, Name FROM Authors WHERE Id=3";
+
+this query works for view
+
+
+
+SELECT `m`.`id` AS `ID`,
+       `m`.`title` AS `Title`, 
+       `m`.`path` AS `Path`, 
+       `ge`.`genre` AS `Genre`,
+       `gr`.`group` AS `Group`,
+       `t`.`genre` AS `Type`
+FROM `main` AS `m`
+LEFT JOIN `genres` AS `ge`
+ON `m`.`genre` = `ge`.`id`
+LEFT JOIN `groups` AS `gr`
+ON `m`.`group` = `gr`.`id`
+LEFT JOIN `type` AS `t`
+ON `m`.`type` = `t`.`id`
+WHERE `m`.`type` = 1;
