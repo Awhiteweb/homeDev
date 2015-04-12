@@ -1,4 +1,4 @@
-package database;
+package local.database;
 
 public class Movie implements IVideo
 {
@@ -71,6 +71,18 @@ public class Movie implements IVideo
 	public void setSeriesN( int seriesN )
 	{
 		this.seriesN = seriesN;
+	}
+
+	@Override
+	public int getID() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setID(int id) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

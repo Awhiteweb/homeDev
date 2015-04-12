@@ -1,4 +1,4 @@
-package database;
+package local.database;
 
 import java.sql.ResultSet;
 

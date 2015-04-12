@@ -1,7 +1,10 @@
-package database;
+package local.database;
 
 public interface IVideo
 {
+	
+	int getID();
+	void setID( int id );
 	
 	String getTitle();
 	void setTitle( String title );
