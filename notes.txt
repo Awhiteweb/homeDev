@@ -1,0 +1,4 @@
+The last part to remove is in your controller (provider at the moment) you have to declare IUnitOfWork variable as a new MysqlUnitOFWork thing is, you don't want that in your controller because you may have many controllers and you'd have to change every instance in every controller to XMLUnitOfWork or TestUnitOfWork So you pull it out and use an (IoC / factory) framework.
+
+IoC means inversion of control
+Maybe this: http://stackoverflow.com/questions/10894760/how-to-use-spring-ioc-with-swing

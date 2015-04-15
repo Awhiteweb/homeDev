@@ -319,6 +319,7 @@ public class MysqlTransfer {
 				+ "`ge`.`genre` AS `Genre`, "
 				+ "`gr`.`group` AS `Group`, "
 				+ "`m`.`series_num` AS `Series Number`, "
+				+ "`m`.`season_num` AS `Season Number`, "
 				+ "`t`.`genre` AS `Type` "
 				+ "FROM `main` AS `m` "
 				+ "LEFT JOIN `genres` AS `ge` "

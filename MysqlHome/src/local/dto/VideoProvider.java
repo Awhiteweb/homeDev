@@ -4,6 +4,9 @@ import java.util.List;
 
 import local.database.mysql.MysqlConnect;
 import local.database.mysql.MysqlTransfer;
+import local.database.mysql.MysqlUOW;
+import local.database.mysql.MysqlVideoRepo;
+import local.models.top.IUnitOfWork;
 
 public class VideoProvider {
 	
@@ -18,12 +21,17 @@ public class VideoProvider {
 							
 	
 	private static List<Video> videos;
-
-	public static List<Video> getVideos() throws Exception {
+	private IUnitOfWork uow = null;
+	
+	public VideoProvider()
+	{
+		this.uow = new MysqlUOW();
+	}
+	
+	
+	public List<Video> getVideos() throws Exception {
 		
-		videos = MysqlTransfer.returnAll();
-		
-		MysqlConnect.close();
+		videos = this.uow.VideoRepo().getVideos();
 		
 		return videos;
 	}

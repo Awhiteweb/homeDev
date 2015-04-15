@@ -2,7 +2,10 @@ package local.database.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class MysqlConnect
@@ -12,10 +15,13 @@ public class MysqlConnect
 							 CONN_STRING = "jdbc:mysql://localhost/movie_db";
 	
 	private static Connection conn;
+	private static Statement statement = null;
+	private static PreparedStatement preparedStatement = null;
+	private static ResultSet resultSet = null;
 	
 	private static MysqlConnect __me = null;
 	
-	private MysqlConnect()
+	public MysqlConnect()
 	{
 		try
 		{
@@ -27,9 +33,34 @@ public class MysqlConnect
 		{
 			System.err.println( "could not connect : " + e.getSQLState() + ", " + e.getErrorCode() + ", " + e.getMessage() );
 		}
-
 	}
 
+	public ResultSet query() throws SQLException
+	{
+		
+		String stmt = "SELECT `m`.`id` AS `ID`, "
+				+ "`m`.`title` AS `Title`, "
+				+ "`m`.`path` AS `Path`, "
+				+ "`ge`.`genre` AS `Genre`, "
+				+ "`gr`.`group` AS `Group`, "
+				+ "`m`.`series_num` AS `Series Number`, "
+				+ "`t`.`genre` AS `Type` "
+				+ "FROM `main` AS `m` "
+				+ "LEFT JOIN `genres` AS `ge` "
+				+ "ON `m`.`genre` = `ge`.`id` "
+				+ "LEFT JOIN `groups` AS `gr` "
+				+ "ON `m`.`group` = `gr`.`id` "
+				+ "LEFT JOIN `type` AS `t` "
+				+ "ON `m`.`type` = `t`.`id` "
+				+ "WHERE `m`.`type` = 1"
+				+ "LIMIT 20;";
+		
+		preparedStatement = conn.prepareStatement( stmt );
+		resultSet = preparedStatement.executeQuery();
+		
+		
+		return resultSet;
+	}
 	
 	/**
 	 * creates a single connection to mysql database
