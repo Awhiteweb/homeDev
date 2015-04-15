@@ -12,15 +12,13 @@ import local.database.VideoProvider;
 
 public class WriteXML {
 
-	public static void main(String[] args) throws XMLStreamException
+	public static void main(String[] args) throws Exception
 	{
 		
 		List<Movie> data = VideoProvider.getVideos();
 		
 		createXML creator = new createXML();
 		creator.createDocument( data , "file.xml" );
-		
-		
 		
 	}
 }

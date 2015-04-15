@@ -37,8 +37,8 @@ public class SAXMovieHandler extends DefaultHandler
 	@Override
 	public void startDocument() throws SAXException
 	{
-//		System.out.println("Start Document");
-//		data = new ArrayList<>();
+		System.out.println("Start Document");
+		data = new ArrayList<>();
 		
 	}
 	
@@ -46,7 +46,7 @@ public class SAXMovieHandler extends DefaultHandler
 	public void endDocument() throws SAXException
 	{
 		previousElement = "";
-//		System.out.println("End Document");
+		System.out.println("End Document");
 	}
 
 	@Override
@@ -112,32 +112,26 @@ public class SAXMovieHandler extends DefaultHandler
 		switch ( previousElement )
 		{
 		case MysqlDatabase.NAME:
-//			movie.setName( content );
 			mysql.setName( content );
 			break;
 			
 		case MysqlDatabase.GENRE:
-//			movie.setGenre( content );
 			mysql.setGenre( content );
 			break;
 
 		case MysqlDatabase.GROUP:
-//			movie.setGroup( content );
 			mysql.setGroup( content );
 			break;
 
 		case MysqlDatabase.LOCATION:
-//			movie.setLocation( content );
 			mysql.setLocation( content );
 			break;
 			
 		case MysqlDatabase.KIND:
-//			movie.setKind( content );
 			mysql.setKind( content );
 			break;
 			
 		case MysqlDatabase.NUMBER:
-//			movie.setNumber( content );
 			mysql.setNumber( content );
 			break;
 
@@ -153,7 +147,6 @@ public class SAXMovieHandler extends DefaultHandler
 	public void characters( char[] ch, int start, int length )
 			throws SAXException
 	{
-//		System.out.println("Characters");
 		if( currentText != null )
 		{
 			currentText.append( ch, start, length );
