@@ -17,7 +17,8 @@ public class VideoProvider {
 							GENRE = "genre",
 							GROUP = "group",
 						 SERIES_N = "series_number",
-						 SEASON_N = "season_number";
+						 SEASON_N = "season_number",
+						 	 TYPE = "type";
 							
 	
 	private static List<Video> videos;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
+import local.dto.VideoProvider;
 import local.models.top.IVideoRepo;
 
 public class MysqlVideoRepo implements IVideoRepo
@@ -38,13 +39,13 @@ public class MysqlVideoRepo implements IVideoRepo
 			while ( this.resultSet.next() )
 			{
 				Video video = new Video();
-				video.setID( Integer.parseInt( resultSet.getString( "ID" ) ) );
-				video.setTitle( resultSet.getString( "Title" ) );
-				video.setLocation( resultSet.getString( "Path" ) );
-				video.setGenre( resultSet.getString( "Genre" ) );
-				video.setGroup( resultSet.getString( "Group" ) );
-				video.setSeriesN( Integer.parseInt( resultSet.getString( "Series Number" ) ) );
-				video.setSeasonN( Integer.parseInt( resultSet.getString( "Season Number" ) ) );
+				video.setID( Integer.parseInt( resultSet.getString( VideoProider.ID ) ) );
+				video.setTitle( resultSet.getString( VideoProider.TITLE ) );
+				video.setLocation( resultSet.getString( VideoProider.LOCATION ) );
+				video.setGenre( resultSet.getString( VideoProider.GENRE ) );
+				video.setGroup( resultSet.getString( VideoProider.GROUP ) );
+				video.setSeriesN( Integer.parseInt( resultSet.getString( VideoProider.SERIES_N ) ) );
+				video.setSeasonN( Integer.parseInt( resultSet.getString( VideoProider.SEASON_N ) ) );
 				list.add( video );
 			}
 		}
