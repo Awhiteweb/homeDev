@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import local.dto.VideoProvider;
+
 
 public class MysqlConnect
 {
@@ -38,6 +40,7 @@ public class MysqlConnect
 	public ResultSet query( String query ) throws SQLException
 	{
 		
+
 //		String stmt = "SELECT `m`.`id` AS `ID`, "
 //				+ "`m`.`title` AS `Title`, "
 //				+ "`m`.`path` AS `Path`, "

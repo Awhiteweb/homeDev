@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
+
 import local.models.top.Finals;
+
 import local.models.top.IVideoRepo;
 
 public class MysqlVideoRepo implements IVideoRepo
@@ -82,8 +84,10 @@ public class MysqlVideoRepo implements IVideoRepo
 		
 		try
 		{
+
 			ResultSet result = this.conn.query( selectFrom + " WHERE `id`=" + id);
 			videos = MapResultSet( result );
+
 		}
 		catch (SQLException e)
 		{
