@@ -6,45 +6,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
+import local.models.top.Finals;
 import local.models.top.IVideoRepo;
 
 public class MysqlVideoRepo implements IVideoRepo
 {
 	private MysqlConnect conn;
-	private ResultSet resultSet = null;
+	
+	private String selectFrom = "SELECT `m`.`id` AS `" + Finals.ID + "`, "
+								+ "`m`.`title` AS `" + Finals.TITLE + "`, "
+								+ "`m`.`path` AS `" + Finals.LOCATION + "`, "
+								+ "`ge`.`genre` AS `" + Finals.GENRE + "`, "
+								+ "`gr`.`group` AS `" + Finals.GROUP + "`, "
+								+ "`m`.`series_num` AS `" + Finals.SERIES_N + "`, "
+								+ "`m`.`tv_season` AS `" + Finals.SEASON_N + "`, "
+								+ "`t`.`genre` AS `" + Finals.TYPE + "` "
+								+ "FROM `main` AS `m` "
+								+ "LEFT JOIN `genres` AS `ge` "
+								+ "ON `m`.`genre` = `ge`.`id` "
+								+ "LEFT JOIN `groups` AS `gr` "
+								+ "ON `m`.`group` = `gr`.`id` "
+								+ "LEFT JOIN `type` AS `t` "
+								+ "ON `m`.`type` = `t`.`id` ";
+	
 	
 	public MysqlVideoRepo(MysqlConnect conn)
 	{
 		this.conn = conn;
 	}
 	
-	@Override
-	public List<Video> getVideos()
+	private List<Video> MapResultSet( ResultSet resultSet )
 	{
-		try
-		{
-			this.resultSet = this.conn.query();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		
 		List<Video> list = new ArrayList<Video>();
 		
 		try
 		{
 			
-			while ( this.resultSet.next() )
+			while ( resultSet.next() )
 			{
 				Video video = new Video();
-				video.setID( Integer.parseInt( resultSet.getString( "ID" ) ) );
-				video.setTitle( resultSet.getString( "Title" ) );
-				video.setLocation( resultSet.getString( "Path" ) );
-				video.setGenre( resultSet.getString( "Genre" ) );
-				video.setGroup( resultSet.getString( "Group" ) );
-				video.setSeriesN( Integer.parseInt( resultSet.getString( "Series Number" ) ) );
-				video.setSeasonN( Integer.parseInt( resultSet.getString( "Season Number" ) ) );
+				video.setTitle( resultSet.getString( Finals.TITLE ) );
 				list.add( video );
 			}
 		}
@@ -55,6 +56,44 @@ public class MysqlVideoRepo implements IVideoRepo
 		
 		return list;
 	}
+	
+	@Override
+	public List<Video> getVideos( int amount )
+	{
+		List<Video> videos = null;
+		
+		try
+		{
+			ResultSet result = this.conn.query( selectFrom + " LIMIT " + amount);
+			videos = MapResultSet( result );
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return videos;
+	}
+	
+	@Override
+	public Video getVideoByID( int id )
+	{
+		List<Video> videos = null;
+		
+		try
+		{
+			ResultSet result = this.conn.query( selectFrom + " WHERE `id`=" + id);
+			videos = MapResultSet( result );
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return videos.get( 0 );
+
+	}
+	
 
 	@Override
 	public List<Video> searchVideos( String search )
@@ -75,6 +114,13 @@ public class MysqlVideoRepo implements IVideoRepo
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<Video> getVideos()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

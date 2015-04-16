@@ -35,27 +35,27 @@ public class MysqlConnect
 		}
 	}
 
-	public ResultSet query() throws SQLException
+	public ResultSet query( String query ) throws SQLException
 	{
 		
-		String stmt = "SELECT `m`.`id` AS `ID`, "
-				+ "`m`.`title` AS `Title`, "
-				+ "`m`.`path` AS `Path`, "
-				+ "`ge`.`genre` AS `Genre`, "
-				+ "`gr`.`group` AS `Group`, "
-				+ "`m`.`series_num` AS `Series Number`, "
-				+ "`t`.`genre` AS `Type` "
-				+ "FROM `main` AS `m` "
-				+ "LEFT JOIN `genres` AS `ge` "
-				+ "ON `m`.`genre` = `ge`.`id` "
-				+ "LEFT JOIN `groups` AS `gr` "
-				+ "ON `m`.`group` = `gr`.`id` "
-				+ "LEFT JOIN `type` AS `t` "
-				+ "ON `m`.`type` = `t`.`id` "
-				+ "WHERE `m`.`type` = 1"
-				+ "LIMIT 20;";
+//		String stmt = "SELECT `m`.`id` AS `ID`, "
+//				+ "`m`.`title` AS `Title`, "
+//				+ "`m`.`path` AS `Path`, "
+//				+ "`ge`.`genre` AS `Genre`, "
+//				+ "`gr`.`group` AS `Group`, "
+//				+ "`m`.`series_num` AS `Series Number`, "
+//				+ "`t`.`genre` AS `Type` "
+//				+ "FROM `main` AS `m` "
+//				+ "LEFT JOIN `genres` AS `ge` "
+//				+ "ON `m`.`genre` = `ge`.`id` "
+//				+ "LEFT JOIN `groups` AS `gr` "
+//				+ "ON `m`.`group` = `gr`.`id` "
+//				+ "LEFT JOIN `type` AS `t` "
+//				+ "ON `m`.`type` = `t`.`id` "
+//				+ "WHERE `m`.`type` = 1"
+//				+ "LIMIT 20;";
 		
-		preparedStatement = conn.prepareStatement( stmt );
+		preparedStatement = conn.prepareStatement( query );
 		resultSet = preparedStatement.executeQuery();
 		
 		

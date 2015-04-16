@@ -9,7 +9,7 @@ public class XMLVideoRepo implements IVideoRepo
 {
 
 	@Override
-	public List<Video> getVideos()
+	public List<Video> getVideos( int amount )
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -34,6 +34,20 @@ public class XMLVideoRepo implements IVideoRepo
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<Video> getVideos()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Video getVideoByID( int id )
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

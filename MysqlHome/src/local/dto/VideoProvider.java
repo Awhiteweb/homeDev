@@ -20,7 +20,6 @@ public class VideoProvider {
 						 SEASON_N = "season_number";
 							
 	
-	private static List<Video> videos;
 	private IUnitOfWork uow = null;
 	
 	public VideoProvider()
@@ -29,10 +28,12 @@ public class VideoProvider {
 	}
 	
 	
-	public List<Video> getVideos() throws Exception {
+	public void getVideos() throws Exception {
+		List<Video> videos = this.uow.VideoRepo().getVideos( 4 );
 		
-		videos = this.uow.VideoRepo().getVideos();
-		
-		return videos;
+		for( Video video : videos)
+		{
+			System.out.println( video.getTitle() );
+		}
 	}
 }
