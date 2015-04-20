@@ -52,16 +52,16 @@ public class XMLHandler extends DefaultHandler
 		
 		switch ( currentElement )
 		{
-		case "parent":
+		case "videos":
 			break;
 			
-			case "video":
-				video = new Video();
-				break;
-				
-			default:
-				currentText = new StringBuilder();
-				break;
+		case "video":
+			video = new Video();
+			break;
+			
+		default:
+			currentText = new StringBuilder();
+			break;
 		}
 		
 	}
@@ -73,7 +73,7 @@ public class XMLHandler extends DefaultHandler
 		
 		switch ( qName )
 		{
-		case "parent":
+		case "videos":
 			return;
 			
 		case "video":
@@ -96,6 +96,10 @@ public class XMLHandler extends DefaultHandler
 		case VideoProvider.TITLE:
 			video.setTitle( content );
 			break;
+		
+		case VideoProvider.LOCATION:
+			video.setLocation( content );
+			break;			
 			
 		case VideoProvider.GENRE:
 			video.setGenre( content );

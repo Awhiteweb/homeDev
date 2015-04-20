@@ -23,7 +23,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
 import local.dto.Video;
+import local.dto.VideoProvider;
 import local.database.xml.XMLVideoRepo;
+import javax.swing.JScrollPane;
 
 public class VideoMainFrame {
 
@@ -50,12 +52,19 @@ public class VideoMainFrame {
 	 * Create the application.
 	 */
 	public VideoMainFrame() {
-		videoList = new ArrayList<Video>();
+		VideoProvider controller = new VideoProvider();
+		try 
+		{
+			controller.getVideos();
 		
-		XMLVideoRepo xmlRepo = new XMLVideoRepo();
-		videoList = xmlRepo.getVideos();
+			List<Video> videoList = controller.returnVideos();
 		
-		initialize(videoList);
+			initialize(videoList);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	
@@ -86,30 +95,37 @@ public class VideoMainFrame {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[400px:n,grow][20px][250px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][30px][grow][30px][grow][30px]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[400px:n,grow][20px][250px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][5px][30px][grow][30px][grow][30px]"));
 	
 /* Labels */
 		JLabel lblTitle = new JLabel("Select a show");
 		lblTitle.setVerticalAlignment(SwingConstants.TOP);
 		frame.getContentPane().add(lblTitle, "cell 0 0,alignx left,aligny bottom");
-
+		
 		JLabel lblGenre = new JLabel("Genre");
-		frame.getContentPane().add(lblGenre, "cell 2 1,aligny bottom");
+		frame.getContentPane().add(lblGenre, "cell 2 2,aligny bottom");
 		
 		JLabel lblGroup = new JLabel("Group");
-		frame.getContentPane().add(lblGroup, "cell 4 1,aligny bottom");
+		frame.getContentPane().add(lblGroup, "cell 4 2,aligny bottom");
 		
 		JLabel lblSeriesNumber = new JLabel("Series Number");
-		frame.getContentPane().add(lblSeriesNumber, "cell 6 1,aligny bottom");
+		frame.getContentPane().add(lblSeriesNumber, "cell 6 2,aligny bottom");
 		
 		JLabel lblSeasonNumber = new JLabel("Season Number");
-		frame.getContentPane().add(lblSeasonNumber, "cell 6 3,aligny bottom");
+		frame.getContentPane().add(lblSeasonNumber, "cell 6 4,aligny bottom");
 		
 /* Lists */
+
+
 		JList videos = new JList(titleList);
 		videos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		videos.setLayoutOrientation(JList.VERTICAL);
-		frame.getContentPane().add(videos, "cell 0 1 1 4,grow");
+
+		JScrollPane scrollVideoPane = new JScrollPane();
+		scrollVideoPane.add( videos );
+
+		frame.getContentPane().add(scrollVideoPane, "cell 0 2 1 4,grow");
+
 		
 		JList genres = new JList(genreList);
 		genres.addListSelectionListener(new ListSelectionListener() {
@@ -118,7 +134,10 @@ public class VideoMainFrame {
 		});
 		genres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		genres.setLayoutOrientation(JList.VERTICAL);
-		frame.getContentPane().add(genres, "cell 2 2 1 3,grow");
+
+		JScrollPane scrollGenrePane = new JScrollPane();
+		scrollGenrePane.add( genres );
+		frame.getContentPane().add(scrollGenrePane, "cell 2 3 1 3,grow");
 		
 		JList groups = new JList(groupList);
 		groups.addListSelectionListener(new ListSelectionListener() {
@@ -127,7 +146,10 @@ public class VideoMainFrame {
 		});
 		groups.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groups.setLayoutOrientation(JList.VERTICAL);
-		frame.getContentPane().add(groups, "cell 4 2 1 3,grow");
+		
+		JScrollPane scrollGroupPane = new JScrollPane();
+		scrollGroupPane.add( groups );
+		frame.getContentPane().add(scrollGroupPane, "cell 4 3 1 3,grow");
 		
 		JList series_numbers = new JList(seriesList);
 		series_numbers.addListSelectionListener(new ListSelectionListener() {
@@ -136,7 +158,10 @@ public class VideoMainFrame {
 		});
 		series_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		series_numbers.setLayoutOrientation(JList.VERTICAL);
-		frame.getContentPane().add(series_numbers, "cell 6 2,grow");
+		
+		JScrollPane scrollSeriesPane = new JScrollPane();
+		scrollSeriesPane.add( series_numbers );
+		frame.getContentPane().add(scrollSeriesPane, "cell 6 3,grow");
 				
 		JList season_numbers = new JList(seasonList);
 		season_numbers.addListSelectionListener(new ListSelectionListener() {
@@ -145,7 +170,10 @@ public class VideoMainFrame {
 		});
 		season_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		season_numbers.setLayoutOrientation(JList.VERTICAL);
-		frame.getContentPane().add(season_numbers, "cell 6 4,grow");
+		
+		JScrollPane scrollSeasonPane = new JScrollPane();
+		scrollSeasonPane.add( season_numbers );
+		frame.getContentPane().add(scrollSeasonPane, "cell 6 5,grow");
 		
 /* Check Boxes */		
 		JCheckBox movieCB = new JCheckBox("Movies");
@@ -171,7 +199,7 @@ public class VideoMainFrame {
 			}
 		});
 		btnPlay.setToolTipText("This will copy to the desktop and then play the movie");
-		frame.getContentPane().add(btnPlay, "cell 0 5,alignx left,aligny center");
+		frame.getContentPane().add(btnPlay, "cell 0 6,alignx left,aligny center");
 		
 		JButton btnUpdateShow = new JButton("Update show");
 		btnUpdateShow.setEnabled(false);
@@ -179,14 +207,14 @@ public class VideoMainFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		frame.getContentPane().add(btnUpdateShow, "cell 4 5,alignx right,aligny bottom");
+		frame.getContentPane().add(btnUpdateShow, "cell 4 6,alignx right,aligny bottom");
 		
 		JButton btnRefreshDatabase = new JButton("Refresh database");
 		btnRefreshDatabase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		frame.getContentPane().add(btnRefreshDatabase, "cell 6 5,alignx left,aligny bottom");
+		frame.getContentPane().add(btnRefreshDatabase, "cell 6 6,alignx left,aligny bottom");
 	}
 
 }

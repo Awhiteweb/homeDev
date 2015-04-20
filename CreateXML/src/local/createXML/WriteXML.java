@@ -7,18 +7,21 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import local.database.Movie;
-import local.database.VideoProvider;
+import local.dto.Video;
+import local.dto.VideoProvider;
 
 public class WriteXML {
 
 	public static void main(String[] args) throws Exception
 	{
-		
-		List<Movie> data = VideoProvider.getVideos();
-		
+		VideoProvider video = new VideoProvider();
+//		video.getVideos();
+
+		List<Video> data = video.returnVideos();
 		createXML creator = new createXML();
-		creator.createDocument( data , "file.xml" );
+		creator.createDocument( data , "./files/file.xml" );
+		
+		
 		
 	}
 }

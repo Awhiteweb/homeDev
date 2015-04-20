@@ -3,26 +3,32 @@ package local.createXML;
 import java.io.StringWriter;
 import java.util.List;
 
+import javanet.staxutils.IndentingXMLStreamWriter;
+
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import local.database.Movie;
-import local.database.VideoProvider;
+import local.dto.Video;
+import local.dto.VideoProvider;
 
 public class createXML {
 
-	public void createDocument (List<Movie> data, String filename) throws XMLStreamException
+	public void createDocument (List<Video> data, String filename) throws XMLStreamException
 	{
 		
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		StringWriter sw = new StringWriter();
-		XMLStreamWriter writer = factory.createXMLStreamWriter( sw );
+		XMLStreamWriter w = factory.createXMLStreamWriter( sw );
+		
+		IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( w );
 		
 		writer.writeStartDocument();
+		writer.writeStartElement( "videos" );
 		
 		createElement(writer, data);
 		
+		writer.writeEndElement();
 		writer.writeEndDocument();
 		
 		writer.flush();
@@ -33,33 +39,42 @@ public class createXML {
 
 	}
 
-	private void createElement(XMLStreamWriter writer, List<Movie> data) throws XMLStreamException 
+	private void createElement(XMLStreamWriter writer, List<Video> data) throws XMLStreamException 
 	{
-		for (Movie movie : data) 
+		for (Video video : data) 
 		{
-			writer.writeStartElement( "movie" );
-			writer.writeAttribute( VideoProvider.ID , Integer.toString(movie.getID()) );
+			writer.writeStartElement( "video" );
+			writer.writeAttribute( VideoProvider.ID , Integer.toString(video.getID()) );
 			
-				writer.writeStartElement( VideoProvider.TITLE );
-				writer.writeCharacters( movie.getTitle() );
-				writer.writeEndElement();
-				
-				writer.writeStartElement( VideoProvider.LOCATION );
-				writer.writeCharacters( movie.getLocation() );
-				writer.writeEndElement();
-				
-				writer.writeStartElement( VideoProvider.GENRE );
-				writer.writeCharacters( movie.getGenre() );
-				writer.writeEndElement();
-				
-				writer.writeStartElement( VideoProvider.GROUP );
-				writer.writeCharacters( movie.getGroup() );
-				writer.writeEndElement();
-				
-				writer.writeStartElement( VideoProvider.SERIESN );
-				writer.writeCharacters( Integer.toString(movie.getSeriesN()) );
-				writer.writeEndElement();
+			writer.writeStartElement( VideoProvider.TYPE );
+			writer.writeCharacters( video.getType() );
+			writer.writeEndElement();
+
+			writer.writeStartElement( VideoProvider.TITLE );
+			writer.writeCharacters( video.getTitle() );
+			writer.writeEndElement();
 			
+			writer.writeStartElement( VideoProvider.LOCATION );
+			writer.writeCharacters( video.getLocation() );
+			writer.writeEndElement();
+			
+			writer.writeStartElement( VideoProvider.GENRE );
+			writer.writeCharacters( video.getGenre() );
+			writer.writeEndElement();
+			
+			writer.writeStartElement( VideoProvider.GROUP );
+			writer.writeCharacters( video.getGroup() );
+			writer.writeEndElement();
+			
+			writer.writeStartElement( VideoProvider.SERIES_N );
+			writer.writeCharacters( Integer.toString( video.getSeriesN() ) );
+			writer.writeEndElement();
+
+			writer.writeStartElement( VideoProvider.SEASON_N );
+			writer.writeCharacters( Integer.toString( video.getSeriesN() ) );
+			writer.writeEndElement();
+
+				
 			writer.writeEndElement();
 	
 		}
