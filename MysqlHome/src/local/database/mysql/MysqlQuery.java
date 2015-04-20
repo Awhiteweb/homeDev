@@ -1,21 +1,19 @@
 package local.database.mysql;
 
 import java.sql.ResultSet;
-import local.dto.VideoProvider;
 
 public class MysqlQuery
 {
 
 	public ResultSet query()
 	{
-		String stmt = "SELECT `m`.`id` AS `" + VideoProider.ID + "`, "
-				+ "`m`.`title` AS `" + VideoProider.TITLE + "`, "
-				+ "`m`.`path` AS `" + VideoProider.LOCATION + "`, "
-				+ "`ge`.`genre` AS `" + VideoProider.GENRE + "`, "
-				+ "`gr`.`group` AS `" + VideoProider.GROUP + "`, "
-				+ "`m`.`series_num` AS `" + VideoProider.SERIES_N + "`, "
-				+ "`m`.`season_num` AS `" + VideoProider.SEASON_N + "`, "
-				+ "`t`.`genre` AS `" + VideoProider.TYPE + "` "
+		String stmt = "SELECT `m`.`id` AS `ID`, "
+				+ "`m`.`title` AS `Title`, "
+				+ "`m`.`path` AS `Path`, "
+				+ "`ge`.`genre` AS `Genre`, "
+				+ "`gr`.`group` AS `Group`, "
+				+ "`m`.`series_num` AS `Series Number`, "
+				+ "`t`.`genre` AS `Type` "
 				+ "FROM `main` AS `m` "
 				+ "LEFT JOIN `genres` AS `ge` "
 				+ "ON `m`.`genre` = `ge`.`id` "

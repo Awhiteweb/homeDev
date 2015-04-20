@@ -1,5 +1,6 @@
 package local.database.xml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
@@ -11,7 +12,6 @@ public class XMLVideoRepo implements IVideoRepo
 	@Override
 	public List<Video> getVideos( int amount )
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -39,8 +39,21 @@ public class XMLVideoRepo implements IVideoRepo
 	@Override
 	public List<Video> getVideos()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<Video> videos = new ArrayList<Video>();
+		
+		XMLHandler handler = new XMLHandler();
+		
+		try
+		{
+			videos = handler.readXML( "files\\file.xml" );
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return videos;
 	}
 
 	@Override

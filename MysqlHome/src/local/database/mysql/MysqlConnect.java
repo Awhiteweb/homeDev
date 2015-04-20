@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import local.dto.VideoProvider;
-
 
 public class MysqlConnect
 {
@@ -29,7 +27,7 @@ public class MysqlConnect
 		{
 			conn = DriverManager.getConnection( CONN_STRING, USERNAME, PASSWORD );
 
-			System.out.println( "connected" );	
+//			System.out.println( "connected" );	
 		}
 		catch (SQLException e)
 		{
@@ -40,7 +38,6 @@ public class MysqlConnect
 	public ResultSet query( String query ) throws SQLException
 	{
 		
-
 //		String stmt = "SELECT `m`.`id` AS `ID`, "
 //				+ "`m`.`title` AS `Title`, "
 //				+ "`m`.`path` AS `Path`, "
