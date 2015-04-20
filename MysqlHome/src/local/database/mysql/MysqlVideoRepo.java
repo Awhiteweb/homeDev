@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
-
 import local.models.top.Finals;
-
 import local.models.top.IVideoRepo;
 
 public class MysqlVideoRepo implements IVideoRepo
@@ -41,13 +39,41 @@ public class MysqlVideoRepo implements IVideoRepo
 	{
 		List<Video> list = new ArrayList<Video>();
 		
+		String t;
 		try
 		{
 			
 			while ( resultSet.next() )
 			{
+//				System.out.println( "Group " + resultSet.getString( Finals.GROUP ) );
+				
 				Video video = new Video();
+				
+				video.setID( Integer.parseInt( resultSet.getString( Finals.ID ) ) );
+				video.setType( resultSet.getString( Finals.TYPE ) );
 				video.setTitle( resultSet.getString( Finals.TITLE ) );
+				video.setLocation( resultSet.getString( Finals.LOCATION ) );
+				
+				if ( resultSet.getString( Finals.GENRE ) != null )
+				{
+					video.setGenre( resultSet.getString( Finals.GENRE ) );
+				}
+				
+				if ( resultSet.getString( Finals.GROUP ) != null )
+				{
+					video.setGroup( resultSet.getString( Finals.GROUP ) );
+				}
+				
+				if ( resultSet.getString( Finals.SERIES_N ) != null )
+				{
+					video.setSeriesN( Integer.parseInt( resultSet.getString( Finals.SERIES_N ) ) );
+				}
+				
+				if ( resultSet.getString( Finals.SEASON_N ) != null )
+				{
+					video.setSeasonN( Integer.parseInt( resultSet.getString( Finals.SEASON_N ) ) );
+				}
+				
 				list.add( video );
 			}
 		}
@@ -84,10 +110,8 @@ public class MysqlVideoRepo implements IVideoRepo
 		
 		try
 		{
-
 			ResultSet result = this.conn.query( selectFrom + " WHERE `id`=" + id);
 			videos = MapResultSet( result );
-
 		}
 		catch (SQLException e)
 		{
@@ -123,8 +147,20 @@ public class MysqlVideoRepo implements IVideoRepo
 	@Override
 	public List<Video> getVideos()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<Video> videos = null;
+		
+		try
+		{
+			ResultSet result = this.conn.query( selectFrom + " ORDER BY " + Finals.TYPE + ", " + Finals.TITLE);
+			videos = MapResultSet( result );
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return videos;
+
 	}
 
 }

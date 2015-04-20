@@ -3,6 +3,7 @@ package local.video.app;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -15,13 +16,19 @@ import net.miginfocom.swing.MigLayout;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
+import local.dto.Video;
+import local.database.xml.XMLVideoRepo;
+
 public class VideoMainFrame {
 
 	private JFrame frame;
+	private List<Video> videoList;
 
 	/**
 	 * Launch the application.
@@ -43,13 +50,39 @@ public class VideoMainFrame {
 	 * Create the application.
 	 */
 	public VideoMainFrame() {
-		initialize();
+		videoList = new ArrayList<Video>();
+		
+		XMLVideoRepo xmlRepo = new XMLVideoRepo();
+		videoList = xmlRepo.getVideos();
+		
+		initialize(videoList);
 	}
 
+	
 	/**
 	 * Initialize the contents of the frame.
+	 * @param videoList 
 	 */
-	private void initialize() {
+	private void initialize( List<Video> videoList ) {
+		
+		DefaultListModel<String> titleList = new DefaultListModel<String>();
+		DefaultListModel<String> genreList = new DefaultListModel<String>();
+		DefaultListModel<String> groupList = new DefaultListModel<String>();
+		DefaultListModel<Integer> seriesList = new DefaultListModel<Integer>();
+		DefaultListModel<Integer> seasonList = new DefaultListModel<Integer>();
+		
+		
+		
+		for ( Video video : videoList )
+		{
+			titleList.addElement( video.getTitle() );
+			genreList.addElement( video.getGenre() );
+			groupList.addElement( video.getGroup() );
+			seriesList.addElement( video.getSeriesN() );
+			seasonList.addElement( video.getSeasonN() );
+		}
+		
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,12 +106,12 @@ public class VideoMainFrame {
 		frame.getContentPane().add(lblSeasonNumber, "cell 6 3,aligny bottom");
 		
 /* Lists */
-		JList videos = new JList();
+		JList videos = new JList(titleList);
 		videos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		videos.setLayoutOrientation(JList.VERTICAL);
 		frame.getContentPane().add(videos, "cell 0 1 1 4,grow");
 		
-		JList genres = new JList();
+		JList genres = new JList(genreList);
 		genres.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 			}
@@ -87,7 +120,7 @@ public class VideoMainFrame {
 		genres.setLayoutOrientation(JList.VERTICAL);
 		frame.getContentPane().add(genres, "cell 2 2 1 3,grow");
 		
-		JList groups = new JList();
+		JList groups = new JList(groupList);
 		groups.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 			}
@@ -96,7 +129,7 @@ public class VideoMainFrame {
 		groups.setLayoutOrientation(JList.VERTICAL);
 		frame.getContentPane().add(groups, "cell 4 2 1 3,grow");
 		
-		JList series_numbers = new JList();
+		JList series_numbers = new JList(seriesList);
 		series_numbers.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 			}
@@ -105,7 +138,7 @@ public class VideoMainFrame {
 		series_numbers.setLayoutOrientation(JList.VERTICAL);
 		frame.getContentPane().add(series_numbers, "cell 6 2,grow");
 				
-		JList season_numbers = new JList();
+		JList season_numbers = new JList(seasonList);
 		season_numbers.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 			}
