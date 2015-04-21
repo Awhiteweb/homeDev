@@ -31,7 +31,14 @@ public class VideoMainFrame {
 
 	private JFrame frame;
 	private List<Video> videoList;
+	private DefaultListModel<String> titleList = new DefaultListModel<String>();
+	private DefaultListModel<String> genreList = new DefaultListModel<String>();
+	private DefaultListModel<String> groupList = new DefaultListModel<String>();
+	private DefaultListModel<Integer> seriesList = new DefaultListModel<Integer>();
+	private DefaultListModel<Integer> seasonList = new DefaultListModel<Integer>();
 
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -74,13 +81,6 @@ public class VideoMainFrame {
 	 */
 	private void initialize( List<Video> videoList ) {
 		
-		DefaultListModel<String> titleList = new DefaultListModel<String>();
-		DefaultListModel<String> genreList = new DefaultListModel<String>();
-		DefaultListModel<String> groupList = new DefaultListModel<String>();
-		DefaultListModel<Integer> seriesList = new DefaultListModel<Integer>();
-		DefaultListModel<Integer> seasonList = new DefaultListModel<Integer>();
-		
-		
 		
 		for ( Video video : videoList )
 		{
@@ -116,14 +116,10 @@ public class VideoMainFrame {
 		
 /* Lists */
 
-
 		JList videos = new JList(titleList);
 		videos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		videos.setLayoutOrientation(JList.VERTICAL);
-
-		JScrollPane scrollVideoPane = new JScrollPane();
-		scrollVideoPane.add( videos );
-
+		JScrollPane scrollVideoPane = new JScrollPane( videos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollVideoPane, "cell 0 2 1 4,grow");
 
 		
@@ -134,9 +130,7 @@ public class VideoMainFrame {
 		});
 		genres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		genres.setLayoutOrientation(JList.VERTICAL);
-
-		JScrollPane scrollGenrePane = new JScrollPane();
-		scrollGenrePane.add( genres );
+		JScrollPane scrollGenrePane = new JScrollPane( genres, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollGenrePane, "cell 2 3 1 3,grow");
 		
 		JList groups = new JList(groupList);
@@ -146,9 +140,7 @@ public class VideoMainFrame {
 		});
 		groups.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groups.setLayoutOrientation(JList.VERTICAL);
-		
-		JScrollPane scrollGroupPane = new JScrollPane();
-		scrollGroupPane.add( groups );
+		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollGroupPane, "cell 4 3 1 3,grow");
 		
 		JList series_numbers = new JList(seriesList);
@@ -158,9 +150,7 @@ public class VideoMainFrame {
 		});
 		series_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		series_numbers.setLayoutOrientation(JList.VERTICAL);
-		
-		JScrollPane scrollSeriesPane = new JScrollPane();
-		scrollSeriesPane.add( series_numbers );
+		JScrollPane scrollSeriesPane = new JScrollPane( series_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollSeriesPane, "cell 6 3,grow");
 				
 		JList season_numbers = new JList(seasonList);
@@ -170,9 +160,7 @@ public class VideoMainFrame {
 		});
 		season_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		season_numbers.setLayoutOrientation(JList.VERTICAL);
-		
-		JScrollPane scrollSeasonPane = new JScrollPane();
-		scrollSeasonPane.add( season_numbers );
+		JScrollPane scrollSeasonPane = new JScrollPane( season_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollSeasonPane, "cell 6 5,grow");
 		
 /* Check Boxes */		
@@ -216,5 +204,19 @@ public class VideoMainFrame {
 		});
 		frame.getContentPane().add(btnRefreshDatabase, "cell 6 6,alignx left,aligny bottom");
 	}
+	
+	private void returnLists( List<Video> videos )
+	{
+			for( Video video : videos )
+			{
+				titleList.addElement( video.getTitle() );
+				genreList.addElement( video.getGenre() );
+				groupList.addElement( video.getGroup() );
+				seriesList.addElement( video.getSeriesN() );
+				seasonList.addElement( video.getSeasonN() );				
+			}
+		
+	}
 
+	
 }
