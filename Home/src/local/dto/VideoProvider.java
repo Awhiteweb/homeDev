@@ -8,6 +8,7 @@ import local.database.mysql.MysqlUOW;
 import local.database.mysql.MysqlVideoRepo;
 import local.database.xml.XmlUOW;
 import local.models.top.IUnitOfWork;
+import local.models.top.Repos;
 
 public class VideoProvider {
 	
@@ -23,10 +24,19 @@ public class VideoProvider {
 	
 	private IUnitOfWork uow = null;
 	
-	public VideoProvider()
+	public VideoProvider( Repos repo )
 	{
-//		this.uow = new MysqlUOW();
-		this.uow = new XmlUOW();
+		
+		switch ( repo )
+		{
+		case MYSQL:
+			this.uow = new MysqlUOW();
+			break;
+		case XML:
+			this.uow = new XmlUOW();
+			break;
+		}
+
 	}
 	
 	
@@ -48,12 +58,17 @@ public class VideoProvider {
 		return videos;
 	}
 	
+	
 	public List<Video> returnVideos( String searchTitle, String searchCat ) throws Exception
 	{
 		List<Video> videos = this.uow.VideoRepo().searchVideos( searchTitle, searchCat );
 		
 		return videos;	
 	}
-	
+
+	public void writeVideos( List<Video> data )
+	{
+		this.uow.VideoRepo().writeVideos( data );
+	}
 	
 }

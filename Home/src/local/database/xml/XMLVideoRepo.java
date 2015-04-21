@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.dto.Video;
+import local.dto.VideoProvider;
 import local.models.top.IVideoRepo;
+import local.models.top.Repos;
 
 public class XMLVideoRepo implements IVideoRepo
 {
@@ -20,7 +22,7 @@ public class XMLVideoRepo implements IVideoRepo
 
 		List<Video> videos = new ArrayList<Video>();
 		
-		XMLHandler handler = new XMLHandler();
+		XMLReader handler = new XMLReader();
 		
 		handler.searchTitle = searchTitle;
 		handler.searchCat = searchCat;
@@ -40,6 +42,23 @@ public class XMLVideoRepo implements IVideoRepo
 	@Override
 	public void writeVideos( List<Video> videos )
 	{
+		VideoProvider video = new VideoProvider( Repos.MYSQL );
+
+		try 
+		{
+
+			List<Video> data = video.returnVideos();
+
+			XMLWriter creator = new XMLWriter();
+		
+			creator.createDocument( data , "./files/file.xml" );
+			
+		} catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+
+
 	}
 
 	@Override
@@ -52,11 +71,11 @@ public class XMLVideoRepo implements IVideoRepo
 	{
 		List<Video> videos = new ArrayList<Video>();
 		
-		XMLHandler handler = new XMLHandler();
+		XMLReader handler = new XMLReader();
 		
 		try
 		{
-			videos = handler.readXML( "files/file.xml" );
+			videos = handler.readXML( "./files/file.xml" );
 		}
 		catch (Exception e)
 		{

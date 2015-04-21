@@ -14,7 +14,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class XMLHandler extends DefaultHandler
+public class XMLReader extends DefaultHandler
 {
 
 	private List<Video> data;

@@ -38,6 +38,7 @@ import local.dto.Video;
 import local.dto.VideoProvider;
 import local.database.xml.XMLVideoRepo;
 import local.models.top.Finals;
+import local.models.top.Repos;
 
 import javax.swing.JScrollPane;
 
@@ -73,7 +74,7 @@ public class VideoMainFrame {
 	 * Create the application.
 	 */
 	public VideoMainFrame() {
-		VideoProvider controller = new VideoProvider();
+		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
 //			controller.getVideos();
@@ -98,7 +99,7 @@ public class VideoMainFrame {
 		setLists( videoList );		
 		
 		frame = new JFrame();
-		frame.setBounds(100, 100, 1200, 800);
+		frame.setBounds(150, 50, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new MigLayout("", "[400px:n,grow][20px][250px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][5px][30px][grow][30px][grow][30px]"));
 		
@@ -136,19 +137,26 @@ public class VideoMainFrame {
 		frame.getContentPane().add(btnPlay, "cell 0 6,alignx left,aligny center");
 		
 		JButton btnRefresh = new JButton( "" );
-		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("files/fontawesome-webfont.ttf") )
+		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("fontawesome-webfont.ttf") )
 		{		
-			Font font;
-			font = Font.createFont(Font.TRUETYPE_FONT, is);
-			font = font.deriveFont(Font.PLAIN, 24f);
-
-			btnRefresh.setText( "\uf021" );
-			btnRefresh.setFont( font );
-			
-		} catch (Exception e2) {
-			btnRefresh.setText( "Refresh lists" );
-			btnRefresh.setMinimumSize( new Dimension( 100,25 ) );
-			e2.printStackTrace();
+			if ( is != null )
+			{
+				Font font;
+				font = Font.createFont(Font.TRUETYPE_FONT, is);
+				font = font.deriveFont(Font.PLAIN, 24f);
+		
+				btnRefresh.setText( "\uf021" );
+				btnRefresh.setFont( font );
+			}
+			else
+			{
+				btnRefresh.setText( "Refresh Lists" );
+			}
+		}
+		catch (Exception ex)
+		{
+			System.err.println( "font exception");
+			ex.printStackTrace();
 		}
 		
 		frame.getContentPane().add( btnRefresh, "cell 2 6,alignx left,aligny bottom" );
@@ -217,90 +225,24 @@ public class VideoMainFrame {
 
 		genres.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				//read xml to match selection and reload all lists with new data
 				
-				if ( genres.getSelectedIndex() > 0 )
-				{
-					VideoProvider controller = new VideoProvider();
-
-					try 
-					{
-						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.GENRE );
-						
-						titleList.clear();
-						genreList.clear();
-						groupList.clear();
-						seriesList.clear();
-						seasonList.clear();
-						locationList.clear();
-						
-						setLists(videoList);
-						
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-					
-				}
+				updateLists( genres, Finals.GENRE );
 				
 			}
 		});
 
 		groups.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				//read xml to match selection and reload all lists with new data
-
-				if ( groups.getSelectedIndex() > 0 )
-				{					
-					VideoProvider controller = new VideoProvider();
-
-					try 
-					{
-						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.GROUP );
-						
-						titleList.clear();
-						genreList.clear();
-						groupList.clear();
-						seriesList.clear();
-						seasonList.clear();
-						locationList.clear();
-						
-						setLists(videoList);
-						
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-					
-				}
+				
+				updateLists( groups, Finals.GROUP );
 
 			}
 		});
 
 		series_numbers.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				//read xml to match selection and reload all lists with new data
 				
-				if ( series_numbers.getSelectedIndex() > 0 )
-				{
-					VideoProvider controller = new VideoProvider();
-
-					try 
-					{
-						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.SERIES_N );
-						
-						titleList.clear();
-						genreList.clear();
-						groupList.clear();
-						seriesList.clear();
-						seasonList.clear();
-						locationList.clear();
-						
-						setLists(videoList);
-						
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-					
-				}
+				updateLists(series_numbers, Finals.SERIES_N);
 
 			}
 		});
@@ -309,30 +251,10 @@ public class VideoMainFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				//read xml to match selection and reload all lists with new data
 				
-				if ( season_numbers.getSelectedIndex() > 0 )
-				{
-					VideoProvider controller = new VideoProvider();
-
-					try 
-					{
-						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.SEASON_N );
-						
-						titleList.clear();
-						genreList.clear();
-						groupList.clear();
-						seriesList.clear();
-						seasonList.clear();
-						locationList.clear();
-						
-						setLists(videoList);
-						
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-					
-				}
+				updateLists(season_numbers, Finals.SEASON_N );
 
 			}
+
 		});
 
 		movieCB.addActionListener(new ActionListener() {
@@ -354,7 +276,7 @@ public class VideoMainFrame {
 						System.out.println( locationList.get( videos.getSelectedIndex() ) );
 				    	String location = "files/icon.png"; // replace with selected item from titleList 
 				        File myFile = new File( location );
-				        Desktop.getDesktop().open(myFile);
+				        Desktop.getDesktop().open( myFile );
 				        videos.clearSelection();
 				        btnPlay.setEnabled( false );
 				    }
@@ -368,26 +290,11 @@ public class VideoMainFrame {
 
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VideoProvider controller = new VideoProvider();
-				
-				try 
-				{
-					List<Video> videoList = controller.returnVideos();
-					
-					titleList.clear();
-					genreList.clear();
-					groupList.clear();
-					seriesList.clear();
-					seasonList.clear();
-					locationList.clear();
-					
-					setLists(videoList);
-					
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+
+				updateAll();
 
 			}
+
 		});
 		btnUpdateShow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -396,6 +303,24 @@ public class VideoMainFrame {
 
 		btnRefreshDatabase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				VideoProvider controller = new VideoProvider( Repos.MYSQL );
+				try
+				{
+					List<Video> data = controller.returnVideos();
+					
+					VideoProvider writer = new VideoProvider( Repos.XML );
+					
+					writer.writeVideos( data );
+					
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+				
+				updateAll();
+				
 			}
 		});
 
@@ -456,6 +381,52 @@ public class VideoMainFrame {
 			seasonList.addElement( i );
 		}
 		
+	}
+
+	private void updateLists(JList searchCat, String finalsValue) {
+		if ( searchCat.getSelectedIndex() > 0 )
+		{
+			VideoProvider controller = new VideoProvider( Repos.XML );
+
+			try 
+			{
+				List<Video> videoList = controller.returnVideos( searchCat.getSelectedValue().toString(), finalsValue );
+				
+				titleList.clear();
+				genreList.clear();
+				groupList.clear();
+				seriesList.clear();
+				seasonList.clear();
+				locationList.clear();
+				
+				setLists(videoList);
+				
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	
+	private void updateAll() {
+		VideoProvider controller = new VideoProvider( Repos.XML );
+		
+		try 
+		{
+			List<Video> videoList = controller.returnVideos();
+			
+			titleList.clear();
+			genreList.clear();
+			groupList.clear();
+			seriesList.clear();
+			seasonList.clear();
+			locationList.clear();
+			
+			setLists(videoList);
+			
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	
