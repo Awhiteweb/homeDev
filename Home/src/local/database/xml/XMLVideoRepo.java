@@ -16,24 +16,35 @@ public class XMLVideoRepo implements IVideoRepo
 	}
 
 	@Override
-	public List<Video> searchVideos( String search )
-	{
-		// TODO Auto-generated method stub
-		return null;
+	public List<Video> searchVideos(String searchTitle, String searchCat) {
+
+		List<Video> videos = new ArrayList<Video>();
+		
+		XMLHandler handler = new XMLHandler();
+		
+		handler.searchTitle = searchTitle;
+		handler.searchCat = searchCat;
+		
+		try
+		{
+			videos = handler.readXML( "files/file.xml" );
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return videos;
 	}
 
 	@Override
 	public void writeVideos( List<Video> videos )
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void updateVideos( List<Video> videos )
-	{
-		// TODO Auto-generated method stub
-		
+	{		
 	}
 
 	@Override
@@ -45,11 +56,10 @@ public class XMLVideoRepo implements IVideoRepo
 		
 		try
 		{
-			videos = handler.readXML( "files\\file.xml" );
+			videos = handler.readXML( "files/file.xml" );
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -59,8 +69,8 @@ public class XMLVideoRepo implements IVideoRepo
 	@Override
 	public Video getVideoByID( int id )
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

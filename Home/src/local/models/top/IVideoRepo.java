@@ -12,7 +12,7 @@ public interface IVideoRepo
 
 	Video getVideoByID( int id );
 	
-	List<Video> searchVideos( String search );
+	List<Video> searchVideos( String searchTitle, String searchCat );
 
 	void writeVideos( List<Video> videos );
 	

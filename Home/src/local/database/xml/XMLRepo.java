@@ -1,11 +1,11 @@
-package local.database.mysql;
+package local.database.xml;
 
 import java.util.List;
 
 import local.dto.Video;
 import local.models.top.IVideoRepo;
 
-public class MysqlRepo implements IVideoRepo
+public class XMLRepo implements IVideoRepo
 {
 
 	@Override
@@ -16,7 +16,7 @@ public class MysqlRepo implements IVideoRepo
 	}
 
 	@Override
-	public List<Video> searchVideos( String search )
+	public List<Video> searchVideos( String search, String category )
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -34,6 +34,18 @@ public class MysqlRepo implements IVideoRepo
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<Video> getVideos( int amount ) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Video getVideoByID( int id ) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

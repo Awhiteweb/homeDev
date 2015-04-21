@@ -124,7 +124,7 @@ public class MysqlVideoRepo implements IVideoRepo
 	
 
 	@Override
-	public List<Video> searchVideos( String search )
+	public List<Video> searchVideos( String search, String category )
 	{
 		// TODO Auto-generated method stub
 		return null;

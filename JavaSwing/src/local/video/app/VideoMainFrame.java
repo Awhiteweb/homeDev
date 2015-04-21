@@ -1,8 +1,11 @@
 package local.video.app;
 
+import java.awt.ActiveEvent;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.FontFormatException;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
@@ -20,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +37,7 @@ import javax.swing.event.ListSelectionEvent;
 import local.dto.Video;
 import local.dto.VideoProvider;
 import local.database.xml.XMLVideoRepo;
+import local.models.top.Finals;
 
 import javax.swing.JScrollPane;
 
@@ -117,7 +122,7 @@ public class VideoMainFrame {
 		JLabel lblGroup = new JLabel("Group");
 		frame.getContentPane().add(lblGroup, "cell 4 2,aligny bottom");
 		
-		JLabel lblSeriesNumber = new JLabel("Series Number");
+		JLabel lblSeriesNumber = new JLabel("Episode Number");
 		frame.getContentPane().add(lblSeriesNumber, "cell 6 2,aligny bottom");
 		
 		JLabel lblSeasonNumber = new JLabel("Season Number");
@@ -129,6 +134,24 @@ public class VideoMainFrame {
 		btnPlay.setEnabled(false);
 		btnPlay.setToolTipText("This will copy to the desktop and then play the movie");
 		frame.getContentPane().add(btnPlay, "cell 0 6,alignx left,aligny center");
+		
+		JButton btnRefresh = new JButton( "" );
+		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("files/fontawesome-webfont.ttf") )
+		{		
+			Font font;
+			font = Font.createFont(Font.TRUETYPE_FONT, is);
+			font = font.deriveFont(Font.PLAIN, 24f);
+
+			btnRefresh.setText( "\uf021" );
+			btnRefresh.setFont( font );
+			
+		} catch (Exception e2) {
+			btnRefresh.setText( "Refresh lists" );
+			btnRefresh.setMinimumSize( new Dimension( 100,25 ) );
+			e2.printStackTrace();
+		}
+		
+		frame.getContentPane().add( btnRefresh, "cell 2 6,alignx left,aligny bottom" );
 		
 		JButton btnUpdateShow = new JButton("Make updates");
 		btnUpdateShow.setEnabled(false);
@@ -146,13 +169,13 @@ public class VideoMainFrame {
 		frame.getContentPane().add(scrollVideoPane, "cell 0 2 1 4,grow");
 		
 		JList genres = new JList( genreList );
-		genres.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		genres.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		genres.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollGenrePane = new JScrollPane( genres, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollGenrePane, "cell 2 3 1 3,grow");
 		
 		JList groups = new JList(groupList);
-		groups.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		groups.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		groups.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		frame.getContentPane().add(scrollGroupPane, "cell 4 3 1 3,grow");
@@ -176,6 +199,7 @@ public class VideoMainFrame {
 		JCheckBox tvCB = new JCheckBox("TV Shows");
 		frame.getContentPane().add(tvCB, "cell 6 0,alignx left,aligny bottom");
 		
+		
 /* Actions */
 
 		videos.addListSelectionListener(new ListSelectionListener() {
@@ -193,21 +217,121 @@ public class VideoMainFrame {
 
 		genres.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				//read xml to match selection and reload all lists with new data
+				
+				if ( genres.getSelectedIndex() > 0 )
+				{
+					VideoProvider controller = new VideoProvider();
+
+					try 
+					{
+						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.GENRE );
+						
+						titleList.clear();
+						genreList.clear();
+						groupList.clear();
+						seriesList.clear();
+						seasonList.clear();
+						locationList.clear();
+						
+						setLists(videoList);
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+				}
+				
 			}
 		});
 
 		groups.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				//read xml to match selection and reload all lists with new data
+
+				if ( groups.getSelectedIndex() > 0 )
+				{					
+					VideoProvider controller = new VideoProvider();
+
+					try 
+					{
+						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.GROUP );
+						
+						titleList.clear();
+						genreList.clear();
+						groupList.clear();
+						seriesList.clear();
+						seasonList.clear();
+						locationList.clear();
+						
+						setLists(videoList);
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+				}
+
 			}
 		});
 
 		series_numbers.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				//read xml to match selection and reload all lists with new data
+				
+				if ( series_numbers.getSelectedIndex() > 0 )
+				{
+					VideoProvider controller = new VideoProvider();
+
+					try 
+					{
+						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.SERIES_N );
+						
+						titleList.clear();
+						genreList.clear();
+						groupList.clear();
+						seriesList.clear();
+						seasonList.clear();
+						locationList.clear();
+						
+						setLists(videoList);
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+				}
+
 			}
 		});
 
 		season_numbers.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				//read xml to match selection and reload all lists with new data
+				
+				if ( season_numbers.getSelectedIndex() > 0 )
+				{
+					VideoProvider controller = new VideoProvider();
+
+					try 
+					{
+						List<Video> videoList = controller.returnVideos( genres.getSelectedValue().toString(), Finals.SEASON_N );
+						
+						titleList.clear();
+						genreList.clear();
+						groupList.clear();
+						seriesList.clear();
+						seasonList.clear();
+						locationList.clear();
+						
+						setLists(videoList);
+						
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+				}
+
 			}
 		});
 
@@ -242,6 +366,29 @@ public class VideoMainFrame {
 			}
 		});
 
+		btnRefresh.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VideoProvider controller = new VideoProvider();
+				
+				try 
+				{
+					List<Video> videoList = controller.returnVideos();
+					
+					titleList.clear();
+					genreList.clear();
+					groupList.clear();
+					seriesList.clear();
+					seasonList.clear();
+					locationList.clear();
+					
+					setLists(videoList);
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+
+			}
+		});
 		btnUpdateShow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -253,6 +400,7 @@ public class VideoMainFrame {
 		});
 
 	}
+	
 	
 	private void setLists( List<Video> videos )
 	{

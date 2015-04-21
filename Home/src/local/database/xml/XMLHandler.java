@@ -21,10 +21,12 @@ public class XMLHandler extends DefaultHandler
 	private Video video;
 	private String currentElement;
 	private StringBuilder currentText;
+	public String searchTitle;
+	public String searchCat;
+	private boolean check;
 	
 	public List<Video> readXML(String filename) throws Exception
 	{
-		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		
@@ -32,7 +34,7 @@ public class XMLHandler extends DefaultHandler
 		
 		return data;	
 	}
-	
+
 	@Override
 	public void startDocument() throws SAXException
 	{
@@ -57,6 +59,7 @@ public class XMLHandler extends DefaultHandler
 			
 		case "video":
 			video = new Video();
+			this.check = false;
 			break;
 			
 		default:
@@ -77,7 +80,10 @@ public class XMLHandler extends DefaultHandler
 			return;
 			
 		case "video":
-			data.add( video );
+			if ( this.check || ( this.searchTitle == null ) )
+			{
+				data.add( video );
+			}
 			return;
 			
 		default:
@@ -102,24 +108,41 @@ public class XMLHandler extends DefaultHandler
 			break;			
 			
 		case VideoProvider.GENRE:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.GENRE.equalsIgnoreCase( this.searchCat ) )
+			{
+				this.check = true;
+			}
 			video.setGenre( content );
 			break;
 			
 		case VideoProvider.GROUP:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.GROUP.equalsIgnoreCase( this.searchCat ) )
+			{
+				this.check = true;
+			}
 			video.setGroup( content );
 			break;
 			
 		case VideoProvider.SERIES_N:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.SERIES_N.equalsIgnoreCase( this.searchCat ) )
+			{
+				this.check = true;
+			}
 			video.setSeriesN( Integer.parseInt( content ) );
 			break;
 			
 		case VideoProvider.SEASON_N:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.SEASON_N.equalsIgnoreCase( this.searchCat ) )
+			{
+				this.check = true;
+			}
 			video.setSeasonN( Integer.parseInt( content ) );
 			break;
 			
 		default:
 			break;
 		}
+		
 		
 		currentElement = "";
 		

@@ -8,9 +8,14 @@ public class Caller
 	{
 		
 		VideoProvider controller = new VideoProvider();
-		controller.getVideos();
+//		controller.getVideos();
 		
-		List<Video> videos = controller.returnVideos();
+//		List<Video> videos = controller.returnVideos(); // gets all videos
+		
+		String searchTitle = "comedy";
+		String searchCat = "genre";
+		
+		List<Video> videos = controller.returnVideos( searchTitle, searchCat ); // searches for videos
 		
 		for (Video video : videos) {
 			

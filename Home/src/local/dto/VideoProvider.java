@@ -30,7 +30,8 @@ public class VideoProvider {
 	}
 	
 	
-	public void getVideos() throws Exception {
+	public void getVideos() throws Exception 
+	{
 		List<Video> videos = this.uow.VideoRepo().getVideos();
 				
 		for( Video video : videos)
@@ -40,10 +41,18 @@ public class VideoProvider {
 		}
 	}
 	
-	public List<Video> returnVideos() throws Exception {
+	public List<Video> returnVideos() throws Exception 
+	{
 		List<Video> videos = this.uow.VideoRepo().getVideos();
 				
 		return videos;
+	}
+	
+	public List<Video> returnVideos( String searchTitle, String searchCat ) throws Exception
+	{
+		List<Video> videos = this.uow.VideoRepo().searchVideos( searchTitle, searchCat );
+		
+		return videos;	
 	}
 	
 	
