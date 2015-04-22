@@ -1,6 +1,7 @@
 package local.video.app;
 
 import java.awt.ActiveEvent;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -14,22 +15,30 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
@@ -41,17 +50,35 @@ import local.models.top.Finals;
 import local.models.top.Repos;
 
 import javax.swing.JScrollPane;
+import javax.swing.JProgressBar;
 
-public class VideoMainFrame {
+public class VideoMainFrame implements PropertyChangeListener {
 
 	private JFrame frame;
+	private JButton btnPlay;
+	private JButton btnRefresh;
+	private JButton btnUpdateShow;
+	private JButton btnRefreshDatabase;
+	private JLabel lblTitle;
+	private JLabel lblGenre;
+	private JLabel lblGroup;		
+	private JLabel lblSeriesNumber;
+	private JLabel lblSeasonNumber;
+	private JList videos;
+	private JList genres;
+	private JList groups;
+	private JList series_numbers;
+	private JList season_numbers;
+	private JCheckBox movieCB;
+	private JCheckBox tvCB;
+	private JProgressBar progressBar;
 	private DefaultListModel<String> titleList = new DefaultListModel<String>();
 	private ArrayList<String> locationList = new ArrayList<String>();
 	private DefaultListModel<String> genreList = new DefaultListModel<String>();
 	private DefaultListModel<String> groupList = new DefaultListModel<String>();
 	private DefaultListModel<Integer> seriesList = new DefaultListModel<Integer>();
 	private DefaultListModel<Integer> seasonList = new DefaultListModel<Integer>();
-
+	private Task task;
 	
 	
 	/**
@@ -94,6 +121,7 @@ public class VideoMainFrame {
 	 * Initialize the contents of the frame.
 	 * @param videoList 
 	 */
+	@SuppressWarnings ( { "unchecked", "rawtypes" } )
 	private void initialize( List<Video> videoList ) {
 		
 		setLists( videoList );		
@@ -113,31 +141,23 @@ public class VideoMainFrame {
 	    }
 	
 /* Labels */
-		JLabel lblTitle = new JLabel("Select a show");
+		
+		lblTitle = new JLabel("Select a show");
 		lblTitle.setVerticalAlignment(SwingConstants.TOP);
-		frame.getContentPane().add(lblTitle, "cell 0 0,alignx left,aligny bottom");
-		
-		JLabel lblGenre = new JLabel("Genre");
-		frame.getContentPane().add(lblGenre, "cell 2 2,aligny bottom");
-		
-		JLabel lblGroup = new JLabel("Group");
-		frame.getContentPane().add(lblGroup, "cell 4 2,aligny bottom");
-		
-		JLabel lblSeriesNumber = new JLabel("Episode Number");
-		frame.getContentPane().add(lblSeriesNumber, "cell 6 2,aligny bottom");
-		
-		JLabel lblSeasonNumber = new JLabel("Season Number");
-		frame.getContentPane().add(lblSeasonNumber, "cell 6 4,aligny bottom");
+		lblGenre = new JLabel("Genre");
+		lblGroup = new JLabel("Group");		
+		lblSeriesNumber = new JLabel("Episode Number");
+		lblSeasonNumber = new JLabel("Season Number");
 
 /* Buttons */
-		JButton btnPlay = new JButton("PLAY");
+		
+		btnPlay = new JButton("PLAY");
 		btnPlay.setMinimumSize(new Dimension(300,25));
 		btnPlay.setEnabled(false);
 		btnPlay.setToolTipText("This will copy to the desktop and then play the movie");
-		frame.getContentPane().add(btnPlay, "cell 0 6,alignx left,aligny center");
 		
-		JButton btnRefresh = new JButton( "" );
-		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("fontawesome-webfont.ttf") )
+		btnRefresh = new JButton( "" );
+		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("icn-font.ttf") )
 		{		
 			if ( is != null )
 			{
@@ -145,7 +165,7 @@ public class VideoMainFrame {
 				font = Font.createFont(Font.TRUETYPE_FONT, is);
 				font = font.deriveFont(Font.PLAIN, 24f);
 		
-				btnRefresh.setText( "\uf021" );
+				btnRefresh.setText( "a" );
 				btnRefresh.setFont( font );
 			}
 			else
@@ -159,53 +179,68 @@ public class VideoMainFrame {
 			ex.printStackTrace();
 		}
 		
-		frame.getContentPane().add( btnRefresh, "cell 2 6,alignx left,aligny bottom" );
 		
-		JButton btnUpdateShow = new JButton("Make updates");
-		btnUpdateShow.setEnabled(false);
-		frame.getContentPane().add(btnUpdateShow, "cell 4 6,alignx right,aligny bottom");
+		btnUpdateShow = new JButton("Make updates");
+				btnUpdateShow.setEnabled(false);
 		
-		JButton btnRefreshDatabase = new JButton("Refresh database");
-		frame.getContentPane().add(btnRefreshDatabase, "cell 6 6,alignx left,aligny bottom");
+		btnRefreshDatabase = new JButton("Refresh database");
 		
 /* Lists */
 
-		JList videos = new JList(titleList);
+		videos = new JList(titleList);
 		videos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		videos.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollVideoPane = new JScrollPane( videos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		frame.getContentPane().add(scrollVideoPane, "cell 0 2 1 4,grow");
 		
-		JList genres = new JList( genreList );
+		genres = new JList( genreList );
 		genres.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		genres.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollGenrePane = new JScrollPane( genres, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		frame.getContentPane().add(scrollGenrePane, "cell 2 3 1 3,grow");
 		
-		JList groups = new JList(groupList);
+		groups = new JList(groupList);
 		groups.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		groups.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		frame.getContentPane().add(scrollGroupPane, "cell 4 3 1 3,grow");
 		
-		JList series_numbers = new JList(seriesList);
+		series_numbers = new JList(seriesList);
 		series_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		series_numbers.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollSeriesPane = new JScrollPane( series_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		frame.getContentPane().add(scrollSeriesPane, "cell 6 3,grow");
 				
-		JList season_numbers = new JList(seasonList);
-		season_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		season_numbers.setLayoutOrientation(JList.VERTICAL);
+		season_numbers = new JList(seasonList);
+	  	season_numbers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	  	season_numbers.setLayoutOrientation(JList.VERTICAL);
 		JScrollPane scrollSeasonPane = new JScrollPane( season_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		frame.getContentPane().add(scrollSeasonPane, "cell 6 5,grow");
 		
-/* Check Boxes */		
-		JCheckBox movieCB = new JCheckBox("Movies");
-		frame.getContentPane().add(movieCB, "cell 4 0,alignx right,aligny bottom");
+/* Check Boxes */	
 		
-		JCheckBox tvCB = new JCheckBox("TV Shows");
-		frame.getContentPane().add(tvCB, "cell 6 0,alignx left,aligny bottom");
+		movieCB = new JCheckBox("Movies");
+		tvCB = new JCheckBox("TV Shows");
+		
+/* Progress Bar */
+		
+		progressBar = new JProgressBar();
+		
+		
+/* Add components to frame */
+
+		frame.getContentPane().add( lblTitle, "cell 0 0,alignx left,aligny bottom" );
+		frame.getContentPane().add( lblGenre, "cell 2 2,aligny bottom" );
+		frame.getContentPane().add( lblGroup, "cell 4 2,aligny bottom" );
+		frame.getContentPane().add( lblSeriesNumber, "cell 6 2,aligny bottom" );
+		frame.getContentPane().add( lblSeasonNumber, "cell 6 4,aligny bottom" );
+		frame.getContentPane().add( btnPlay, "cell 0 6,alignx left,aligny center" );
+		frame.getContentPane().add( btnRefresh, "cell 2 6,alignx left,aligny bottom" );
+		frame.getContentPane().add( btnUpdateShow, "cell 4 6,alignx right,aligny bottom" );
+		frame.getContentPane().add( btnRefreshDatabase, "cell 6 6,alignx left,aligny bottom" );
+		frame.getContentPane().add( scrollVideoPane, "cell 0 2 1 4,grow" );
+		frame.getContentPane().add( scrollGenrePane, "cell 2 3 1 3,grow" );
+		frame.getContentPane().add( scrollGroupPane, "cell 4 3 1 3,grow" );
+		frame.getContentPane().add( scrollSeriesPane, "cell 6 3,grow" );
+		frame.getContentPane().add( scrollSeasonPane, "cell 6 5,grow" );
+		frame.getContentPane().add( movieCB, "cell 4 0,alignx right,aligny bottom" );
+		frame.getContentPane().add( tvCB, "cell 6 0,alignx left,aligny bottom" );
+		frame.getContentPane().add( progressBar, "cell 2 0,growx,aligny center" );
 		
 		
 /* Actions */
@@ -269,22 +304,7 @@ public class VideoMainFrame {
 
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (Desktop.isDesktopSupported()) {
-				    
-					try 
-					{
-						System.out.println( locationList.get( videos.getSelectedIndex() ) );
-				    	String location = "files/icon.png"; // replace with selected item from titleList 
-				        File myFile = new File( location );
-				        Desktop.getDesktop().open( myFile );
-				        videos.clearSelection();
-				        btnPlay.setEnabled( false );
-				    }
-					catch (IOException ex)
-					{
-				      System.err.println( "unable to open file" );
-				    }
-				}
+				playAction(e);
 			}
 		});
 
@@ -383,7 +403,8 @@ public class VideoMainFrame {
 		
 	}
 
-	private void updateLists(JList searchCat, String finalsValue) {
+	private void updateLists(JList searchCat, String finalsValue) 
+	{
 		if ( searchCat.getSelectedIndex() > 0 )
 		{
 			VideoProvider controller = new VideoProvider( Repos.XML );
@@ -408,7 +429,8 @@ public class VideoMainFrame {
 		}
 	}
 	
-	private void updateAll() {
+	private void updateAll() 
+	{
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		
 		try 
@@ -427,6 +449,137 @@ public class VideoMainFrame {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+	}
+	
+	public void playAction ( ActionEvent e )
+	{
+		btnPlay.setEnabled( false );
+		progressBar.setStringPainted( true );
+		task = new Task();
+        task.addPropertyChangeListener( this );
+        task.execute();
+        
+		if (Desktop.isDesktopSupported()) {
+			
+			try 
+			{
+		        Path location = moveFile( "/Users/Alex/Desktop/13 Assassins.m4v" );
+		        Desktop.getDesktop().open( location.toFile() );
+		    }
+			catch (IOException ex)
+			{
+				JOptionPane.showMessageDialog(frame,
+					    "Error opening video",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+		    	System.err.println( "unable to open file" );
+		    }
+		}
+
+	}
+
+	
+	/**
+	 * class for progress bar updating when copying files from network drive to local.
+	 * @author Alex
+	 *
+	 */
+	class Task extends SwingWorker<Void, Void>
+	{
+
+		@Override
+		protected Void doInBackground () throws Exception
+		{
+
+			btnPlay.setText( "Copying file" );
+			progressBar.setString( "Copying file" );
+			Random random = new Random();
+			int progress = 0;
+            
+			//Initialize progress property.
+			setProgress(0);
+            
+			while (progress < 100) 
+			{
+				//Sleep for up to one second.
+				try 
+				{
+					Thread.sleep(random.nextInt(1000));
+				}
+				catch (InterruptedException ignore) 
+				{
+				}
+				
+				//Make random progress.
+				progress += random.nextInt(10);
+				setProgress(Math.min(progress, 100));
+            }
+            return null;
+		}
+
+		/*
+         * Executed in event dispatching thread
+         */
+        @Override
+        public void done() 
+        {
+        	progressBar.setStringPainted( false );
+            btnPlay.setEnabled(true);
+            btnPlay.setText( "PLAY" );
+            setProgress( 0 );
+        }
+	}
+	
+	
+	/**
+     * Invoked when task's progress property changes.
+     */
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("progress" == evt.getPropertyName()) {
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
+        } 
+    }
+    
+    private Path moveFile( String filename )
+	{
+		
+		String target = "/Users/Alex/Desktop/";
+		Path from = Paths.get( filename );
+		Path to = Paths.get( target + from.getFileName() );
+
+		System.out.println( "From: " + from.toString() );
+		System.out.println( "To: " + to.toString() );
+		
+		try
+		{
+			if ( Files.isRegularFile( from ) )
+			{
+				Files.copy( from, to );
+				return to;
+			}
+			else 
+			{
+				errorPopup( to.getFileName().toString() );
+				System.err.println( "error copying file" );
+				return null;
+			}
+			
+		}
+		catch ( IOException e )
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}			 
+	}
+	
+	private void errorPopup ( String file )
+	{
+		JOptionPane.showMessageDialog(frame,
+			    "Error moving the file" + file + ".",
+			    "Error",
+			    JOptionPane.ERROR_MESSAGE);
 	}
 
 	
