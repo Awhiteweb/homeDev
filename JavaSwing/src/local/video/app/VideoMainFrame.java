@@ -27,8 +27,11 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -453,18 +456,22 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	public void playAction ( ActionEvent e )
 	{
+		File copyFrom = new File( "/Users/Alex/Desktop/13 Assassins.m4v" );
+        File copyTo = new File( "/Users/Alex/Desktop/copy/13 Assassins.m4v" );
+
 		btnPlay.setEnabled( false );
 		progressBar.setStringPainted( true );
 		task = new Task();
+		task.source = copyFrom;
+		task.dest = copyTo;
         task.addPropertyChangeListener( this );
         task.execute();
-        
+                
 		if (Desktop.isDesktopSupported()) {
 			
 			try 
 			{
-		        Path location = moveFile( "/Users/Alex/Desktop/13 Assassins.m4v" );
-		        Desktop.getDesktop().open( location.toFile() );
+		        Desktop.getDesktop().open( copyTo );
 		    }
 			catch (IOException ex)
 			{
@@ -472,7 +479,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 					    "Error opening video",
 					    "Error",
 					    JOptionPane.ERROR_MESSAGE);
-		    	System.err.println( "unable to open file" );
+		    	System.err.println( "unable to open video" );
 		    }
 		}
 
@@ -487,19 +494,50 @@ public class VideoMainFrame implements PropertyChangeListener {
 	class Task extends SwingWorker<Void, Void>
 	{
 
+		public File source;
+		public File dest;
+		
 		@Override
 		protected Void doInBackground () throws Exception
 		{
 
-			btnPlay.setText( "Copying file" );
+			InputStream is = null;
+		    OutputStream os = null;
+
+		    btnPlay.setText( "Copying file" );
 			progressBar.setString( "Copying file" );
-			Random random = new Random();
+
 			int progress = 0;
-            
+			int length;
+	        int fileSize = (int) source.length();
+	        int bufferSize = 1024;
+	        byte[] buffer = new byte[ bufferSize ];
+
 			//Initialize progress property.
 			setProgress(0);
             
-			while (progress < 100) 
+
+		    try {
+		    	
+		        is = new FileInputStream(this.source);
+		        os = new FileOutputStream(this.dest);
+		        
+		        while ((length = is.read(buffer)) > 0) {
+		        	
+		            os.write(buffer, 0, length);
+		            progress += bufferSize;
+		            double percent = ( (double) progress / fileSize ) * 100;
+		            if ( (int) percent % 5 == 0 )
+		            {
+		            	setProgress(Math.min( ( int ) percent , 100));
+		            }
+		        }
+		    } finally {
+		        is.close();
+		        os.close();
+		    }
+
+		    while (progress < 100) 
 			{
 				//Sleep for up to one second.
 				try 
@@ -540,46 +578,31 @@ public class VideoMainFrame implements PropertyChangeListener {
             progressBar.setValue(progress);
         } 
     }
-    
-    private Path moveFile( String filename )
-	{
-		
-		String target = "/Users/Alex/Desktop/";
-		Path from = Paths.get( filename );
-		Path to = Paths.get( target + from.getFileName() );
-
-		System.out.println( "From: " + from.toString() );
-		System.out.println( "To: " + to.toString() );
-		
-		try
-		{
-			if ( Files.isRegularFile( from ) )
-			{
-				Files.copy( from, to );
-				return to;
-			}
-			else 
-			{
-				errorPopup( to.getFileName().toString() );
-				System.err.println( "error copying file" );
-				return null;
-			}
-			
-		}
-		catch ( IOException e )
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}			 
-	}
-	
+    	
 	private void errorPopup ( String file )
 	{
 		JOptionPane.showMessageDialog(frame,
 			    "Error moving the file" + file + ".",
 			    "Error",
 			    JOptionPane.ERROR_MESSAGE);
+	}
+
+	private static void copyFileUsingStream(File source, File dest) throws IOException {
+	    InputStream is = null;
+	    OutputStream os = null;
+	    try {
+	        is = new FileInputStream(source);
+	        os = new FileOutputStream(dest);
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	    } finally {
+	        is.close();
+	        os.close();
+	    }
+	    
 	}
 
 	
