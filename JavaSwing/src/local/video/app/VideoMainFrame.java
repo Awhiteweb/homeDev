@@ -466,7 +466,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 		task.dest = copyTo;
         task.addPropertyChangeListener( this );
         task.execute();
-                
+        
+ // TODO problem: method continues while task is executing.
+        
 		if (Desktop.isDesktopSupported()) {
 			
 			try 
@@ -496,11 +498,12 @@ public class VideoMainFrame implements PropertyChangeListener {
 
 		public File source;
 		public File dest;
+		public boolean check;
 		
 		@Override
 		protected Void doInBackground () throws Exception
 		{
-
+			this.check = false;
 			InputStream is = null;
 		    OutputStream os = null;
 
@@ -535,23 +538,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 		    } finally {
 		        is.close();
 		        os.close();
+		        this.check = true;
 		    }
 
-		    while (progress < 100) 
-			{
-				//Sleep for up to one second.
-				try 
-				{
-					Thread.sleep(random.nextInt(1000));
-				}
-				catch (InterruptedException ignore) 
-				{
-				}
-				
-				//Make random progress.
-				progress += random.nextInt(10);
-				setProgress(Math.min(progress, 100));
-            }
             return null;
 		}
 
@@ -585,24 +574,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 			    "Error moving the file" + file + ".",
 			    "Error",
 			    JOptionPane.ERROR_MESSAGE);
-	}
-
-	private static void copyFileUsingStream(File source, File dest) throws IOException {
-	    InputStream is = null;
-	    OutputStream os = null;
-	    try {
-	        is = new FileInputStream(source);
-	        os = new FileOutputStream(dest);
-	        byte[] buffer = new byte[1024];
-	        int length;
-	        while ((length = is.read(buffer)) > 0) {
-	            os.write(buffer, 0, length);
-	        }
-	    } finally {
-	        is.close();
-	        os.close();
-	    }
-	    
 	}
 
 	
