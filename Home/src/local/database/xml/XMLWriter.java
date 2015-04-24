@@ -1,9 +1,11 @@
 package local.database.xml;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 
 import javanet.staxutils.IndentingXMLStreamWriter;
@@ -21,12 +23,12 @@ public class XMLWriter {
 	{
 		
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
-		FileWriter fw = new FileWriter( new File( filename ) );
-		XMLStreamWriter w = factory.createXMLStreamWriter( fw );
+//		Writer fw = new OutputStreamWriter( new FileOutputStream( filename ), "UTF-8" );
+		XMLStreamWriter w = factory.createXMLStreamWriter( new FileOutputStream( filename ) , "UTF-8" );
 		
 		IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( w );
 		
-		writer.writeStartDocument();
+		writer.writeStartDocument("UTF-8", "1.0");
 		writer.writeStartElement( "videos" );
 		
 		createElement(writer, data);

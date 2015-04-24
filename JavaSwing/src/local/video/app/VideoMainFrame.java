@@ -1,12 +1,22 @@
 package local.video.app;
 
-import java.awt.ActiveEvent;
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.FontFormatException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
@@ -16,45 +26,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-
-import net.miginfocom.swing.MigLayout;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
-
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
-import local.database.xml.XMLVideoRepo;
 import local.models.top.Finals;
 import local.models.top.Repos;
+import net.miginfocom.swing.MigLayout;
 
-import javax.swing.JScrollPane;
-import javax.swing.JProgressBar;
-
+@SuppressWarnings( "rawtypes" )
 public class VideoMainFrame implements PropertyChangeListener {
 
 	private JFrame frame;
@@ -124,7 +110,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 * Initialize the contents of the frame.
 	 * @param videoList 
 	 */
-	@SuppressWarnings ( { "unchecked", "rawtypes" } )
+	@SuppressWarnings ( { "unchecked" } )
 	private void initialize( List<Video> videoList ) {
 		
 		setLists( videoList );		
@@ -160,7 +146,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnPlay.setToolTipText("This will copy to the desktop and then play the movie");
 		
 		btnRefresh = new JButton( "" );
-		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("icn-font.ttf") )
+		try ( InputStream is = VideoMainFrame.class.getResourceAsStream("fontawesome-webfont.ttf") )
 		{		
 			if ( is != null )
 			{
@@ -168,7 +154,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 				font = Font.createFont(Font.TRUETYPE_FONT, is);
 				font = font.deriveFont(Font.PLAIN, 24f);
 		
-				btnRefresh.setText( "a" );
+				btnRefresh.setText( "\uf021" );
 				btnRefresh.setFont( font );
 			}
 			else
@@ -456,8 +442,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	public void playAction ( ActionEvent e )
 	{
-		File copyFrom = new File( "/Users/Alex/Desktop/13 Assassins.m4v" );
-        File copyTo = new File( "/Users/Alex/Desktop/copy/13 Assassins.m4v" );
+		File copyFrom = new File( /*"C:\\Users\\Alex.White\\Documents\\screen.avi"*/ "/Users/Alex/Desktop/13 Assassins.m4v" );
+        File copyTo = new File( /*"C:\\Users\\Alex.White\\Documents\\copy\\screen.avi"*/ "/Users/Alex/Desktop/copy/13 Assassins.m4v" );
 
 		btnPlay.setEnabled( false );
 		progressBar.setStringPainted( true );
@@ -466,25 +452,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 		task.dest = copyTo;
         task.addPropertyChangeListener( this );
         task.execute();
-        
- // TODO problem: method continues while task is executing.
-        
-		if (Desktop.isDesktopSupported()) {
-			
-			try 
-			{
-		        Desktop.getDesktop().open( copyTo );
-		    }
-			catch (IOException ex)
-			{
-				JOptionPane.showMessageDialog(frame,
-					    "Error opening video",
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-		    	System.err.println( "unable to open video" );
-		    }
-		}
-
 	}
 
 	
@@ -526,7 +493,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 		        os = new FileOutputStream(this.dest);
 		        
 		        while ((length = is.read(buffer)) > 0) {
-		        	
 		            os.write(buffer, 0, length);
 		            progress += bufferSize;
 		            double percent = ( (double) progress / fileSize ) * 100;
@@ -554,6 +520,23 @@ public class VideoMainFrame implements PropertyChangeListener {
             btnPlay.setEnabled(true);
             btnPlay.setText( "PLAY" );
             setProgress( 0 );
+            
+            if (Desktop.isDesktopSupported()) {
+    			
+    			try 
+    			{
+    		        Desktop.getDesktop().open( this.dest );
+    		    }
+    			catch (IOException ex)
+    			{
+    				JOptionPane.showMessageDialog(frame,
+    					    "Error opening video",
+    					    "Error",
+    					    JOptionPane.ERROR_MESSAGE);
+    		    	System.err.println( "unable to open video" );
+    		    }
+    		}
+            
         }
 	}
 	
