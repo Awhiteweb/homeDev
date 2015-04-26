@@ -71,4 +71,9 @@ public class VideoProvider {
 		this.uow.VideoRepo().writeVideos( data );
 	}
 	
+	public void updateVideos( List<Video> videos )
+	{
+		this.uow.VideoRepo().updateVideos( videos );
+	}
+	
 }

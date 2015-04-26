@@ -293,7 +293,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				playAction(e);
+				String chosen = videos.getSelectedValue().toString();
+				playAction( chosen );
 			}
 		});
 
@@ -421,7 +422,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private void updateAll() 
 	{
 		VideoProvider controller = new VideoProvider( Repos.XML );
-		
 		try 
 		{
 			List<Video> videoList = controller.returnVideos();
@@ -440,8 +440,35 @@ public class VideoMainFrame implements PropertyChangeListener {
 		}
 	}
 	
-	public void playAction ( ActionEvent e )
+	/**
+	 * plays the movie after copying it to local directory.
+	 * will modify so that it streams it to a player instead as copying can take over 10mins
+	 * @param chosen 
+	 * @throws Exception 
+	 * 
+	 */
+	private void playAction ( String chosen )
 	{
+		
+		VideoProvider video = new VideoProvider( Repos.XML );
+		
+		try
+		{
+			List<Video> videos = video.returnVideos( chosen, VideoProvider.TITLE );
+			for ( Video video2 : videos )
+			{
+				File copyFrom =  new File( video2.getLocation() );
+			}
+
+		
+		
+		
+		}
+		catch ( Exception e )
+		{
+			System.err.println( "could not get video" );
+		}
+		
 		File copyFrom = new File( /*"C:\\Users\\Alex.White\\Documents\\screen.avi"*/ "/Users/Alex/Desktop/13 Assassins.m4v" );
         File copyTo = new File( /*"C:\\Users\\Alex.White\\Documents\\copy\\screen.avi"*/ "/Users/Alex/Desktop/copy/13 Assassins.m4v" );
 

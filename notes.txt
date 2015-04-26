@@ -2,3 +2,20 @@ The last part to remove is in your controller (provider at the moment) you have 
 
 IoC means inversion of control
 Maybe this: http://stackoverflow.com/questions/10894760/how-to-use-spring-ioc-with-swing
+
+Get app ready to roll as is, copy file to computer and open in QT.
+ - needs movie & tv buttons to narrow selection of list to match & filters to work with that selection.
+
+Add update window for selected movie/tv
+
+With radio button list for those items,
+genres list (check box list) + input box,
+groups list (check box list) + input box,
+episode number input box,
+season number input box,
+tv/movie radio button.
+// if only 1 video selected open with all current info selected, otherwise all fields empty.
+update button,
+close button.
+// update write to DB then refreshed the xml
+// IReaders to concat & split strings on ‘;’ symbol.
