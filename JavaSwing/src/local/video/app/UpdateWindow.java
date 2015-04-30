@@ -22,10 +22,12 @@ import local.dto.VideoProvider;
 import local.models.top.Categories;
 import local.models.top.Repos;
 import local.video.model.CreateTable;
+import local.video.model.StartTable;
 import local.video.model.UpdateModel;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 public class UpdateWindow {
 
@@ -117,7 +119,11 @@ public class UpdateWindow {
 		CreateTable tModel = new CreateTable( videoList, Categories.TITLE );
 		tableTitles = new JTable( tModel.getTable() );
 		scrollTitle.setViewportView(tableTitles);
-		
+
+		CreateTable geModel = new CreateTable( videoList, Categories.GENRE );
+		tableTitles = new JTable( geModel.getTable() );
+		scrollGenre.setViewportView(tableTitles);
+
 		
 		txtTitle = new JTextField();
 		txtTitle.setText( "Update Title" );

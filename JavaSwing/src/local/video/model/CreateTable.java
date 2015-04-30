@@ -11,7 +11,7 @@ import local.models.top.Categories;
 public class CreateTable
 {
 	
-	private MyTable tModel;
+	private String title;
 	private List<String> data = new ArrayList<String>();
 	
 	
@@ -59,6 +59,7 @@ public class CreateTable
 
 	private void getTypes( List<Video> videos )
 	{
+		this.title = "Type";
 		for ( Video video : videos )
 		{
 			this.data.add( video.getType() );
@@ -68,6 +69,7 @@ public class CreateTable
 
 	private void getSeasons( List<Video> videos )
 	{
+		this.title = "Seasons";
 		for ( Video video : videos )
 		{
 			this.data.add( Integer.toString( video.getSeasonN() ) );
@@ -77,6 +79,7 @@ public class CreateTable
 
 	private void getEpisodes( List<Video> videos )
 	{
+		this.title = "Episodes";
 		for ( Video video : videos )
 		{
 			this.data.add( Integer.toString( video.getSeriesN() ) );
@@ -86,6 +89,7 @@ public class CreateTable
 
 	private void getGroups( List<Video> videos )
 	{
+		this.title = "Groups";
 		for ( Video video : videos )
 		{
 			this.data.add( video.getGroup() );
@@ -95,6 +99,7 @@ public class CreateTable
 
 	private void getGenres( List<Video> videos )
 	{
+		this.title = "Genres";
 		for ( Video video : videos )
 		{
 			this.data.add( video.getGenre() );
@@ -104,6 +109,7 @@ public class CreateTable
 
 	private void getLocations( List<Video> videos )
 	{
+		this.title = "Locations";
 		for ( Video video : videos )
 		{
 			this.data.add( video.getLocation() );
@@ -113,6 +119,7 @@ public class CreateTable
 
 	private void getIDs( List<Video> videos )
 	{
+		this.title = "ID's";
 		for ( Video video : videos )
 		{
 			this.data.add( Integer.toString( video.getID() ) );
@@ -121,6 +128,7 @@ public class CreateTable
 
 	private void getTitles( List<Video> videos )
 	{
+		this.title = "Titles";
 		for ( Video video : videos )
 		{
 			this.data.add( video.getTitle() );
@@ -136,15 +144,33 @@ public class CreateTable
 
 	private TableModel makeTable( List<String> data )
 	{
-		this.tModel = new MyTable();
-
-		for ( String s : data )
+		
+		if ( this.title.equals( "Titles" ) )
 		{
-			Object[] obj = { new Boolean( false ) , s };
-			this.tModel.addRow( obj );
+			TitleTable tModel = new TitleTable();
+
+			for ( String s : data )
+			{
+				Object[] obj = { new Boolean( false ) , s };
+				tModel.addRow( obj );
+			}
+			
+			return tModel;
+		}
+		else
+		{
+			MakeTable tModel = new MakeTable( this.title );
+
+			for ( String s : data )
+			{
+				Object[] obj = { s };
+				tModel.addRow( obj );
+			}
+
+			return tModel;
 		}
 
-		return tModel;
+
 	}	
     
 }
