@@ -455,30 +455,26 @@ public class VideoMainFrame implements PropertyChangeListener {
 		try
 		{
 			List<Video> videos = video.returnVideos( chosen, VideoProvider.TITLE );
-			for ( Video video2 : videos )
-			{
-				File copyFrom =  new File( video2.getLocation() );
-			}
 
+			File copyFrom =  new File( videos.get(0).getLocation() );
+			
+			File copyTo = new File( "/Users/Alex/Desktop/" + copyFrom.getName() );
 		
-		
-		
+			btnPlay.setEnabled( false );
+			progressBar.setStringPainted( true );
+			task = new Task();
+
+			task.source = copyFrom;
+			task.dest = copyTo;
+	        
+			task.addPropertyChangeListener( this );
+	        task.execute();
+	        
 		}
 		catch ( Exception e )
 		{
 			System.err.println( "could not get video" );
 		}
-		
-		File copyFrom = new File( /*"C:\\Users\\Alex.White\\Documents\\screen.avi"*/ "/Users/Alex/Desktop/13 Assassins.m4v" );
-        File copyTo = new File( /*"C:\\Users\\Alex.White\\Documents\\copy\\screen.avi"*/ "/Users/Alex/Desktop/copy/13 Assassins.m4v" );
-
-		btnPlay.setEnabled( false );
-		progressBar.setStringPainted( true );
-		task = new Task();
-		task.source = copyFrom;
-		task.dest = copyTo;
-        task.addPropertyChangeListener( this );
-        task.execute();
 	}
 
 	
