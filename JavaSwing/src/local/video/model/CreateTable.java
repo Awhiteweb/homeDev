@@ -147,27 +147,27 @@ public class CreateTable
 		
 		if ( this.title.equals( "Titles" ) )
 		{
-			TitleTable tModel = new TitleTable();
+			TitleTable tiModel = new TitleTable();
 
 			for ( String s : data )
 			{
 				Object[] obj = { new Boolean( false ) , s };
-				tModel.addRow( obj );
+				tiModel.addRow( obj );
 			}
 			
-			return tModel;
+			return tiModel;
 		}
 		else
 		{
-			MakeTable tModel = new MakeTable( this.title );
+			MakeTable mModel = new MakeTable( this.title );
 
 			for ( String s : data )
 			{
 				Object[] obj = { s };
-				tModel.addRow( obj );
+				mModel.addRow( obj );
 			}
 
-			return tModel;
+			return mModel;
 		}
 
 

@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -16,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
@@ -27,6 +29,7 @@ import local.video.model.UpdateModel;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 public class UpdateWindow {
@@ -37,11 +40,6 @@ public class UpdateWindow {
 	private JTextField txtGroup;
 	private JTextField txtEpisode;
 	private JTextField txtSeason;
-	private JLabel lblTitles;
-	private JLabel lblGenres;
-	private JLabel lblGroups;
-	private JLabel lblEpisodeNumber;
-	private JLabel lblSeasonNumber;
 	private JButton btnClear;
 	private JButton btnSaveUpdate;
 	private JScrollPane scrollTitle;
@@ -50,6 +48,10 @@ public class UpdateWindow {
 	private JScrollPane scrollEpisode;
 	private JScrollPane scrollSeason;
 	private JTable tableTitles;
+	private JTable tableGenres;
+	private JTable tableGroups;
+	private JTable tableEpisodes;
+	private JTable tableSeasons;
 	private List<Video> videoList;
 	
 
@@ -92,13 +94,8 @@ public class UpdateWindow {
 		frame = new JFrame();
 		frame.setBounds( 100, 100, 900, 600 );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().setLayout( new MigLayout( "", "[300,grow][10][200,grow][10][140,grow][10][100,grow][10][100,grow]", "[30][460][10][30][10][30][10]" ) );
+		frame.getContentPane().setLayout( new MigLayout( "", "[300,grow][10][200,grow][10][140,grow][10][100,grow][10][100,grow]", "[460][10][30][10][30][10]" ) );
 		
-		lblTitles = new JLabel( "Titles" );
-		lblGenres = new JLabel( "Genres" );
-		lblGroups = new JLabel( "Groups" );
-		lblEpisodeNumber = new JLabel( "Episode Number" );
-		lblSeasonNumber = new JLabel( "Season Number" );
 
 		btnClear = new JButton( "Clear" );
 		btnSaveUpdate = new JButton( "Save Update" );
@@ -116,13 +113,20 @@ public class UpdateWindow {
 		scrollSeason = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		
 // create the titles table		
-		CreateTable tModel = new CreateTable( videoList, Categories.TITLE );
-		tableTitles = new JTable( tModel.getTable() );
+		CreateTable tiModel = new CreateTable( videoList, Categories.TITLE );
+		tableTitles = new JTable( tiModel.getTable() );
+		tableTitles.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		tableTitles.getColumnModel().getColumn( 0 ).setMinWidth( 20 );
+		tableTitles.getColumnModel().getColumn( 0 ).setMaxWidth( 30 );
+		tableTitles.setAutoCreateRowSorter( true );
+
 		scrollTitle.setViewportView(tableTitles);
 
 		CreateTable geModel = new CreateTable( videoList, Categories.GENRE );
-		tableTitles = new JTable( geModel.getTable() );
-		scrollGenre.setViewportView(tableTitles);
+		tableGenres = new JTable( geModel.getTable() );
+		tableGenres.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		tableGenres.setAutoCreateRowSorter( true );
+		scrollGenre.setViewportView(tableGenres);
 
 		
 		txtTitle = new JTextField();
@@ -141,26 +145,20 @@ public class UpdateWindow {
 		txtSeason.setText( "Add Season #" );
 		txtSeason.setColumns(10);
 
-		frame.getContentPane().add( lblTitles, "cell 0 0" );
-		frame.getContentPane().add( lblGenres, "cell 2 0" );
-		frame.getContentPane().add( lblGroups, "cell 4 0" );
-		frame.getContentPane().add( lblEpisodeNumber, "cell 6 0" );
-		frame.getContentPane().add( lblSeasonNumber, "cell 8 0" );
+		frame.getContentPane().add( scrollTitle, "cell 0 0,grow" );
+		frame.getContentPane().add( scrollGenre, "cell 2 0,grow" );
+		frame.getContentPane().add( scrollGroup, "cell 4 0,grow" );
+		frame.getContentPane().add( scrollEpisode, "cell 6 0,grow" );
+		frame.getContentPane().add( scrollSeason, "cell 8 0,grow" );
 
-		frame.getContentPane().add( scrollTitle, "cell 0 1,grow" );
-		frame.getContentPane().add( scrollGenre, "cell 2 1,grow" );
-		frame.getContentPane().add( scrollGroup, "cell 4 1,grow" );
-		frame.getContentPane().add( scrollEpisode, "cell 6 1,grow" );
-		frame.getContentPane().add( scrollSeason, "cell 8 1,grow" );
-
-		frame.getContentPane().add( txtTitle, "cell 0 3,growx" );
-		frame.getContentPane().add( txtGenre, "cell 2 3,growx" );
-		frame.getContentPane().add( txtGroup, "cell 4 3,growx" );
-		frame.getContentPane().add( txtEpisode, "cell 6 3,growx" );
-		frame.getContentPane().add( txtSeason, "cell 8 3,growx" );
+		frame.getContentPane().add( txtTitle, "cell 0 2,growx" );
+		frame.getContentPane().add( txtGenre, "cell 2 2,growx" );
+		frame.getContentPane().add( txtGroup, "cell 4 2,growx" );
+		frame.getContentPane().add( txtEpisode, "cell 6 2,growx" );
+		frame.getContentPane().add( txtSeason, "cell 8 2,growx" );
 		
-		frame.getContentPane().add( btnClear, "cell 0 5,aligny bottom" );
-		frame.getContentPane().add( btnSaveUpdate, "cell 8 5,alignx right,aligny bottom" );
+		frame.getContentPane().add( btnClear, "cell 0 4,aligny bottom" );
+		frame.getContentPane().add( btnSaveUpdate, "cell 8 4,alignx right,aligny bottom" );
 	}
 
 	private JTable returnPreparedTable()

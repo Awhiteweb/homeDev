@@ -7,7 +7,7 @@ public class TitleTable extends DefaultTableModel
 {
 	public TitleTable()
 	{
-		super( new String[] { "Check", "Title" }, 0 );
+		super( new String[] { "", "Title" }, 0 );
 	}
 	
 	public Class<?> getColumnClass ( int columnIndex )
