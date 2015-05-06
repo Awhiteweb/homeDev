@@ -3,6 +3,9 @@ package local.video.constants;
 
 public enum Types
 {
+	ALL,
+	MOVIE,
+	TV,
 	ID,
 	TYPE,
 	TITLE,

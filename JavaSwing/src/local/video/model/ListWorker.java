@@ -10,43 +10,98 @@ import javax.swing.JList;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
+import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.*;
 
 
 public class ListWorker {
 	
-	private ArrayList<String> arrayList;
-	private DefaultListModel<String> listModel;
+	private DefaultListModel<String> titleList;
+	private ArrayList<String> locationList;
+	private DefaultListModel<String> genreList;
+	private DefaultListModel<String> groupList;
+	private DefaultListModel<Integer> episodeList;
+	private DefaultListModel<Integer> seasonList;
+	private List<Video> videos;
 
-	private DefaultListModel<String> setLists( List<Video> videos, Types type )
+	public ListWorker()
 	{
-		switch ( type )
+	}
+	
+	public ListWorker( List<Video> videos )
+	{
+		this.videos = videos;
+		setLists();
+	}
+	
+	public void setLists()
+	{
+		ArrayList<String> genres = new ArrayList<String>();
+		ArrayList<String> groups = new ArrayList<String>();
+		ArrayList<Integer> episodes = new ArrayList<Integer>();
+		ArrayList<Integer> season = new ArrayList<Integer>();
+		
+		titleList = new DefaultListModel<String>();
+		locationList = new ArrayList<String>();
+		genreList = new DefaultListModel<String>();
+		groupList = new DefaultListModel<String>();
+		episodeList = new DefaultListModel<Integer>();
+		seasonList = new DefaultListModel<Integer>();
+
+		for( Video video : videos )
 		{
-			case TITLE:
-				return sortTitles( videos );
-				
-			case GENRE:
-				return sortGenres( videos );
-				
-			case GROUP:
-				return sortGroups( videos );
+			titleList.addElement( video.getTitle() );
+			locationList.add( video.getLocation() );
+			
+			if ( !genres.contains( video.getGenre() ) )
+			{
+				genres.add( video.getGenre() );
+			}
+			
+			if ( !groups.contains( video.getGroup() ) )
+			{
+				groups.add( video.getGroup() );
+			}
 
-			case EPISODE:
-				return sortEpisodes( videos );
+			if ( !episodes.contains( video.getSeriesN() ) )
+			{
+				episodes.add( video.getSeriesN() );
+			}
 
-			case SEASON:
-				return sortSeasons( videos );
+			if ( !season.contains( video.getSeasonN() ) )
+			{
+				season.add( video.getSeasonN() );				
+			}
 
-			default:
-				return listModel;
+		}
+		
+		Collections.sort( genres );
+		for (String s : genres ) {
+			genreList.addElement( s );
+		}
+		
+		Collections.sort( groups );
+		for (String s : groups ) {
+			groupList.addElement( s );
+		}
+
+		Collections.sort( episodes );
+		for (Integer i : episodes ) {
+			episodeList.addElement( i );
+		}
+
+		Collections.sort( season );
+		for (Integer i : season ) {
+			seasonList.addElement( i );
 		}
 		
 	}
 	
-	private DefaultListModel<String> sortTitles( List<Video> videos )
+	public DefaultListModel<String> sortTitles()
 	{
-		arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		
 		for (Video video : videos )
 		{
@@ -62,9 +117,10 @@ public class ListWorker {
 		return listModel;
 	}
 
-	private DefaultListModel<String> sortGenres( List<Video> videos )
+	public DefaultListModel<String> sortGenres()
 	{
-		arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		
 		for (Video video : videos )
 		{
@@ -84,9 +140,10 @@ public class ListWorker {
 		
 	}
 	
-	private DefaultListModel<String> sortGroups( List<Video> videos )
+	public DefaultListModel<String> sortGroups()
 	{
-		arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		
 		for (Video video : videos )
 		{
@@ -105,9 +162,10 @@ public class ListWorker {
 		return listModel;
 	}
 	
-	private DefaultListModel<String> sortEpisodes( List<Video> videos )
+	public DefaultListModel<String> sortEpisodes()
 	{
-		arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		
 		for (Video video : videos )
 		{
@@ -126,9 +184,10 @@ public class ListWorker {
 		return listModel;
 	}
 	
-	private DefaultListModel<String> sortSeasons( List<Video> videos )
+	public DefaultListModel<String> sortSeasons()
 	{
-		arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		
 		for (Video video : videos )
 		{
@@ -147,77 +206,87 @@ public class ListWorker {
 		return listModel;
 	}
 	
-
-
-	private void updateLists(JList searchCat, String finalsValue, Types type) 
+	public static List<Video> chooseType( Types type )
 	{
-		if ( searchCat.getSelectedIndex() > 0 )
+		switch ( type )
 		{
-			VideoProvider controller = new VideoProvider( Repos.XML );
-
-			try 
-			{
-				List<Video> videoList = controller.returnVideos( searchCat.getSelectedValue().toString(), finalsValue );
-
-				setLists( videoList, type );
-				
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+		case ALL:
+			return updateAll();
 			
+		case MOVIE:
+			return updateLists( "movie" , Finals.TYPE );
+			
+		case TV:
+			return updateLists( "tv" , Finals.TYPE );
+			
+		default:
+			return updateAll();
 		}
 	}
 	
-	private void updateAll() 
+	public static List<Video> updateLists( String type, String finalsValue ) 
 	{
 		VideoProvider controller = new VideoProvider( Repos.XML );
+
+		try 
+		{
+			List<Video> videoList = controller.returnVideos( type, finalsValue );
+		
+			return videoList;
+			
+		} 
+		catch (Exception e1) 
+		{
+			e1.printStackTrace();
+		}
+		return null;		
+	}
+	
+	public static List<Video> updateAll() 
+	{
+		VideoProvider controller = new VideoProvider( Repos.XML );
+		
 		try 
 		{
 			List<Video> videoList = controller.returnVideos();
 			
-			setLists(videoList);
+			return videoList;
 			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		return null;
+	}
+
+	public DefaultListModel<String> getTitles()
+	{
+		return this.titleList;
+	}
+
+	public DefaultListModel<String> getGenres()
+	{
+		return this.genreList;
 	}
 	
-	/**
-	 * plays the movie after copying it to local directory.
-	 * will modify so that it streams it to a player instead as copying can take over 10mins
-	 * @param chosen 
-	 * @throws Exception 
-	 * 
-	 */
-	private void playAction ( String chosen )
+	public DefaultListModel<String> getGroups()
 	{
-		
-		VideoProvider video = new VideoProvider( Repos.XML );
-		
-		try
-		{
-			List<Video> videos = video.returnVideos( chosen, VideoProvider.TITLE );
-
-			File copyFrom =  new File( videos.get(0).getLocation() );
-			
-			File copyTo = new File( "/Users/Alex/Desktop/" + copyFrom.getName() );
-		
-			btnPlay.setEnabled( false );
-			progressBar.setStringPainted( true );
-			task = new Task();
-
-			task.source = copyFrom;
-			task.dest = copyTo;
-	        
-			task.addPropertyChangeListener( this );
-	        task.execute();
-	        
-		}
-		catch ( Exception e )
-		{
-			System.err.println( "could not get video" );
-		}
+		return this.groupList;
 	}
-
-
+	
+	public DefaultListModel<Integer> getEpisodes()
+	{
+		return this.episodeList;
+	}
+	
+	public DefaultListModel<Integer> getSeasons()
+	{
+		return this.seasonList;
+	}
+	
+	public ArrayList<String> getLocations()
+	{
+		return this.locationList;
+	}
+	
+	
 }
