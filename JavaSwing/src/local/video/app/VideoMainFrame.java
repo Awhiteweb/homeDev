@@ -39,6 +39,7 @@ import local.dto.VideoProvider;
 import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.Types;
+import local.video.controller.Updater;
 import local.video.model.ListWorker;
 import net.miginfocom.swing.MigLayout;
 
@@ -63,14 +64,13 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private JCheckBox movieCB;
 	private JCheckBox tvCB;
 	private JProgressBar progressBar;
-	public DefaultListModel<String> titleList;
-	public ArrayList<String> locationList;
-	public DefaultListModel<String> genreList;
-	public DefaultListModel<String> groupList;
-	public DefaultListModel<Integer> episodeList;
-	public DefaultListModel<Integer> seasonList;
+	public static DefaultListModel<String> titleList;
+	public static ArrayList<String> locationList;
+	public static DefaultListModel<String> genreList;
+	public static DefaultListModel<String> groupList;
+	public static DefaultListModel<Integer> episodeList;
+	public static DefaultListModel<Integer> seasonList;
 	private Task task;
-	private List<Video> videoList;
 	
 	
 	/**
@@ -79,10 +79,13 @@ public class VideoMainFrame implements PropertyChangeListener {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
+				try 
+				{
 					VideoMainFrame window = new VideoMainFrame();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -93,19 +96,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 * Create the application.
 	 */
 	public VideoMainFrame() {
-		VideoProvider controller = new VideoProvider( Repos.XML );
-		try 
-		{
-//			controller.getVideos();
-		
-			this.videoList = controller.returnVideos();
-		
 			initialize();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	
@@ -116,16 +107,12 @@ public class VideoMainFrame implements PropertyChangeListener {
 	@SuppressWarnings ( { "unchecked" } )
 	private void initialize() {
 		
-		ListWorker firstList = new ListWorker( this.videoList );
-
-		titleList = firstList.getTitles();
-		genreList = firstList.getGenres();
-		groupList = firstList.getGroups();
-		episodeList = firstList.getEpisodes();
-		seasonList = firstList.getSeasons();
-		locationList = firstList.getLocations();
+		/*
+		 * gets video lists
+		 */
+		Updater.updateAll();
 		
-		
+			
 		frame = new JFrame();
 		frame.setBounds(150, 50, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -236,7 +223,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		genres.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e) {
 				
-				updateLists( genres, Finals.GENRE );
+				Updater.updateLists( genres, Finals.GENRE );
 				
 			}
 		});
@@ -244,7 +231,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		groups.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				updateLists( groups, Finals.GROUP );
+				Updater.updateLists( groups, Finals.GROUP );
 
 			}
 		});
@@ -252,7 +239,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		series_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				updateLists( series_numbers, Finals.SERIES_N );
+				Updater.updateLists( series_numbers, Finals.SERIES_N );
 
 			}
 		});
@@ -261,7 +248,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 			public void valueChanged( ListSelectionEvent e ) {
 				//read xml to match selection and reload all lists with new data
 				
-				updateLists( season_numbers, Finals.SEASON_N );
+				Updater.updateLists( season_numbers, Finals.SEASON_N );
 
 			}
 
@@ -290,7 +277,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 
-				updateAll();
+				Updater.updateAll();
 
 			}
 
@@ -303,10 +290,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnRefreshDatabase.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 				
-				VideoProvider controller = new VideoProvider( Repos.MYSQL );
+//				VideoProvider controller = new VideoProvider( Repos.MYSQL );
 				try
 				{
-					List<Video> data = controller.returnVideos();
+					List<Video> data = null;
 					
 					VideoProvider writer = new VideoProvider( Repos.XML );
 					
@@ -318,63 +305,15 @@ public class VideoMainFrame implements PropertyChangeListener {
 					ex.printStackTrace();
 				}
 				
-				updateAll();
+				Updater.updateAll();
 				
 			}
 		});
 
 	}
 	
-	
 
-
-	private void updateLists( JList searchCat, String finalsValue ) 
-	{
-		if ( searchCat.getSelectedIndex() > 0 )
-		{
-			VideoProvider controller = new VideoProvider( Repos.XML );
-
-			try 
-			{
-				List<Video> videoList = controller.returnVideos( searchCat.getSelectedValue().toString(), finalsValue );
-				
-				ListWorker resetLists = new ListWorker( videoList );
-								
-				titleList = resetLists.getTitles();
-				genreList = resetLists.getGenres();
-				groupList = resetLists.getGroups();
-				episodeList = resetLists.getEpisodes();
-				seasonList = resetLists.getSeasons();
-				locationList = resetLists.getLocations();
-				
-			} catch ( Exception e1 ) {
-				e1.printStackTrace();
-			}
-			
-		}
-	}
-	
-	private void updateAll() 
-	{
-		VideoProvider controller = new VideoProvider( Repos.XML );
 		
-		try 
-		{
-			List<Video> videoList = controller.returnVideos();
-			ListWorker resetLists = new ListWorker( videoList );
-			
-			titleList = resetLists.getTitles();
-			genreList = resetLists.getGenres();
-			groupList = resetLists.getGroups();
-			episodeList = resetLists.getEpisodes();
-			seasonList = resetLists.getSeasons();
-			locationList = resetLists.getLocations();
-			
-		} catch ( Exception e1 ) {
-			e1.printStackTrace();
-		}
-	}
-	
 	/**
 	 * plays the movie after copying it to local directory.
 	 * will modify so that it streams it to a player instead as copying can take over 10mins
@@ -511,32 +450,27 @@ public class VideoMainFrame implements PropertyChangeListener {
     
 	private void typeSelector ()
 	{
-		if ( ( tvCB.isSelected() && movieCB.isSelected() ) || ( !tvCB.isSelected() && !movieCB.isSelected() ) )
+		if ( 
+				( tvCB.isSelected() && movieCB.isSelected() ) 
+				|| 
+				( !tvCB.isSelected() && !movieCB.isSelected() ) 
+			)
 		{
-			this.videoList = ListWorker.chooseType( Types.ALL );
+			Updater.typeSelector( Types.ALL );
 		}
 		else if ( !tvCB.isSelected() && movieCB.isSelected() )
 		{
-			this.videoList = ListWorker.chooseType( Types.MOVIE );
+			Updater.typeSelector( Types.MOVIE );
 		}
 		else if ( tvCB.isSelected() && !movieCB.isSelected() )
 		{
-			this.videoList = ListWorker.chooseType( Types.TV );
+			Updater.typeSelector( Types.TV );
 		}
 		else
 		{
-			this.videoList = ListWorker.chooseType( Types.ALL );
+			Updater.typeSelector( Types.ALL );
 		}
 		
-		ListWorker resetLists = new ListWorker( this.videoList );
-		
-		titleList = resetLists.getTitles();
-		genreList = resetLists.getGenres();
-		groupList = resetLists.getGroups();
-		episodeList = resetLists.getEpisodes();
-		seasonList = resetLists.getSeasons();
-		locationList = resetLists.getLocations();
-
 	}
 
     	
