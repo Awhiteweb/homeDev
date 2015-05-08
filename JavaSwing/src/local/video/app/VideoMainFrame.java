@@ -3,7 +3,6 @@ package local.video.app;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -47,29 +45,14 @@ import net.miginfocom.swing.MigLayout;
 public class VideoMainFrame implements PropertyChangeListener {
 
 	private JFrame frame;
-	private JButton btnPlay;
-	private JButton btnRefresh;
-	private JButton btnUpdateShow;
-	private JButton btnRefreshDatabase;
-	private JLabel lblTitle;
-	private JLabel lblGenre;
-	private JLabel lblGroup;		
-	private JLabel lblSeriesNumber;
-	private JLabel lblSeasonNumber;
-	private JList videos;
-	private JList genres;
-	private JList groups;
-	private JList series_numbers;
-	private JList season_numbers;
-	private JCheckBox movieCB;
-	private JCheckBox tvCB;
+	private JButton btnPlay, btnRefresh, btnUpdateShow, btnRefreshDatabase;
+	private JLabel lblTitle, lblGenre, lblGroup, lblSeriesNumber, lblSeasonNumber;
+	private JList videos, genres, groups, series_numbers, season_numbers;
+	private JCheckBox movieCB, tvCB;
 	private JProgressBar progressBar;
-	public static DefaultListModel<String> titleList;
+	public static DefaultListModel<String> titleList, genreList, groupList;
 	public static ArrayList<String> locationList;
-	public static DefaultListModel<String> genreList;
-	public static DefaultListModel<String> groupList;
-	public static DefaultListModel<Integer> episodeList;
-	public static DefaultListModel<Integer> seasonList;
+	public static DefaultListModel<Integer> episodeList, seasonList;
 	private Task task;
 	
 	
@@ -110,8 +93,14 @@ public class VideoMainFrame implements PropertyChangeListener {
 		/*
 		 * gets video lists
 		 */
-		Updater.updateAll();
-		
+		Updater update = new Updater();
+		ListWorker list = update.updateAll();
+		titleList = list.getTitles();
+		genreList = list.getGenres();
+		groupList = list.getGroups();
+		episodeList = list.getEpisodes();
+		seasonList = list.getSeasons();
+		locationList = list.getLocations();
 			
 		frame = new JFrame();
 		frame.setBounds(150, 50, 1200, 800);
@@ -223,35 +212,89 @@ public class VideoMainFrame implements PropertyChangeListener {
 		genres.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e) {
 				
-				Updater.updateLists( genres, Finals.GENRE );
+				Thread updateGenres = new Thread()
+				{
+					public void run()
+					{
+						Updater update = new Updater();
+						ListWorker list = update.updateLists( genres, Finals.GENRE );
+						titleList = list.getTitles();
+						genreList = list.getGenres();
+						groupList = list.getGroups();
+						episodeList = list.getEpisodes();
+						seasonList = list.getSeasons();
+						locationList = list.getLocations();
+					}
+				};
 				
+				updateGenres.start();				
 			}
 		});
 
 		groups.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				Updater.updateLists( groups, Finals.GROUP );
-
+				Thread updateGroups = new Thread()
+				{
+					public void run()
+					{
+						Updater update = new Updater();
+						ListWorker list = update.updateLists( groups, Finals.GROUP );
+						titleList = list.getTitles();
+						genreList = list.getGenres();
+						groupList = list.getGroups();
+						episodeList = list.getEpisodes();
+						seasonList = list.getSeasons();
+						locationList = list.getLocations();
+					}
+				};
+				
+				updateGroups.start();				
 			}
 		});
 
 		series_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				Updater.updateLists( series_numbers, Finals.SERIES_N );
-
+				Thread updateEpisodes = new Thread()
+				{
+					public void run()
+					{
+						Updater update = new Updater();
+						ListWorker list = update.updateLists( series_numbers, Finals.SERIES_N );
+						titleList = list.getTitles();
+						genreList = list.getGenres();
+						groupList = list.getGroups();
+						episodeList = list.getEpisodes();
+						seasonList = list.getSeasons();
+						locationList = list.getLocations();
+					}
+				};
+				
+				updateEpisodes.start();				
 			}
 		});
 
 		season_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
-				//read xml to match selection and reload all lists with new data
 				
-				Updater.updateLists( season_numbers, Finals.SEASON_N );
-
+				Thread updateSeasons = new Thread()
+				{
+					public void run()
+					{
+						Updater update = new Updater();
+						ListWorker list = update.updateLists( season_numbers, Finals.SEASON_N );
+						titleList = list.getTitles();
+						genreList = list.getGenres();
+						groupList = list.getGroups();
+						episodeList = list.getEpisodes();
+						seasonList = list.getSeasons();
+						locationList = list.getLocations();
+					}
+				};
+				
+				updateSeasons.start();
 			}
-
 		});
 
 		movieCB.addActionListener( new ActionListener() {
@@ -276,12 +319,18 @@ public class VideoMainFrame implements PropertyChangeListener {
 
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
-
-				Updater.updateAll();
-
+				Updater update = new Updater();
+				ListWorker list = update.updateAll();
+				titleList = list.getTitles();
+				genreList = list.getGenres();
+				groupList = list.getGroups();
+				episodeList = list.getEpisodes();
+				seasonList = list.getSeasons();
+				locationList = list.getLocations();
 			}
 
 		});
+		
 		btnUpdateShow.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 			}
@@ -305,8 +354,14 @@ public class VideoMainFrame implements PropertyChangeListener {
 					ex.printStackTrace();
 				}
 				
-				Updater.updateAll();
-				
+				Updater update = new Updater();
+				ListWorker list = update.updateAll();
+				titleList = list.getTitles();
+				genreList = list.getGenres();
+				groupList = list.getGroups();
+				episodeList = list.getEpisodes();
+				seasonList = list.getSeasons();
+				locationList = list.getLocations();				
 			}
 		});
 
@@ -354,10 +409,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	/**
 	 * class for progress bar updating when copying files from network drive to local.
-	 * @author Alex
-	 *
 	 */
-	class Task extends SwingWorker<Void, Void>
+	private class Task extends SwingWorker<Void, Void>
 	{
 
 		public File source;
@@ -456,31 +509,35 @@ public class VideoMainFrame implements PropertyChangeListener {
 				( !tvCB.isSelected() && !movieCB.isSelected() ) 
 			)
 		{
-			Updater.typeSelector( Types.ALL );
+			Updater update = new Updater();
+			update.typeSelector( Types.ALL );
 		}
 		else if ( !tvCB.isSelected() && movieCB.isSelected() )
 		{
-			Updater.typeSelector( Types.MOVIE );
+			Updater update = new Updater();
+			update.typeSelector( Types.MOVIE );
 		}
 		else if ( tvCB.isSelected() && !movieCB.isSelected() )
 		{
-			Updater.typeSelector( Types.TV );
+			Updater update = new Updater();
+			update.typeSelector( Types.TV );
 		}
 		else
 		{
-			Updater.typeSelector( Types.ALL );
+			Updater update = new Updater();
+			update.typeSelector( Types.ALL );
 		}
 		
 	}
 
     	
-	private void errorPopup ( String file )
-	{
-		JOptionPane.showMessageDialog(frame,
-			    "Error moving the file" + file + ".",
-			    "Error",
-			    JOptionPane.ERROR_MESSAGE);
-	}
+//	private void errorPopup ( String file )
+//	{
+//		JOptionPane.showMessageDialog(frame,
+//			    "Error moving the file" + file + ".",
+//			    "Error",
+//			    JOptionPane.ERROR_MESSAGE);
+//	}
 
 	
 }

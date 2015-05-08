@@ -14,15 +14,12 @@ import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.*;
 
-
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class ListWorker {
 	
-	private DefaultListModel<String> titleList;
+	
+	private DefaultListModel titleList, genreList, groupList, episodeList, seasonList;
 	private ArrayList<String> locationList;
-	private DefaultListModel<String> genreList;
-	private DefaultListModel<String> groupList;
-	private DefaultListModel<Integer> episodeList;
-	private DefaultListModel<Integer> seasonList;
 	private List<Video> videos;
 
 	public ListWorker()
@@ -42,12 +39,12 @@ public class ListWorker {
 		ArrayList<Integer> episodes = new ArrayList<Integer>();
 		ArrayList<Integer> season = new ArrayList<Integer>();
 		
-		titleList = new DefaultListModel<String>();
+		titleList = new DefaultListModel();
 		locationList = new ArrayList<String>();
-		genreList = new DefaultListModel<String>();
-		groupList = new DefaultListModel<String>();
-		episodeList = new DefaultListModel<Integer>();
-		seasonList = new DefaultListModel<Integer>();
+		genreList = new DefaultListModel();
+		groupList = new DefaultListModel();
+		episodeList = new DefaultListModel();
+		seasonList = new DefaultListModel();
 
 		for( Video video : videos )
 		{
@@ -98,148 +95,40 @@ public class ListWorker {
 		
 	}
 	
-	public DefaultListModel<String> sortTitles()
-	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		
-		for (Video video : videos )
-		{
-			arrayList.add( video.getTitle() );
-		}
-		
-		Collections.sort( arrayList );
-		for ( String s : arrayList )
-		{
-			listModel.addElement( s );
-		}
-
-		return listModel;
-	}
-
-	public DefaultListModel<String> sortGenres()
-	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		
-		for (Video video : videos )
-		{
-			if ( !arrayList.contains( video.getGenre() ) )
-			{
-				arrayList.add( video.getGenre() );
-			}
-		}
-		
-		Collections.sort( arrayList );
-		for ( String s : arrayList )
-		{
-			listModel.addElement( s );
-		}
-
-		return listModel;
-		
-	}
-	
-	public DefaultListModel<String> sortGroups()
-	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		
-		for (Video video : videos )
-		{
-			if ( !arrayList.contains( video.getGroup() ) )
-			{
-				arrayList.add( video.getGroup() );
-			}
-		}
-		
-		Collections.sort( arrayList );
-		for ( String s : arrayList )
-		{
-			listModel.addElement( s );
-		}
-
-		return listModel;
-	}
-	
-	public DefaultListModel<String> sortEpisodes()
-	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		
-		for (Video video : videos )
-		{
-			if ( !arrayList.contains( video.getSeriesN() ) )
-			{
-				arrayList.add( Integer.toString( video.getSeriesN() ) );
-			}
-		}
-		
-		Collections.sort( arrayList );
-		for ( String s : arrayList )
-		{
-			listModel.addElement( s );
-		}
-
-		return listModel;
-	}
-	
-	public DefaultListModel<String> sortSeasons()
-	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		DefaultListModel<String> listModel = new DefaultListModel<String>();
-		
-		for (Video video : videos )
-		{
-			if ( !arrayList.contains( video.getSeasonN() ) )
-			{
-				arrayList.add( Integer.toString( video.getSeasonN() ) );
-			}
-		}
-		
-		Collections.sort( arrayList );
-		for ( String s : arrayList )
-		{
-			listModel.addElement( s );
-		}
-
-		return listModel;
-	}
-	
-	public static List<Video> chooseType( Types type )
+	public void chooseType( Types type )
 	{
 		switch ( type )
 		{
 		case ALL:
-			return updateAll();
+			updateAll();
+			break;
 			
 		case MOVIE:
-			return updateLists( "movie" , Finals.TYPE );
+			updateLists( "movie" , Finals.TYPE );
+			break;
 			
 		case TV:
-			return updateLists( "tv" , Finals.TYPE );
+			updateLists( "tv" , Finals.TYPE );
+			break;
 			
 		default:
-			return updateAll();
+			updateAll();
+			break;
 		}
 	}
 	
-	public static List<Video> updateLists( String type, String finalsValue ) 
+	public void updateLists( String type, String finalsValue ) 
 	{
 		VideoProvider controller = new VideoProvider( Repos.XML );
 
 		try 
 		{
-			List<Video> videoList = controller.returnVideos( type, finalsValue );
-		
-			return videoList;
-			
+			videos = controller.returnVideos( type, finalsValue );
 		} 
 		catch (Exception e1) 
 		{
 			e1.printStackTrace();
-		}
-		return null;		
+		}		
 	}
 	
 	public static List<Video> updateAll() 

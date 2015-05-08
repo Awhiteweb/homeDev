@@ -3,6 +3,7 @@ package local.video.controller;
 import java.util.List;
 
 import javax.swing.JList;
+import javax.swing.SwingUtilities;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
@@ -13,64 +14,43 @@ import local.video.model.ListWorker;
 
 @SuppressWarnings( "rawtypes" )
 public class Updater {
-
-	public static void typeSelector ( Types type )
+	
+	public ListWorker typeSelector ( Types type )
 	{
-		List<Video> videoList = ListWorker.chooseType( type );
-		ListWorker resetLists = new ListWorker( videoList );
-		
-		VideoMainFrame.titleList = resetLists.getTitles();
-		VideoMainFrame.genreList = resetLists.getGenres();
-		VideoMainFrame.groupList = resetLists.getGroups();
-		VideoMainFrame.episodeList = resetLists.getEpisodes();
-		VideoMainFrame.seasonList = resetLists.getSeasons();
-		VideoMainFrame.locationList = resetLists.getLocations();
+		ListWorker resetLists = new ListWorker();
+		resetLists.chooseType( type );
+		return resetLists;
 	}
 
-	public static void updateLists( JList searchCat, String finalsValue ) 
+	public ListWorker updateLists( final JList searchCat, final String finalsValue ) 
 	{
+		ListWorker resetLists = new ListWorker();
 		if ( searchCat.getSelectedIndex() > 0 )
 		{
 			VideoProvider controller = new VideoProvider( Repos.XML );
-
 			try 
 			{
 				List<Video> videoList = controller.returnVideos( searchCat.getSelectedValue().toString(), finalsValue );
-				ListWorker resetLists = new ListWorker( videoList );
-								
-				VideoMainFrame.titleList = resetLists.getTitles();
-				VideoMainFrame.genreList = resetLists.getGenres();
-				VideoMainFrame.groupList = resetLists.getGroups();
-				VideoMainFrame.episodeList = resetLists.getEpisodes();
-				VideoMainFrame.seasonList = resetLists.getSeasons();
-				VideoMainFrame.locationList = resetLists.getLocations();
-				
+				resetLists = new ListWorker( videoList );
 			} catch ( Exception e1 ) {
 				e1.printStackTrace();
 			}
-			
 		}
+		return resetLists;
 	}
-
-	public static void updateAll() 
+	
+	public ListWorker updateAll() 
 	{
+		ListWorker resetLists = new ListWorker();
 		VideoProvider controller = new VideoProvider( Repos.XML );
-		
 		try 
 		{
 			List<Video> videoList = controller.returnVideos();
-			ListWorker resetLists = new ListWorker( videoList );
-			
-			VideoMainFrame.titleList = resetLists.getTitles();
-			VideoMainFrame.genreList = resetLists.getGenres();
-			VideoMainFrame.groupList = resetLists.getGroups();
-			VideoMainFrame.episodeList = resetLists.getEpisodes();
-			VideoMainFrame.seasonList = resetLists.getSeasons();
-			VideoMainFrame.locationList = resetLists.getLocations();
-			
+			resetLists = new ListWorker( videoList );
 		} catch ( Exception e1 ) {
 			e1.printStackTrace();
 		}
+		return resetLists;
 	}
 
 }
