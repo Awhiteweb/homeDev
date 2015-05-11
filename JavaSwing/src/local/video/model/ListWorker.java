@@ -14,12 +14,10 @@ import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.*;
 
-@SuppressWarnings( { "rawtypes", "unchecked" } )
+
 public class ListWorker {
 	
-	
-	private DefaultListModel titleList, genreList, groupList, episodeList, seasonList;
-	private ArrayList<String> locationList;
+	private	ListStore lists;
 	private List<Video> videos;
 
 	public ListWorker()
@@ -32,19 +30,19 @@ public class ListWorker {
 		setLists();
 	}
 	
-	public void setLists()
+	public ListStore setLists()
 	{
 		ArrayList<String> genres = new ArrayList<String>();
 		ArrayList<String> groups = new ArrayList<String>();
 		ArrayList<Integer> episodes = new ArrayList<Integer>();
 		ArrayList<Integer> season = new ArrayList<Integer>();
 		
-		titleList = new DefaultListModel();
-		locationList = new ArrayList<String>();
-		genreList = new DefaultListModel();
-		groupList = new DefaultListModel();
-		episodeList = new DefaultListModel();
-		seasonList = new DefaultListModel();
+		DefaultListModel<String> titleList = new DefaultListModel<String>();
+		ArrayList<String> locationList = new ArrayList<String>();
+		DefaultListModel<String> genreList = new DefaultListModel<String>();
+		DefaultListModel<String> groupList = new DefaultListModel<String>();
+		DefaultListModel<Integer> episodeList = new DefaultListModel<Integer>();
+		DefaultListModel<Integer> seasonList = new DefaultListModel<Integer>();
 
 		for( Video video : videos )
 		{
@@ -93,42 +91,158 @@ public class ListWorker {
 			seasonList.addElement( i );
 		}
 		
+		this.lists.setTitles( titleList );
+		this.lists.setGenres( genreList );
+		this.lists.setGroups( groupList );
+		this.lists.setEpisodes( episodeList );
+		this.lists.setSeasons( seasonList );
+		this.lists.setLocations( locationList );
+		
+		return this.lists;
 	}
 	
-	public void chooseType( Types type )
+	public DefaultListModel<String> sortTitles()
+	{
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+		
+		for (Video video : videos )
+		{
+			arrayList.add( video.getTitle() );
+		}
+		
+		Collections.sort( arrayList );
+		for ( String s : arrayList )
+		{
+			listModel.addElement( s );
+		}
+
+		return listModel;
+	}
+
+	public DefaultListModel<String> sortGenres()
+	{
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+		
+		for (Video video : videos )
+		{
+			if ( !arrayList.contains( video.getGenre() ) )
+			{
+				arrayList.add( video.getGenre() );
+			}
+		}
+		
+		Collections.sort( arrayList );
+		for ( String s : arrayList )
+		{
+			listModel.addElement( s );
+		}
+
+		return listModel;
+		
+	}
+	
+	public DefaultListModel<String> sortGroups()
+	{
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+		
+		for (Video video : videos )
+		{
+			if ( !arrayList.contains( video.getGroup() ) )
+			{
+				arrayList.add( video.getGroup() );
+			}
+		}
+		
+		Collections.sort( arrayList );
+		for ( String s : arrayList )
+		{
+			listModel.addElement( s );
+		}
+
+		return listModel;
+	}
+	
+	public DefaultListModel<String> sortEpisodes()
+	{
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+		
+		for (Video video : videos )
+		{
+			if ( !arrayList.contains( video.getSeriesN() ) )
+			{
+				arrayList.add( Integer.toString( video.getSeriesN() ) );
+			}
+		}
+		
+		Collections.sort( arrayList );
+		for ( String s : arrayList )
+		{
+			listModel.addElement( s );
+		}
+
+		return listModel;
+	}
+	
+	public DefaultListModel<String> sortSeasons()
+	{
+		ArrayList<String> arrayList = new ArrayList<String>();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
+		
+		for (Video video : videos )
+		{
+			if ( !arrayList.contains( video.getSeasonN() ) )
+			{
+				arrayList.add( Integer.toString( video.getSeasonN() ) );
+			}
+		}
+		
+		Collections.sort( arrayList );
+		for ( String s : arrayList )
+		{
+			listModel.addElement( s );
+		}
+
+		return listModel;
+	}
+	
+	public static List<Video> chooseType( Types type )
 	{
 		switch ( type )
 		{
 		case ALL:
-			updateAll();
-			break;
+			return updateAll();
 			
 		case MOVIE:
-			updateLists( "movie" , Finals.TYPE );
-			break;
+			return updateLists( "movie" , Finals.TYPE );
 			
 		case TV:
-			updateLists( "tv" , Finals.TYPE );
-			break;
+			return updateLists( "tv" , Finals.TYPE );
 			
 		default:
-			updateAll();
-			break;
+			return updateAll();
 		}
 	}
 	
-	public void updateLists( String type, String finalsValue ) 
+	public static List<Video> updateLists( String type, String finalsValue ) 
 	{
 		VideoProvider controller = new VideoProvider( Repos.XML );
 
 		try 
 		{
-			videos = controller.returnVideos( type, finalsValue );
+			List<Video> videoList = controller.returnVideos( type, finalsValue );
+		
+			return videoList;
+			
 		} 
 		catch (Exception e1) 
 		{
 			e1.printStackTrace();
-		}		
+		}
+		return null;		
 	}
 	
 	public static List<Video> updateAll() 
@@ -147,35 +261,35 @@ public class ListWorker {
 		return null;
 	}
 
-	public DefaultListModel<String> getTitles()
-	{
-		return this.titleList;
-	}
-
-	public DefaultListModel<String> getGenres()
-	{
-		return this.genreList;
-	}
-	
-	public DefaultListModel<String> getGroups()
-	{
-		return this.groupList;
-	}
-	
-	public DefaultListModel<Integer> getEpisodes()
-	{
-		return this.episodeList;
-	}
-	
-	public DefaultListModel<Integer> getSeasons()
-	{
-		return this.seasonList;
-	}
-	
-	public ArrayList<String> getLocations()
-	{
-		return this.locationList;
-	}
+//	public DefaultListModel<String> getTitles()
+//	{
+//		return this.titleList;
+//	}
+//
+//	public DefaultListModel<String> getGenres()
+//	{
+//		return this.genreList;
+//	}
+//	
+//	public DefaultListModel<String> getGroups()
+//	{
+//		return this.groupList;
+//	}
+//	
+//	public DefaultListModel<Integer> getEpisodes()
+//	{
+//		return this.episodeList;
+//	}
+//	
+//	public DefaultListModel<Integer> getSeasons()
+//	{
+//		return this.seasonList;
+//	}
+//	
+//	public ArrayList<String> getLocations()
+//	{
+//		return this.locationList;
+//	}
 	
 	
 }

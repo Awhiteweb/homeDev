@@ -3,6 +3,7 @@ package local.video.app;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -37,7 +39,6 @@ import local.dto.VideoProvider;
 import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.Types;
-import local.video.controller.Updater;
 import local.video.model.ListWorker;
 import net.miginfocom.swing.MigLayout;
 
@@ -45,15 +46,31 @@ import net.miginfocom.swing.MigLayout;
 public class VideoMainFrame implements PropertyChangeListener {
 
 	private JFrame frame;
-	private JButton btnPlay, btnRefresh, btnUpdateShow, btnRefreshDatabase;
-	private JLabel lblTitle, lblGenre, lblGroup, lblSeriesNumber, lblSeasonNumber;
-	private JList videos, genres, groups, series_numbers, season_numbers;
-	private JCheckBox movieCB, tvCB;
+	private JButton btnPlay;
+	private JButton btnRefresh;
+	private JButton btnUpdateShow;
+	private JButton btnRefreshDatabase;
+	private JLabel lblTitle;
+	private JLabel lblGenre;
+	private JLabel lblGroup;		
+	private JLabel lblSeriesNumber;
+	private JLabel lblSeasonNumber;
+	private JList videos;
+	private JList genres;
+	private JList groups;
+	private JList series_numbers;
+	private JList season_numbers;
+	private JCheckBox movieCB;
+	private JCheckBox tvCB;
 	private JProgressBar progressBar;
-	public static DefaultListModel<String> titleList, genreList, groupList;
-	public static ArrayList<String> locationList;
-	public static DefaultListModel<Integer> episodeList, seasonList;
+	public DefaultListModel<String> titleList;
+	public ArrayList<String> locationList;
+	public DefaultListModel<String> genreList;
+	public DefaultListModel<String> groupList;
+	public DefaultListModel<Integer> episodeList;
+	public DefaultListModel<Integer> seasonList;
 	private Task task;
+	private List<Video> videoList;
 	
 	
 	/**
@@ -62,13 +79,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try 
-				{
+				try {
 					VideoMainFrame window = new VideoMainFrame();
 					window.frame.setVisible(true);
-				} 
-				catch (Exception e) 
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -79,7 +93,19 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 * Create the application.
 	 */
 	public VideoMainFrame() {
+		VideoProvider controller = new VideoProvider( Repos.XML );
+		try 
+		{
+//			controller.getVideos();
+		
+			this.videoList = controller.returnVideos();
+		
 			initialize();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	
@@ -90,18 +116,16 @@ public class VideoMainFrame implements PropertyChangeListener {
 	@SuppressWarnings ( { "unchecked" } )
 	private void initialize() {
 		
-		/*
-		 * gets video lists
-		 */
-		Updater update = new Updater();
-		ListWorker list = update.updateAll();
-		titleList = list.getTitles();
-		genreList = list.getGenres();
-		groupList = list.getGroups();
-		episodeList = list.getEpisodes();
-		seasonList = list.getSeasons();
-		locationList = list.getLocations();
-			
+		ListWorker firstList = new ListWorker( this.videoList );
+
+		titleList = firstList.getTitles();
+		genreList = firstList.getGenres();
+		groupList = firstList.getGroups();
+		episodeList = firstList.getEpisodes();
+		seasonList = firstList.getSeasons();
+		locationList = firstList.getLocations();
+		
+		
 		frame = new JFrame();
 		frame.setBounds(150, 50, 1200, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -212,89 +236,35 @@ public class VideoMainFrame implements PropertyChangeListener {
 		genres.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e) {
 				
-				Thread updateGenres = new Thread()
-				{
-					public void run()
-					{
-						Updater update = new Updater();
-						ListWorker list = update.updateLists( genres, Finals.GENRE );
-						titleList = list.getTitles();
-						genreList = list.getGenres();
-						groupList = list.getGroups();
-						episodeList = list.getEpisodes();
-						seasonList = list.getSeasons();
-						locationList = list.getLocations();
-					}
-				};
+				updateLists( genres, Finals.GENRE );
 				
-				updateGenres.start();				
 			}
 		});
 
 		groups.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				Thread updateGroups = new Thread()
-				{
-					public void run()
-					{
-						Updater update = new Updater();
-						ListWorker list = update.updateLists( groups, Finals.GROUP );
-						titleList = list.getTitles();
-						genreList = list.getGenres();
-						groupList = list.getGroups();
-						episodeList = list.getEpisodes();
-						seasonList = list.getSeasons();
-						locationList = list.getLocations();
-					}
-				};
-				
-				updateGroups.start();				
+				updateLists( groups, Finals.GROUP );
+
 			}
 		});
 
 		series_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
 				
-				Thread updateEpisodes = new Thread()
-				{
-					public void run()
-					{
-						Updater update = new Updater();
-						ListWorker list = update.updateLists( series_numbers, Finals.SERIES_N );
-						titleList = list.getTitles();
-						genreList = list.getGenres();
-						groupList = list.getGroups();
-						episodeList = list.getEpisodes();
-						seasonList = list.getSeasons();
-						locationList = list.getLocations();
-					}
-				};
-				
-				updateEpisodes.start();				
+				updateLists( series_numbers, Finals.SERIES_N );
+
 			}
 		});
 
 		season_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) {
+				//read xml to match selection and reload all lists with new data
 				
-				Thread updateSeasons = new Thread()
-				{
-					public void run()
-					{
-						Updater update = new Updater();
-						ListWorker list = update.updateLists( season_numbers, Finals.SEASON_N );
-						titleList = list.getTitles();
-						genreList = list.getGenres();
-						groupList = list.getGroups();
-						episodeList = list.getEpisodes();
-						seasonList = list.getSeasons();
-						locationList = list.getLocations();
-					}
-				};
-				
-				updateSeasons.start();
+				updateLists( season_numbers, Finals.SEASON_N );
+
 			}
+
 		});
 
 		movieCB.addActionListener( new ActionListener() {
@@ -319,18 +289,12 @@ public class VideoMainFrame implements PropertyChangeListener {
 
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
-				Updater update = new Updater();
-				ListWorker list = update.updateAll();
-				titleList = list.getTitles();
-				genreList = list.getGenres();
-				groupList = list.getGroups();
-				episodeList = list.getEpisodes();
-				seasonList = list.getSeasons();
-				locationList = list.getLocations();
+
+				updateAll();
+
 			}
 
 		});
-		
 		btnUpdateShow.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 			}
@@ -339,10 +303,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnRefreshDatabase.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 				
-//				VideoProvider controller = new VideoProvider( Repos.MYSQL );
+				VideoProvider controller = new VideoProvider( Repos.MYSQL );
 				try
 				{
-					List<Video> data = null;
+					List<Video> data = controller.returnVideos();
 					
 					VideoProvider writer = new VideoProvider( Repos.XML );
 					
@@ -354,21 +318,63 @@ public class VideoMainFrame implements PropertyChangeListener {
 					ex.printStackTrace();
 				}
 				
-				Updater update = new Updater();
-				ListWorker list = update.updateAll();
-				titleList = list.getTitles();
-				genreList = list.getGenres();
-				groupList = list.getGroups();
-				episodeList = list.getEpisodes();
-				seasonList = list.getSeasons();
-				locationList = list.getLocations();				
+				updateAll();
+				
 			}
 		});
 
 	}
 	
+	
 
+
+	private void updateLists( JList searchCat, String finalsValue ) 
+	{
+		if ( searchCat.getSelectedIndex() > 0 )
+		{
+			VideoProvider controller = new VideoProvider( Repos.XML );
+
+			try 
+			{
+				List<Video> videoList = controller.returnVideos( searchCat.getSelectedValue().toString(), finalsValue );
+				
+				ListWorker resetLists = new ListWorker( videoList );
+								
+				titleList = resetLists.getTitles();
+				genreList = resetLists.getGenres();
+				groupList = resetLists.getGroups();
+				episodeList = resetLists.getEpisodes();
+				seasonList = resetLists.getSeasons();
+				locationList = resetLists.getLocations();
+				
+			} catch ( Exception e1 ) {
+				e1.printStackTrace();
+			}
+			
+		}
+	}
+	
+	private void updateAll() 
+	{
+		VideoProvider controller = new VideoProvider( Repos.XML );
 		
+		try 
+		{
+			List<Video> videoList = controller.returnVideos();
+			ListWorker resetLists = new ListWorker( videoList );
+			
+			titleList = resetLists.getTitles();
+			genreList = resetLists.getGenres();
+			groupList = resetLists.getGroups();
+			episodeList = resetLists.getEpisodes();
+			seasonList = resetLists.getSeasons();
+			locationList = resetLists.getLocations();
+			
+		} catch ( Exception e1 ) {
+			e1.printStackTrace();
+		}
+	}
+	
 	/**
 	 * plays the movie after copying it to local directory.
 	 * will modify so that it streams it to a player instead as copying can take over 10mins
@@ -409,8 +415,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	/**
 	 * class for progress bar updating when copying files from network drive to local.
+	 * @author Alex
+	 *
 	 */
-	private class Task extends SwingWorker<Void, Void>
+	class Task extends SwingWorker<Void, Void>
 	{
 
 		public File source;
@@ -503,41 +511,42 @@ public class VideoMainFrame implements PropertyChangeListener {
     
 	private void typeSelector ()
 	{
-		if ( 
-				( tvCB.isSelected() && movieCB.isSelected() ) 
-				|| 
-				( !tvCB.isSelected() && !movieCB.isSelected() ) 
-			)
+		if ( ( tvCB.isSelected() && movieCB.isSelected() ) || ( !tvCB.isSelected() && !movieCB.isSelected() ) )
 		{
-			Updater update = new Updater();
-			update.typeSelector( Types.ALL );
+			this.videoList = ListWorker.chooseType( Types.ALL );
 		}
 		else if ( !tvCB.isSelected() && movieCB.isSelected() )
 		{
-			Updater update = new Updater();
-			update.typeSelector( Types.MOVIE );
+			this.videoList = ListWorker.chooseType( Types.MOVIE );
 		}
 		else if ( tvCB.isSelected() && !movieCB.isSelected() )
 		{
-			Updater update = new Updater();
-			update.typeSelector( Types.TV );
+			this.videoList = ListWorker.chooseType( Types.TV );
 		}
 		else
 		{
-			Updater update = new Updater();
-			update.typeSelector( Types.ALL );
+			this.videoList = ListWorker.chooseType( Types.ALL );
 		}
 		
+		ListWorker resetLists = new ListWorker( this.videoList );
+		
+		titleList = resetLists.getTitles();
+		genreList = resetLists.getGenres();
+		groupList = resetLists.getGroups();
+		episodeList = resetLists.getEpisodes();
+		seasonList = resetLists.getSeasons();
+		locationList = resetLists.getLocations();
+
 	}
 
     	
-//	private void errorPopup ( String file )
-//	{
-//		JOptionPane.showMessageDialog(frame,
-//			    "Error moving the file" + file + ".",
-//			    "Error",
-//			    JOptionPane.ERROR_MESSAGE);
-//	}
+	private void errorPopup ( String file )
+	{
+		JOptionPane.showMessageDialog(frame,
+			    "Error moving the file" + file + ".",
+			    "Error",
+			    JOptionPane.ERROR_MESSAGE);
+	}
 
 	
 }
