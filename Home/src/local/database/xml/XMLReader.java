@@ -54,7 +54,7 @@ public class XMLReader extends DefaultHandler
 		
 		switch ( currentElement )
 		{
-		case "videos":
+		case "parent":
 			break;
 			
 		case "video":
@@ -76,7 +76,7 @@ public class XMLReader extends DefaultHandler
 		
 		switch ( qName )
 		{
-		case "videos":
+		case "parent":
 			return;
 			
 		case "video":
