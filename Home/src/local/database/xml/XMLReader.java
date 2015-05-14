@@ -96,6 +96,10 @@ public class XMLReader extends DefaultHandler
 		switch ( currentElement )
 		{
 		case VideoProvider.TYPE:
+if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.TYPE.equalsIgnoreCase( this.searchCat ) )
+			{
+				this.check = true;
+			}
 			video.setType( content );
 			break;
 			
