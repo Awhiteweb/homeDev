@@ -46,7 +46,6 @@ public class XMLVideoRepo implements IVideoRepo
 
 		try 
 		{
-
 			List<Video> data = video.returnVideos();
 
 			XMLWriter creator = new XMLWriter();
