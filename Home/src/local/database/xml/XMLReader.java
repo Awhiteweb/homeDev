@@ -59,6 +59,7 @@ public class XMLReader extends DefaultHandler
 			
 		case "video":
 			video = new Video();
+			video.setID( Integer.parseInt( attributes.getValue( Finals.ID ) ) );
 			this.check = false;
 			break;
 			
