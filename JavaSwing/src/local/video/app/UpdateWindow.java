@@ -35,24 +35,12 @@ import javax.swing.table.TableModel;
 public class UpdateWindow {
 
 	private JFrame frame;
-	private JTextField txtTitle;
-	private JTextField txtGenre;
-	private JTextField txtGroup;
-	private JTextField txtEpisode;
-	private JTextField txtSeason;
-	private JButton btnClear;
-	private JButton btnSaveUpdate;
-	private JScrollPane scrollTitle;
-	private JScrollPane scrollGenre;
-	private JScrollPane scrollGroup;
-	private JScrollPane scrollEpisode;
-	private JScrollPane scrollSeason;
-	private JTable tableTitles;
-	private JTable tableGenres;
-	private JTable tableGroups;
-	private JTable tableEpisodes;
-	private JTable tableSeasons;
+	private JTextField txtTitle, txtGenre, txtGroup, txtEpisode, txtSeason;
+	private JButton btnClear, btnSaveUpdate;
+	private JScrollPane scrollTitle, scrollGenre, scrollGroup, scrollEpisode, scrollSeason;
+	private JTable tableTitles, tableGenres, tableGroups, tableEpisodes, tableSeasons;
 	private List<Video> videoList;
+	private ArrayList locationList, genresArray, groupsArray, episodesArray, seasonArray, idArray,  tmpArray;
 	
 
 	/**
@@ -75,11 +63,21 @@ public class UpdateWindow {
 	/**
 	 * Create the application.
 	 */
-	public UpdateWindow() {
+	public UpdateWindow( ArrayList<Integer> tmpArray ) {
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
+			this.tmpArray = new ArrayList();
+			this.tmpArray = tmpArray;
+			locationList = new ArrayList();
+			genresArray = new ArrayList();
+			groupsArray = new ArrayList();
+			episodesArray = new ArrayList();
+			seasonArray = new ArrayList();
+			idArray = new ArrayList();
+
 			this.videoList = controller.returnVideos();
+			updateAll();
 			initialize();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -166,6 +164,74 @@ public class UpdateWindow {
 		JTable table = new JTable( );
 	
 		return table;
+	}
+	
+
+	private void setLists ( List<Video> videos )
+	{
+		ArrayList<Integer> tmpArray = new ArrayList<Integer>();
+		
+		for ( int id : idArray )
+		{
+			tmpArray.add( id );
+		}
+		
+		locationArray.clear();
+		genresArray.clear();
+		groupsArray.clear();
+		episodesArray.clear();
+		seasonArray.clear();
+		idArray.clear();
+		
+				for( Video video : videos )
+				{
+					if ( tmpArray.contains( video.getID() ) )
+					{
+						idArray.add( video.getID() );
+						titleArray.add( video.getTitle() );
+						locationArray.add( video.getLocation() );
+						
+						if ( !genresArray.contains( video.getGenre() ) )
+						{
+							genresArray.add( video.getGenre() );
+						}
+						if ( !groupsArray.contains( video.getGroup() ) )
+						{
+							groupsArray.add( video.getGroup() );
+						}
+						if ( !episodesArray.contains( video.getSeriesN() ) )
+						{
+							episodesArray.add( video.getSeriesN() );
+						}
+						if ( !seasonArray.contains( video.getSeasonN() ) )
+						{
+							seasonArray.add( video.getSeasonN() );				
+						}
+					}
+				}
+
+		}
+			
+		Collections.sort( genresArray );
+		for (String s : genresArray ) 
+		{
+			genreList.addElement( s );
+		}
+		Collections.sort( groupsArray );
+		for (String s : groupsArray ) 
+		{
+			groupList.addElement( s );
+		}
+		Collections.sort( episodesArray );
+		for (Integer i : episodesArray ) 
+		{
+			episodeList.addElement( i );
+		}
+		Collections.sort( seasonArray );
+		for (Integer i : seasonArray ) 
+		{
+			seasonList.addElement( i );
+		}
 	}
 
 }

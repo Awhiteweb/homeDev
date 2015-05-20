@@ -49,7 +49,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private JFrame frame;
 	private JButton btnPlay, btnRefresh, btnUpdateShow, btnRefreshDatabase;
 	private JLabel lblTitle, lblGenre, lblGroup, lblSeriesNumber, lblSeasonNumber;
-	private JList videos, genres, groups, series_numbers, season_numbers;
+	private JList videos, genres, groups, episode_numbers, season_numbers;
 	private JCheckBox movieCB, tvCB;
 	private JProgressBar progressBar;
 	private DefaultListModel<String> titleList, genreList, groupList;
@@ -96,7 +96,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 			idArray = new ArrayList<Integer>();
 			
 			this.videoList = controller.returnVideos();
-		
+			updateAll();
 			initialize();
 
 		} catch (Exception e) {
@@ -112,8 +112,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 */
 //	@SuppressWarnings ( "unchecked" )
 	private void initialize() {
-		
-		updateAll();
 		
 		frame = new JFrame();
 		frame.setBounds(150, 50, 1200, 800);
@@ -166,10 +164,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 		groups.setLayoutOrientation( JList.VERTICAL );
 		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		
-		series_numbers = new JList( episodeList );
-		series_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-		series_numbers.setLayoutOrientation( JList.VERTICAL );
-		JScrollPane scrollSeriesPane = new JScrollPane( series_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+		episode_numbers = new JList( episodeList );
+		episode_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+		episode_numbers.setLayoutOrientation( JList.VERTICAL );
+		JScrollPane scrollSeriesPane = new JScrollPane( episode_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 				
 		season_numbers = new JList( seasonList );
 	  	season_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
@@ -212,6 +210,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		videos.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) 
 			{
+				System.out.println( "video click" );
 				if ( videos.getSelectedIndex() > 0 )
 				{
 					btnPlay.setEnabled( true );
@@ -226,6 +225,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		genres.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e) 
 			{
+				System.out.println( "genre click" );
 				if ( genres.getSelectedIndex() > 0 )
 				{
 					updateLists( genres.getSelectedValue().toString(), Finals.GENRE );
@@ -236,6 +236,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		groups.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) 
 			{
+				System.out.println( "group click" );
 				if ( groups.getSelectedIndex() > 0 )
 				{
 					updateLists( groups.getSelectedValue().toString(), Finals.GROUP );
@@ -243,12 +244,13 @@ public class VideoMainFrame implements PropertyChangeListener {
 			}
 		});
 
-		series_numbers.addListSelectionListener( new ListSelectionListener() {
+		episode_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) 
 			{
-				if ( series_numbers.getSelectedIndex() > 0 )
+				System.out.println( "episode click" );
+				if ( episode_numbers.getSelectedIndex() > 0 )
 				{
-					updateLists( series_numbers.getSelectedValue().toString(), Finals.SERIES_N );
+					updateLists( episode_numbers.getSelectedValue().toString(), Finals.SERIES_N );
 				}
 			}
 		});
@@ -256,6 +258,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		season_numbers.addListSelectionListener( new ListSelectionListener() {
 			public void valueChanged( ListSelectionEvent e ) 
 			{
+				System.out.println( "season click" );
 				if ( season_numbers.getSelectedIndex() > 0 )
 				{
 					updateLists( season_numbers.getSelectedValue().toString(), Finals.SEASON_N );
@@ -267,6 +270,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		movieCB.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
+				System.out.println( "movie click" );
 				typeSelector();
 			}
 		});
@@ -274,6 +278,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		tvCB.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
+				System.out.println( "tv click" );
 				typeSelector();
 			}
 
@@ -290,9 +295,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
-
+				System.out.println( "refresh click" );
 				updateAll();
-
 			}
 
 		});
@@ -300,12 +304,20 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnUpdateShow.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
+				System.out.println( "update a show click" );
+				if ( videos.getSelectedIndex() > 0 || genres.getSelectedIndex() > 0 || groups.getSelectedIndex() > 0 )
+				{
+					UpdateWindow update = UpdateWindow( idArray ); //launch update window with with idArray
+				}
 			}
 		});
 
 		btnRefreshDatabase.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
+				System.out.println( "refresh DB click" );
+				movieCB.setSelected( false );
+				tvCB.setSelected( false );
 				VideoProvider controller = new VideoProvider( Repos.MYSQL );
 				try
 				{
@@ -324,8 +336,15 @@ public class VideoMainFrame implements PropertyChangeListener {
 	}
 	
 	
-	private void setLists ( List<Video> videos )
+	private void setLists ( List<Video> videos, int n )
 	{
+		ArrayList<Integer> tmpArray = new ArrayList<Integer>();
+		
+		for ( int id : idArray )
+		{
+			tmpArray.add( id );
+		}
+		
 		titleList.clear();
 		genreList.clear();
 		groupList.clear();
@@ -338,29 +357,64 @@ public class VideoMainFrame implements PropertyChangeListener {
 		seasonArray.clear();
 		idArray.clear();
 		
-		for( Video video : videos )
+		switch ( n )
 		{
-			idArray.add( video.getID() );
-			titleList.addElement( video.getTitle() );
-			locationList.add( video.getLocation() );
-			
-			if ( !genresArray.contains( video.getGenre() ) )
-			{
-				genresArray.add( video.getGenre() );
-			}
-			if ( !groupsArray.contains( video.getGroup() ) )
-			{
-				groupsArray.add( video.getGroup() );
-			}
-			if ( !episodesArray.contains( video.getSeriesN() ) )
-			{
-				episodesArray.add( video.getSeriesN() );
-			}
-			if ( !seasonArray.contains( video.getSeasonN() ) )
-			{
-				seasonArray.add( video.getSeasonN() );				
-			}
+			case 0:
+				for( Video video : videos )
+				{
+					idArray.add( video.getID() );
+					titleList.addElement( video.getTitle() );
+					locationList.add( video.getLocation() );
+					
+					if ( !genresArray.contains( video.getGenre() ) )
+					{
+						genresArray.add( video.getGenre() );
+					}
+					if ( !groupsArray.contains( video.getGroup() ) )
+					{
+						groupsArray.add( video.getGroup() );
+					}
+					if ( !episodesArray.contains( video.getSeriesN() ) )
+					{
+						episodesArray.add( video.getSeriesN() );
+					}
+					if ( !seasonArray.contains( video.getSeasonN() ) )
+					{
+						seasonArray.add( video.getSeasonN() );				
+					}
+				}
+				break;
+				
+			default:
+				for( Video video : videos )
+				{
+					if ( tmpArray.contains( video.getID() ) )
+					{
+						idArray.add( video.getID() );
+						titleList.addElement( video.getTitle() );
+						locationList.add( video.getLocation() );
+						
+						if ( !genresArray.contains( video.getGenre() ) )
+						{
+							genresArray.add( video.getGenre() );
+						}
+						if ( !groupsArray.contains( video.getGroup() ) )
+						{
+							groupsArray.add( video.getGroup() );
+						}
+						if ( !episodesArray.contains( video.getSeriesN() ) )
+						{
+							episodesArray.add( video.getSeriesN() );
+						}
+						if ( !seasonArray.contains( video.getSeasonN() ) )
+						{
+							seasonArray.add( video.getSeasonN() );				
+						}
+					}
+				}
+				break;
 		}
+			
 		Collections.sort( genresArray );
 		for (String s : genresArray ) 
 		{
@@ -388,7 +442,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
-			setLists( controller.returnVideos( searchCat, finalsValue ) );
+			System.out.println( "new edit list" );
+			setLists( controller.returnVideos( searchCat, finalsValue ), 1 );
 		} catch ( Exception e1 ) {
 			e1.printStackTrace();
 		}
@@ -399,7 +454,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
-			setLists( controller.returnVideos() );
+			System.out.println( "new full list" );
+			setLists( controller.returnVideos(), 0 );
 		} catch ( Exception e1 ) {
 			e1.printStackTrace();
 		}
@@ -538,8 +594,9 @@ public class VideoMainFrame implements PropertyChangeListener {
         } 
     }
     
-	private void typeSelector ()
+	private void typeSelector()
 	{
+		System.out.println( "type selector called");
 		if ( ( tvCB.isSelected() && movieCB.isSelected() ) || ( !tvCB.isSelected() && !movieCB.isSelected() ) )
 		{
 			chooseType( Types.ALL );
@@ -560,20 +617,25 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	private void chooseType( Types type )
 	{
+		System.out.println( "choose type called");
 		// xml is not returning a list for tv or movie selection.
 		switch ( type )
 		{
 		case ALL:
 			updateAll();
+			break;
 			
 		case MOVIE:
 			updateLists( "movie" , Finals.TYPE );
+			break;
 			
 		case TV:
 			updateLists( "tv" , Finals.TYPE );
+			break;
 			
 		default:
 			updateAll();
+			break;
 		}
 	}
 
