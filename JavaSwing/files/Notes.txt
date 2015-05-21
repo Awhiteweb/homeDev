@@ -1,1 +1,2 @@
-Multiple action searches, don't refresh the default list, but remove discrepancies.
+
+Find locations & id’s for play / updates using get itemselectednumber from title list.
