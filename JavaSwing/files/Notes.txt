@@ -1,2 +1,4 @@
 
-Find locations & id’s for play / updates using get itemselectednumber from title list.
+Find locations & id's for play / updates using get itemselectednumber from title list.
+
+error being thrown on update all after app has loaded.
