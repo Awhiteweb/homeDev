@@ -281,22 +281,24 @@ public class VideoMainFrame implements PropertyChangeListener {
 //
 //		});
 
-		movieCB.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) 
-			{
-				System.out.println( "\nmovie click" );
-				typeSelector();
-			}
-		});
+		movieCB.addActionListener( new ActionEventHandler( Types.MOVIE ) );
+//				new ActionListener() {
+//			public void actionPerformed( ActionEvent e ) 
+//			{
+//				System.out.println( "\nmovie click" );
+//				typeSelector();
+//			}
+//		});
 
-		tvCB.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) 
-			{
-				System.out.println( "\ntv click" );
-				typeSelector();
-			}
-
-		});
+		tvCB.addActionListener( new ActionEventHandler( Types.TV ) );
+//				new ActionListener() {
+//			public void actionPerformed( ActionEvent e ) 
+//			{
+//				System.out.println( "\ntv click" );
+//				typeSelector();
+//			}
+//
+//		});
 
 		btnPlay.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
@@ -350,7 +352,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 	}
 	
 	
-	private void setLists ( List<Video> videos, int n )
+	private void setLists( List<Video> videos, int n )
 	{
 		ArrayList<Integer> tmpArray = new ArrayList<Integer>();
 		
@@ -625,6 +627,24 @@ public class VideoMainFrame implements PropertyChangeListener {
 					break;
 			}
 		}	
+	}
+	
+	
+	private class ActionEventHandler implements ActionListener
+	{
+		private Types type;
+		
+		ActionEventHandler( Types type )
+		{
+			this.type = type;
+		}
+		
+		public void actionPerformed( ActionEvent e )
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 	
 	
