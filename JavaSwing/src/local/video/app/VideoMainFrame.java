@@ -57,8 +57,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private ArrayList<Integer> episodesArray, seasonArray, idArray;
 	private Task task;
 	private Order order;
-	private List<Video> videoList;
+	private List<Video> videoList, videoList1, videoList2, videoList3;
 	private ItemToUpdate item;
+	private int selections;
 	
 	/**
 	 * Launch the application.
@@ -83,6 +84,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
+			selections = 0;
 			titleList = new DefaultListModel<String>();
 			genreList = new DefaultListModel<String>();
 			groupList = new DefaultListModel<String>();
@@ -452,25 +454,105 @@ public class VideoMainFrame implements PropertyChangeListener {
 
 	private void updateLists( String searchCat, String finalsValue ) 
 	{
-		VideoProvider controller = new VideoProvider( Repos.XML );
-		try 
+		List<Video> tmpList = new ArrayList<Video>();
+
+		Switch ( selections )
 		{
-//			System.out.println( "new edit list" );
-			
-			
-			if ( !finalsValue.equals( Finals.TYPE ) )
-			{
-				setLists( controller.returnVideos( searchCat, finalsValue ), 1 );
-			}
-			else
-			{
-				setLists( controller.returnVideos( searchCat, finalsValue ), 2 );
-			}
-			
-			
-		} catch ( Exception e1 ) {
-			e1.printStackTrace();
+			case 0:
+				break;
+
+			case TYPE:
+				for ( Video video : videoList )
+				{
+					if( video.getType.equals( searchCat ) )
+					{
+						Video v = new Video();
+						v.setID = video.getId;
+						// ...
+						tmpList.add(v);
+					}
+				}
+				break;
+
+			case GENRE:
+				for ( Video video : videoList )
+				{
+					if( video.getGenre.equals( searchCat ) )
+					{
+						Video v = new Video();
+						v.setID = video.getId;
+						// ...
+						tmpList.add(v);
+					}
+				}
+				break;
+
+			case GROUP:
+				for ( Video video : videoList )
+				{
+					if( video.getGroup.equals( searchCat ) )
+					{
+						Video v = new Video();
+						v.setID = video.getId;
+						// ...
+						tmpList.add(v);
+					}
+				}
+				break;
+
+			case EPISODE:
+				for ( Video video : videoList )
+				{
+					if( video.getEpisode.equals( searchCat ) )
+					{
+						Video v = new Video();
+						v.setID = video.getId;
+						// ...
+						tmpList.add(v);
+					}
+				}
+				break;
+
+			case SEASON:
+				for ( Video video : videoList )
+				{
+					if( video.getSeason.equals( searchCat ) )
+					{
+						Video v = new Video();
+						v.setID = video.getId;
+						// ...
+						tmpList.add(v);
+					}
+				}
+				break;
+
+			default:
+				break;
 		}
+
+		// if videoList1 is null then videoList1 = tmpList
+		// etc etc
+
+
+// 		VideoProvider controller = new VideoProvider( Repos.XML );
+// 		try 
+// 		{
+//			System.out.println( "new edit list" );
+//
+//
+// 			if ( !finalsValue.equals( Finals.TYPE ) )
+// 			{
+// 				setLists( controller.returnVideos( searchCat, finalsValue ), 1 );
+// 			}
+// 			else
+// 			{
+// 				setLists( controller.returnVideos( searchCat, finalsValue ), 2 );
+// 			}
+// 
+//			
+// 		} catch ( Exception e1 ) {
+// 			e1.printStackTrace();
+// 		}
 	}
 	
 	private void updateAll() 
