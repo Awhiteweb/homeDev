@@ -3,4 +3,16 @@ Find locations & id's for play / updates using get itemselectednumber from title
 
 error being thrown on update all after app has loaded.
 
-edited video app so filtering is done on the List not from the xml. So it is easier to filter in a random order. 
+add validation so not to re-filter on current list. options, change list to unselectable or re-filter on previous videolist if previous selection == current selection
+
+regex for getting season numbers:
+^file:[/\w%]+?Season%20(\d+).*$
+tested on:
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%204/The%20Love%20Car%20Displacement.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%201/The%20Luminous%20Fish%20Effect.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Friends/Season%209/The%20One%20Where%20Emma%20Cries.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Friends/Season%208/The%20One%20With%20The%20Videotape.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%203/The%20Psychic%20Vortex.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Merlin/Season%203/The%20Sorcerers%20Shadow.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Yoga/YOGA_FOR_ATHLETES_1.m4v
+file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/CSI/Season%208/You%20Kill%20Me.m4v
