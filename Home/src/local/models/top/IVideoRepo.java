@@ -1,5 +1,6 @@
 package local.models.top;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface IVideoRepo
 	void writeVideos( List<Video> videos );
 	
 	void updateVideos( List<Video> videos );
+	
+	void sendPreparedStatement ( String statement );
 
 	List<Video> getVideos();
 	

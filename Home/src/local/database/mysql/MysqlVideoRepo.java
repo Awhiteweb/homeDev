@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.PreparedStatement;
+
 import local.dto.Video;
 import local.models.top.Finals;
 import local.models.top.IVideoRepo;
@@ -12,6 +14,7 @@ import local.models.top.IVideoRepo;
 public class MysqlVideoRepo implements IVideoRepo
 {
 	private MysqlConnect conn;
+	private PreparedStatement preparedStatement = null;
 	
 	private String selectFrom = "SELECT `m`.`id` AS `" + Finals.ID + "`, "
 								+ "`m`.`title` AS `" + Finals.TITLE + "`, "
@@ -30,7 +33,7 @@ public class MysqlVideoRepo implements IVideoRepo
 								+ "ON `m`.`type` = `t`.`id` ";
 	
 	
-	public MysqlVideoRepo(MysqlConnect conn)
+	public MysqlVideoRepo( MysqlConnect conn )
 	{
 		this.conn = conn;
 	}
@@ -66,7 +69,7 @@ public class MysqlVideoRepo implements IVideoRepo
 				
 				if ( resultSet.getString( Finals.SERIES_N ) != null )
 				{
-					video.setSeriesN( Integer.parseInt( resultSet.getString( Finals.SERIES_N ) ) );
+					video.setEpisodeN( Integer.parseInt( resultSet.getString( Finals.SERIES_N ) ) );
 				}
 				
 				if ( resultSet.getString( Finals.SEASON_N ) != null )
@@ -133,15 +136,12 @@ public class MysqlVideoRepo implements IVideoRepo
 	@Override
 	public void writeVideos( List<Video> videos )
 	{
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void updateVideos( List<Video> videos )
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -161,5 +161,21 @@ public class MysqlVideoRepo implements IVideoRepo
 		
 		return videos;
 	}
+
+	@Override
+	public void sendPreparedStatement ( String statement )
+	{
+		try
+		{
+			int i = this.conn.update( statement );
+			System.out.println( "rows updated " + i );
+		}
+		catch ( SQLException e )
+		{
+			System.err.println( "error updating database" );
+//			e.printStackTrace();
+		}
+	}
+
 
 }

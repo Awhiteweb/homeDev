@@ -9,6 +9,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
+import local.models.top.Finals;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -128,12 +129,12 @@ public class XMLReader extends DefaultHandler
 			video.setGroup( content );
 			break;
 			
-		case VideoProvider.SERIES_N:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.SERIES_N.equalsIgnoreCase( this.searchCat ) )
+		case VideoProvider.EPISODE_N:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.EPISODE_N.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}
-			video.setSeriesN( Integer.parseInt( content ) );
+			video.setEpisodeN( Integer.parseInt( content ) );
 			break;
 			
 		case VideoProvider.SEASON_N:

@@ -14,7 +14,7 @@ public class Video
 					group,
 					type;
 	private int 	id,
-					seriesN,
+					episodeN,
 					seasonN;
 	
 	public Video()
@@ -90,15 +90,15 @@ public class Video
 	}
 	
 
-	public int getSeriesN()
+	public int getEpisodeN()
 	{
-		return this.seriesN;
+		return this.episodeN;
 	}
 	
 
-	public void setSeriesN( int seriesN )
+	public void setEpisodeN( int episodeN )
 	{
-		this.seriesN = seriesN;
+		this.episodeN = episodeN;
 	}
 	
 	public int getSeasonN()

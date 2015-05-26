@@ -1,5 +1,6 @@
 package local.database.xml;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +89,13 @@ public class XMLVideoRepo implements IVideoRepo
 	public Video getVideoByID( int id )
 	{
 		return null;
+	}
+
+	@Override
+	public void sendPreparedStatement ( String statement )
+	{
+		// not for XML use
+		
 	}
 
 

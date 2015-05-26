@@ -62,6 +62,12 @@ public class MysqlConnect
 		return resultSet;
 	}
 	
+	public int update( String statement ) throws SQLException
+	{
+		preparedStatement = conn.prepareStatement( statement );
+		return preparedStatement.executeUpdate();
+	}
+	
 	/**
 	 * creates a single connection to mysql database
 	 */

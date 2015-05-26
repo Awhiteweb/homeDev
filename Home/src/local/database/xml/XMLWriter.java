@@ -71,15 +71,14 @@ public class XMLWriter {
 			writer.writeCharacters( video.getGroup() );
 			writer.writeEndElement();
 			
-			writer.writeStartElement( VideoProvider.SERIES_N );
-			writer.writeCharacters( Integer.toString( video.getSeriesN() ) );
+			writer.writeStartElement( VideoProvider.EPISODE_N );
+			writer.writeCharacters( Integer.toString( video.getEpisodeN() ) );
 			writer.writeEndElement();
 
 			writer.writeStartElement( VideoProvider.SEASON_N );
-			writer.writeCharacters( Integer.toString( video.getSeriesN() ) );
+			writer.writeCharacters( Integer.toString( video.getSeasonN() ) );
 			writer.writeEndElement();
 
-				
 			writer.writeEndElement();
 	
 		}

@@ -8,6 +8,6 @@ public class Finals
 						 LOCATION = "location",
 							GENRE = "genre",
 							GROUP = "group",
-						 SERIES_N = "series_number",
+						EPISODE_N = "episode_number",
 						 SEASON_N = "season_number";
 }

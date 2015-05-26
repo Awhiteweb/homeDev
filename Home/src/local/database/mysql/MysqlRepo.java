@@ -48,4 +48,11 @@ public class MysqlRepo implements IVideoRepo
 		return null;
 	}
 
+	@Override
+	public void sendPreparedStatement ( String statement )
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
