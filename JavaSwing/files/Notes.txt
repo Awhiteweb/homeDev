@@ -5,8 +5,27 @@ error being thrown on update all after app has loaded.
 
 add validation so not to re-filter on current list. options, change list to unselectable or re-filter on previous videolist if previous selection == current selection
 
-regex for getting season numbers:
+regex:
+for getting season numbers:
 ^file:[/\w%]+?Season%20(\d+).*$
+
+for getting type:
+^file:[/\w%]+?iTunes\/([\w%]+).*$
+
+for show title:
+^file:[/\w%]+?iTunes\/([\w%]+)\/([\w%]+)(?:\/[\w%]+){0,1}\/([\w-%\.]+)(?:\.\w{3,4})$
+
+for show/movie name
+^file:[/\w%-]+?\/([\w%\.-]+)(?:\.\w{3,4})$
+
+this will work work on files with movies or tv show folder with our without up to 2 sub folders and returns 4 capturing groups
+^file:[/\w%]+?iTunes\/([\w%]+)((?:\/)([\w%\-]+)){0,1}(?:\/[\w%\-]+){0,1}\/([\w%\.\-]+)(?:\.\w{3,4})$
+Type = $1
+ignore = $2
+Group = $3
+Title = $4
+
+
 tested on:
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%204/The%20Love%20Car%20Displacement.m4v
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%201/The%20Luminous%20Fish%20Effect.m4v
@@ -16,3 +35,19 @@ file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/The%20Big%20Bang%20Theory/Season%2
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Merlin/Season%203/The%20Sorcerers%20Shadow.m4v
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Yoga/YOGA_FOR_ATHLETES_1.m4v
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/CSI/Season%208/You%20Kill%20Me.m4v
+
+
+SELECT `m`.`id` AS `ID`, 
+`m`.`title` AS `Title`, 
+`m`.`path` AS `Path`, 
+`ge`.`genre` AS `Genre`, 
+`gr`.`group` AS `Group`, 
+`m`.`series_num` AS `Series Number`, 
+`t`.`genre` AS `Type` 
+FROM `main` AS `m` 
+LEFT JOIN `genres` AS `ge` 
+ON `m`.`genre` = `ge`.`id` 
+LEFT JOIN `groups` AS `gr` 
+ON `m`.`group` = `gr`.`id` 
+LEFT JOIN `type` AS `t` 
+ON `m`.`type` = `t`.`id`;

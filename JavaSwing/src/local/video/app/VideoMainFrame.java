@@ -3,7 +3,7 @@ package local.video.app;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -36,13 +37,12 @@ import javax.swing.event.ListSelectionListener;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
-import local.models.top.Finals;
 import local.models.top.Repos;
 import local.video.constants.Types;
-import local.video.model.ListWorker;
+import local.video.model.ItemToUpdate;
 import net.miginfocom.swing.MigLayout;
 
-@SuppressWarnings( "rawtypes" )
+@SuppressWarnings( { "rawtypes", "unchecked" } )
 public class VideoMainFrame implements PropertyChangeListener {
 
 	private JFrame frame;
@@ -53,11 +53,12 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private JProgressBar progressBar;
 	private DefaultListModel<String> titleList, genreList, groupList;
 	private DefaultListModel<Integer> episodeList, seasonList;
-	private ArrayList<String> locationList, titleArray, genreArray, groupArray;
-	private ArrayList<Integer> episodeArray, seasonArray;
+	private ArrayList<String> locationList, titleArray, genresArray, groupsArray;
+	private ArrayList<Integer> episodesArray, seasonArray, idArray;
 	private Task task;
 	private List<Video> videoList;
-	
+	private List<List<Video>> blockbuster = new ArrayList<List<Video>>();
+	private int selections;
 	
 	/**
 	 * Launch the application.
@@ -82,25 +83,24 @@ public class VideoMainFrame implements PropertyChangeListener {
 		VideoProvider controller = new VideoProvider( Repos.XML );
 		try 
 		{
-			genreArray = new ArrayList<String>();
-			groupArray = new ArrayList<String>();
-			episodeArray = new ArrayList<Integer>();
-			seasonArray = new ArrayList<Integer>();
-			locationList = new ArrayList<String>();
 			titleList = new DefaultListModel<String>();
 			genreList = new DefaultListModel<String>();
 			groupList = new DefaultListModel<String>();
 			episodeList = new DefaultListModel<Integer>();
 			seasonList = new DefaultListModel<Integer>();
-		
-			videoList = controller.returnVideos();
-		
+			locationList = new ArrayList<String>();
+			titleArray = new ArrayList<String>();
+			genresArray = new ArrayList<String>();
+			groupsArray = new ArrayList<String>();
+			episodesArray = new ArrayList<Integer>();
+			seasonArray = new ArrayList<Integer>();
+			idArray = new ArrayList<Integer>();
+			this.videoList = controller.returnVideos();
+			updateAll();
 			initialize();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	
@@ -108,11 +108,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 * Initialize the contents of the frame.
 	 * @param videoList 
 	 */
-	@SuppressWarnings ( { "unchecked" } )
+//	@SuppressWarnings ( "unchecked" )
 	private void initialize() {
-		
-		update();
-		
 		
 		frame = new JFrame();
 		frame.setBounds(150, 50, 1200, 800);
@@ -143,7 +140,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		btnPlay.setMinimumSize( new Dimension(300,25 ) );
 		btnPlay.setEnabled( false );
 		btnPlay.setToolTipText( "This will copy to the desktop and then play the movie" );
-		btnRefresh = new JButton( "Refresh Lists" );		
+		btnRefresh = new JButton( "Refresh Lists" );
 		btnUpdateShow = new JButton( "Make updates" );
 		btnUpdateShow.setEnabled( false );
 		btnRefreshDatabase = new JButton( "Refresh database" );
@@ -151,28 +148,27 @@ public class VideoMainFrame implements PropertyChangeListener {
 /* Lists */
 
 		videos = new JList( titleList );
-		videos.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-		videos.setLayoutOrientation( JList.VERTICAL );
-		JScrollPane scrollVideoPane = new JScrollPane( videos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		
 		genres = new JList( genreList );
-		genres.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-		genres.setLayoutOrientation( JList.VERTICAL );
-		JScrollPane scrollGenrePane = new JScrollPane( genres, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		
 		groups = new JList( groupList );
-		groups.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-		groups.setLayoutOrientation( JList.VERTICAL );
-		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		
 		episode_numbers = new JList( episodeList );
-		episode_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-		episode_numbers.setLayoutOrientation( JList.VERTICAL );
-		JScrollPane scrollSeriesPane = new JScrollPane( episode_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-				
 		season_numbers = new JList( seasonList );
+		
+		videos.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		genres.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		groups.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		episode_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 	  	season_numbers.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+		
+		videos.setLayoutOrientation( JList.VERTICAL );
+		genres.setLayoutOrientation( JList.VERTICAL );
+		groups.setLayoutOrientation( JList.VERTICAL );
+		episode_numbers.setLayoutOrientation( JList.VERTICAL );
 	  	season_numbers.setLayoutOrientation( JList.VERTICAL );
+
+		JScrollPane scrollVideoPane = new JScrollPane( videos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+		JScrollPane scrollGenrePane = new JScrollPane( genres, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+		JScrollPane scrollGroupPane = new JScrollPane( groups, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+		JScrollPane scrollSeriesPane = new JScrollPane( episode_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		JScrollPane scrollSeasonPane = new JScrollPane( season_numbers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		
 /* Check Boxes */	
@@ -183,7 +179,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 /* Progress Bar */
 		
 		progressBar = new JProgressBar();
-		
 		
 /* Add components to frame */
 
@@ -205,222 +200,351 @@ public class VideoMainFrame implements PropertyChangeListener {
 		frame.getContentPane().add( tvCB, "cell 6 0,alignx left,aligny bottom" );
 		frame.getContentPane().add( progressBar, "cell 2 0,growx,aligny center" );
 		
-		
 /* Actions */
 
-		videos.addListSelectionListener( new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e ) {
-				if ( videos.getSelectedIndex() > 0 )
-				{
-					btnPlay.setEnabled( true );
-				}
-				else
-				{
-					btnPlay.setEnabled( false );
-				}
-			}
-		});
-
-		genres.addListSelectionListener( new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e) {
-				if ( genres.getSelectedIndex() > 0 )
-				{
-					updateLists( genres.getSelectedValue().toString(), Finals.GENRE );
-				}
-			}
-		});
-
-		groups.addListSelectionListener( new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e ) {
-				if ( groups.getSelectedIndex() > 0 )
-				{	
-					updateLists( groups.getSelectedValue().toString(), Finals.GROUP );
-				}
-			}
-		});
-
-		episode_numbers.addListSelectionListener( new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e ) {
-				if ( episode_numbers.getSelectedIndex() > 0 )
-				{
-					updateLists( episode_numbers.getSelectedValue().toString(), Finals.EPISODE_N );
-				}
-			}
-		});
-
-		season_numbers.addListSelectionListener( new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e ) {
-				if ( season_numbers.getSelectedIndex() > 0 )
-				{
-					updateLists( season_numbers.getSelectedValue().toString(), Finals.SEASON_N );
-				}
-			}
-
-		});
-
-		movieCB.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-				typeSelector();
-			}
-		});
-
-		tvCB.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-				typeSelector();
-			}
-
-		});
+		videos.addListSelectionListener( new ListFilter( Types.ALL ) );
+		genres.addListSelectionListener( new ListFilter( Types.GENRE ) );
+		groups.addListSelectionListener( new ListFilter( Types.GROUP ) );
+		episode_numbers.addListSelectionListener( new ListFilter( Types.EPISODE ) );
+		season_numbers.addListSelectionListener( new ListFilter( Types.SEASON ) );
+		movieCB.addActionListener( new ActionEventHandler() );
+		tvCB.addActionListener( new ActionEventHandler() );
 
 		btnPlay.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
+			public void actionPerformed( ActionEvent e ) 
+			{
 				String chosen = videos.getSelectedValue().toString();
 				playAction( chosen );
 			}
 		});
 
 		btnRefresh.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-
+			public void actionPerformed( ActionEvent e ) 
+			{
+				System.out.println( "refresh click" );
 				updateAll();
-
 			}
-
 		});
+		
 		btnUpdateShow.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
+			public void actionPerformed( ActionEvent e ) 
+			{
+				System.out.println( "update a show click" );
+				if ( videos.getSelectedIndex() >= 0 )
+				{
+					ItemToUpdate item = new ItemToUpdate();
+					int i = videos.getSelectedIndex();
+					genresArray.clear();
+					groupsArray.clear();
+					episodesArray.clear();
+					seasonArray.clear();
+					for ( Video v : videoList )
+					{
+						if ( v.getID() == idArray.get( i ) )
+						{
+							item.setID( v.getID() );
+							item.setTitle( v.getTitle() );
+							item.setGenre( v.getGenre() );
+							item.setGroup( v.getGroup() );
+							item.setEpisode( v.getEpisodeN() );
+							item.setSeason( v.getSeasonN() );
+							item.setLocation( v.getLocation() );
+							item.setType( v.getType() );
+						}
+
+						if ( !genresArray.contains( v.getGenre() ) )
+						{
+							genresArray.add( v.getGenre() );
+						}
+						if ( !groupsArray.contains( v.getGroup() ))
+						{
+							groupsArray.add( v.getGroup() );
+						}
+						if ( !episodesArray.contains( v.getEpisodeN() ) )
+						{
+							episodesArray.add( v.getEpisodeN() );
+						}
+						if ( !seasonArray.contains( v.getSeasonN() ) )
+						{
+							seasonArray.add( v.getSeasonN() );				
+						}
+					}
+					sortString( genresArray );
+					sortString( groupsArray );
+					sortInteger( episodesArray );
+					sortInteger( seasonArray );
+					item.setGenreList( genresArray );
+					item.setGroupList( groupsArray );
+					item.setEpisodeList( episodesArray );
+					item.setSeasonList( seasonArray );
+
+					EditorWindow editor = new EditorWindow( item );
+					editor.setLocationRelativeTo( frame );
+					editor.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+					editor.setModalityType( Dialog.ModalityType.APPLICATION_MODAL );
+					editor.setVisible( true );
+				}
 			}
 		});
 
 		btnRefreshDatabase.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-				
+			public void actionPerformed( ActionEvent e ) 
+			{
+				System.out.println( "\nrefresh DB click" );
+				movieCB.setSelected( false );
+				tvCB.setSelected( false );
 				VideoProvider controller = new VideoProvider( Repos.MYSQL );
 				try
 				{
 					List<Video> data = controller.returnVideos();
-					
 					VideoProvider writer = new VideoProvider( Repos.XML );
-					
 					writer.writeVideos( data );
-					
 				}
 				catch ( Exception ex )
 				{
 					ex.printStackTrace();
 				}
-				
 				updateAll();
-				
 			}
 		});
-
 	}
 	
-	
-	private void typeSelector ()
+	private void updateAll() 
 	{
+		blockbuster.clear();
+		blockbuster.add( 0, videoList );
+		selections = 0;
+		System.out.println( "new full list" );
+		setLists( videoList, 0 );
+	}
+
+	private void typeSelector()
+	{
+		System.out.println( "type selector called");
 		if ( ( tvCB.isSelected() && movieCB.isSelected() ) || ( !tvCB.isSelected() && !movieCB.isSelected() ) )
 		{
 			updateAll();
 		}
 		else if ( !tvCB.isSelected() && movieCB.isSelected() )
 		{
-			updateLists( "movie", Finals.TYPE );
+			updateLists( "movie" , Types.TYPE );
 		}
 		else if ( tvCB.isSelected() && !movieCB.isSelected() )
 		{
-			updateLists( "tv", Finals.TYPE ); // Types.TV
+			updateLists( "tv" , Types.TYPE );
 		}
 		else
 		{
 			updateAll();
 		}
 	}
-
-
-	private void updateLists( String searchCat, String finalsValue ) 
+	
+	private void updateLists( String searchCat, Types type )
 	{
-		VideoProvider controller = new VideoProvider( Repos.XML );
-		try 
+		List<Video> getter = blockbuster.get( selections );
+		List<Video> tmpList = new ArrayList<Video>();
+		switch ( type )
 		{
-			videoList = controller.returnVideos( searchCat, finalsValue );
-		} catch ( Exception e1 ) {
-			e1.printStackTrace();
+			case TYPE:
+				for ( Video video : getter )
+				{
+					if( video.getType().equals( searchCat ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+				}
+				break;
+
+			case GENRE:
+				for ( Video video : getter )
+				{
+					if( video.getGenre().equals( searchCat ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+				}
+				break;
+
+			case GROUP:
+				for ( Video video : getter )
+				{
+					if( video.getGroup().equals( searchCat ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+				}
+				break;
+
+			case EPISODE:
+				for ( Video video : getter )
+				{
+					if( video.getEpisodeN() == Integer.parseInt( searchCat ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+				}
+				break;
+
+			case SEASON:
+				for ( Video video : getter )
+				{
+					if( video.getSeasonN() == Integer.parseInt( searchCat ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+				}
+				break;
+
+			default:
+				break;
 		}
+		
+		selections++;
+		blockbuster.add( selections, tmpList );
+		int bSize = blockbuster.size() - 1;
+		setLists( blockbuster.get( bSize ), 1 );
 	}
 	
-	private void updateAll()
+	private void setLists( List<Video> videos, int n  )
 	{
-		try
+		titleList.clear();
+		titleArray.clear();
+		idArray.clear();
+		locationList.clear();
+		genresArray.clear();
+		groupsArray.clear();
+		episodesArray.clear();
+		seasonArray.clear();
+		for( Video video : videos )
 		{
-			VideoProvider controller = new VideoProvider( Repos.XML );
-			videoList = controller.returnVideos();
-			update();			
-		}
-		catch ( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void update() 
-	{
-		try 
-		{
-			for( Video video : videoList )
+			idArray.add( video.getID() );
+			titleArray.add( video.getTitle() );
+			locationList.add( video.getLocation() );
+			
+			if ( !genresArray.contains( video.getGenre() ) )
 			{
-				titleList.addElement( video.getTitle() );
-				locationList.add( video.getLocation() );
+				genresArray.add( video.getGenre() );
+			}
+			if ( !groupsArray.contains( video.getGroup() ) )
+			{
+				groupsArray.add( video.getGroup() );
+			}
+			if ( !episodesArray.contains( video.getEpisodeN() ) )
+			{
+				episodesArray.add( video.getEpisodeN() );
+			}
+			if ( !seasonArray.contains( video.getSeasonN() ) )
+			{
+				seasonArray.add( video.getSeasonN() );				
+			}
+		}
+		
+		switch ( n )
+		{
+			case 1:
+				if ( genres.getSelectedValue() == null )
+				{
+					genreList.clear();
+					Collections.sort( genresArray );
+					for (String s : genresArray ) 
+					{
+						genreList.addElement( s );
+					}
+				}
+				if ( groups.getSelectedValue() == null )
+				{
+					groupList.clear();
+					Collections.sort( groupsArray );
+					for (String s : groupsArray ) 
+					{
+						groupList.addElement( s );
+					}
+				}
+				if ( episode_numbers.getSelectedValue() == null )
+				{
+					episodeList.clear();
+					Collections.sort( episodesArray );
+					for (Integer i : episodesArray ) 
+					{
+						episodeList.addElement( i );
+					}
+				}
+				if ( season_numbers.getSelectedValue() == null )
+				{
+					seasonList.clear();
+					Collections.sort( seasonArray );
+					for (Integer i : seasonArray ) 
+					{
+						seasonList.addElement( i );
+					}
+				}
+				break;
 				
-				if ( !genreArray.contains( video.getGenre() ) )
+			default:
+				genreList.clear();
+				sortString( genresArray );
+				for (String s : genresArray ) 
 				{
-					genreArray.add( video.getGenre() );
+					genreList.addElement( s );
 				}
-				
-				if ( !groupArray.contains( video.getGroup() ) )
+				groupList.clear();
+				sortString( groupsArray );
+				for (String s : groupsArray ) 
 				{
-					groupArray.add( video.getGroup() );
+					groupList.addElement( s );
 				}
-
-				if ( !episodeArray.contains( video.getEpisodeN() ) )
+				episodeList.clear();
+				sortInteger( episodesArray );
+				for (Integer i : episodesArray ) 
 				{
-					episodeArray.add( video.getEpisodeN() );
+					episodeList.addElement( i );
 				}
-
-				if ( !seasonArray.contains( video.getSeasonN() ) )
+				seasonList.clear();
+				sortInteger( seasonArray );
+				for (Integer i : seasonArray ) 
 				{
-					seasonArray.add( video.getSeasonN() );				
+					seasonList.addElement( i );
 				}
+				break;
+		}
 
-			}
-			
-			Collections.sort( genreArray );
-			for (String s : genreArray ) {
-				genreList.addElement( s );
-			}
-			
-			Collections.sort( groupArray );
-			for (String s : groupArray ) {
-				groupList.addElement( s );
-			}
-
-			Collections.sort( episodeArray );
-			for (Integer i : episodeArray ) {
-				episodeList.addElement( i );
-			}
-
-			Collections.sort( seasonArray );
-			for (Integer i : seasonArray ) {
-				seasonList.addElement( i );
-			}
-			
-		} catch ( Exception e1 ) {
-			e1.printStackTrace();
+		for ( String s : titleArray )
+		{
+			titleList.addElement( s );
 		}
 	}
 
+	private Video createTempVideoList( Video video )
+	{
+		Video v = new Video();
+		v.setID( video.getID() );
+		v.setType( video.getType() );
+		v.setLocation( video.getLocation() );
+		v.setGenre( video.getGenre() );
+		v.setGroup( video.getGroup() );
+		v.setEpisodeN( video.getEpisodeN() );
+		v.setSeasonN( video.getSeasonN() );
+		v.setTitle( video.getTitle() );
+		return v;
+	}
 	
+	private void sortString(List<String> list )
+	{
+		Collections.sort( list );
+		if ( list.get( 0 ).equals( "" ) )
+		{
+			list.remove( 0 );
+		}
+	}
 	
+	private void sortInteger(List<Integer> list )
+	{
+		Collections.sort( list );
+		if ( list.get( 0 ).equals( "" ) )
+		{
+			list.remove( 0 );
+		}
+	}
 	
 	/**
 	 * plays the movie after copying it to local directory.
@@ -436,9 +560,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 		
 		try
 		{
-			List<Video> videos = video.returnVideos( chosen, VideoProvider.TITLE );
+			videoList = video.returnVideos( chosen, VideoProvider.TITLE );
 
-			File copyFrom =  new File( videos.get( 0 ).getLocation() );
+			File copyFrom =  new File( videoList.get( 0 ).getLocation() );
 			
 			File copyTo = new File( "/Users/Alex/Desktop/" + copyFrom.getName() );
 		
@@ -459,12 +583,90 @@ public class VideoMainFrame implements PropertyChangeListener {
 		}
 	}
 
+	private void clearVideoSelection()
+	{
+		if ( videos.getSelectedIndex() >= 0 )
+			videos.clearSelection();
+	}
 	
-	/**
-	 * class for progress bar updating when copying files from network drive to local.
-	 * @author Alex
-	 *
-	 */
+	private class ListFilter implements ListSelectionListener
+	{
+		private Types type;
+
+		
+		ListFilter( Types type )
+		{
+			this.type = type;
+		}
+		
+		public void valueChanged( ListSelectionEvent e )
+		{
+			if ( e.getValueIsAdjusting() )
+				return;
+			
+			switch ( type )
+			{
+				case ALL:
+//					System.out.println( "Videos" );
+//					System.out.println( "selected video: " + videos.getSelectedIndex() );
+					if ( videos.getSelectedIndex() >= 0 )
+					{
+						btnPlay.setEnabled( true );
+						btnUpdateShow.setEnabled( true );					
+					}
+					else
+					{
+						btnPlay.setEnabled( false );
+						btnUpdateShow.setEnabled( false );
+					}
+					break;
+				
+				case GENRE:
+					clearVideoSelection();
+//					System.out.println( "Genre" );
+//					System.out.println( genres.getSelectedIndex() );
+					if ( genres.getSelectedIndex() >= 0 )
+						updateLists( genres.getSelectedValue().toString(), Types.GENRE );
+					break;
+					
+				case GROUP:
+					clearVideoSelection();
+//					System.out.println( "Group" );
+//					System.out.println( groups.getSelectedIndex() );
+					if ( groups.getSelectedIndex() >= 0 )
+						updateLists( groups.getSelectedValue().toString(), Types.GROUP );
+					break;
+					
+				case EPISODE:
+					clearVideoSelection();
+//					System.out.println( "Episode" );
+//					System.out.println( episode_numbers.getSelectedIndex() );
+					if ( episode_numbers.getSelectedIndex() >= 0 )
+						updateLists( episode_numbers.getSelectedValue().toString(), Types.EPISODE );
+					break;
+					
+				case SEASON:
+					clearVideoSelection();
+//					System.out.println( "Season" );
+//					System.out.println( season_numbers.getSelectedIndex() );
+					if ( season_numbers.getSelectedIndex() >= 0 )
+						updateLists( season_numbers.getSelectedValue().toString(), Types.SEASON );
+					break;
+					
+				default:
+					break;
+			}
+		}	
+	}
+	
+	private class ActionEventHandler implements ActionListener
+	{
+		public void actionPerformed( ActionEvent e )
+		{
+			typeSelector();
+		}
+	}
+	
 	class Task extends SwingWorker<Void, Void>
 	{
 
@@ -488,11 +690,11 @@ public class VideoMainFrame implements PropertyChangeListener {
 	        int bufferSize = 1024;
 	        byte[] buffer = new byte[ bufferSize ];
 
-			//Initialize progress property.
+			// Initialize progress property.
 			setProgress(0);
-            
 
-		    try {
+		    try 
+		    {
 		    	
 		        is = new FileInputStream( this.source );
 		        os = new FileOutputStream( this.dest );
@@ -506,7 +708,16 @@ public class VideoMainFrame implements PropertyChangeListener {
 		            	setProgress( Math.min( ( int ) percent , 100 ) );
 		            }
 		        }
-		    } finally {
+		    }
+		    catch ( Exception e )
+		    {
+		    	JOptionPane.showMessageDialog(frame,
+					    "Error moving the file " + source.toString() ,
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+		    }
+		    finally 
+		    {
 		        is.close();
 		        os.close();
 		        this.check = true;
@@ -526,8 +737,8 @@ public class VideoMainFrame implements PropertyChangeListener {
             btnPlay.setText( "PLAY" );
             setProgress( 0 );
             
-            if (Desktop.isDesktopSupported()) {
-    			
+            if (Desktop.isDesktopSupported()) 
+            {
     			try 
     			{
     		        Desktop.getDesktop().open( this.dest );
@@ -541,28 +752,19 @@ public class VideoMainFrame implements PropertyChangeListener {
     		    	System.err.println( "unable to open video" );
     		    }
     		}
-            
         }
 	}
-	
-	
+		
 	/**
-     * Invoked when task's progress property changes.
+     * Invoked when Task's progress property changes.
      */
-    public void propertyChange( PropertyChangeEvent evt ) {
-        if ( "progress" == evt.getPropertyName() ) {
+    public void propertyChange( PropertyChangeEvent evt ) 
+    {
+        if ( "progress" == evt.getPropertyName() ) 
+        {
             int progress = ( Integer ) evt.getNewValue();
             progressBar.setValue( progress );
         } 
     }
         	
-	private void errorPopup ( String file )
-	{
-		JOptionPane.showMessageDialog(frame,
-			    "Error moving the file" + file + ".",
-			    "Error",
-			    JOptionPane.ERROR_MESSAGE);
-	}
-
-	
 }
