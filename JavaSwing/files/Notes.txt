@@ -36,18 +36,32 @@ file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Merlin/Season%203/The%20Sorcerers%
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/Yoga/YOGA_FOR_ATHLETES_1.m4v
 file:///Volumes/2TB%20Drive/iTunes/TV%20Shows/CSI/Season%208/You%20Kill%20Me.m4v
 
-
+Pulls all the text details from each database and outputs strings:
 SELECT `m`.`id` AS `ID`, 
 `m`.`title` AS `Title`, 
 `m`.`path` AS `Path`, 
 `ge`.`genre` AS `Genre`, 
 `gr`.`group` AS `Group`, 
 `m`.`series_num` AS `Series Number`, 
+`m`.`tv_season` AS `TV Season`, 
 `t`.`genre` AS `Type` 
 FROM `main` AS `m` 
+LEFT JOIN `video_genres` AS `vge` 
+ON `m`.`id` = `vge`.`id` 
 LEFT JOIN `genres` AS `ge` 
-ON `m`.`genre` = `ge`.`id` 
+ON `vge`.`genre` = `ge`.`id` 
+LEFT JOIN `video_groups` AS `vgr` 
+ON `m`.`id` = `vgr`.`id` 
 LEFT JOIN `groups` AS `gr` 
-ON `m`.`group` = `gr`.`id` 
-LEFT JOIN `type` AS `t` 
+ON `vgr`.`group` = `gr`.`id` 
+JOIN `type` AS `t` 
 ON `m`.`type` = `t`.`id`;
+
+
+Make database `main` into more relational, so `main` contains only title, path and id, then new tables are called `video_genres`, `video_groups`, `video_episodes`, `video_seasons`
+which contain video id's and genre/group/episode/season id's
+
+INSERT INTO `video_genres` (`id`, `genres`) SELECT `id`, `genres` FROM `main`;
+INSERT INTO `video_groups` (`id`, `group`) SELECT `id`, `group` FROM `main`;
+
+work out how to get each additional genre or gorup into and out of xml.

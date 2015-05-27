@@ -21,16 +21,21 @@ public class MysqlVideoRepo implements IVideoRepo
 								+ "`m`.`path` AS `" + Finals.LOCATION + "`, "
 								+ "`ge`.`genre` AS `" + Finals.GENRE + "`, "
 								+ "`gr`.`group` AS `" + Finals.GROUP + "`, "
-								+ "`m`.`series_num` AS `" + Finals.SERIES_N + "`, "
+								+ "`m`.`series_num` AS `" + Finals.EPISODE_N + "`, "
 								+ "`m`.`tv_season` AS `" + Finals.SEASON_N + "`, "
 								+ "`t`.`genre` AS `" + Finals.TYPE + "` "
 								+ "FROM `main` AS `m` "
+								+ "LEFT JOIN `video_genres` AS `vge` "
+								+ "ON `m`.`id` = `vge`.`id` "
 								+ "LEFT JOIN `genres` AS `ge` "
-								+ "ON `m`.`genre` = `ge`.`id` "
+								+ "ON `vge`.`genre` = `ge`.`id` "
+								+ "LEFT JOIN `video_groups` AS `vgr` " 
+								+ "ON `m`.`id` = `vgr`.`id` "
 								+ "LEFT JOIN `groups` AS `gr` "
-								+ "ON `m`.`group` = `gr`.`id` "
-								+ "LEFT JOIN `type` AS `t` "
+								+ "ON `vgr`.`group` = `gr`.`id` " 
+								+ "JOIN `type` AS `t` "
 								+ "ON `m`.`type` = `t`.`id` ";
+	
 	
 	
 	public MysqlVideoRepo( MysqlConnect conn )
@@ -41,11 +46,8 @@ public class MysqlVideoRepo implements IVideoRepo
 	private List<Video> MapResultSet( ResultSet resultSet )
 	{
 		List<Video> list = new ArrayList<Video>();
-		
-		String t;
 		try
 		{
-			
 			while ( resultSet.next() )
 			{
 //				System.out.println( "Group " + resultSet.getString( Finals.GROUP ) );
@@ -67,9 +69,9 @@ public class MysqlVideoRepo implements IVideoRepo
 					video.setGroup( resultSet.getString( Finals.GROUP ) );
 				}
 				
-				if ( resultSet.getString( Finals.SERIES_N ) != null )
+				if ( resultSet.getString( Finals.EPISODE_N ) != null )
 				{
-					video.setEpisodeN( Integer.parseInt( resultSet.getString( Finals.SERIES_N ) ) );
+					video.setEpisodeN( Integer.parseInt( resultSet.getString( Finals.EPISODE_N ) ) );
 				}
 				
 				if ( resultSet.getString( Finals.SEASON_N ) != null )
