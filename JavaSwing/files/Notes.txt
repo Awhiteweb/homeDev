@@ -42,7 +42,7 @@ SELECT `m`.`id` AS `ID`,
 `m`.`path` AS `Path`, 
 `ge`.`genre` AS `Genre`, 
 `gr`.`group` AS `Group`, 
-`m`.`series_num` AS `Series Number`, 
+`m`.`series_num` AS `Episode Number`, 
 `m`.`tv_season` AS `TV Season`, 
 `t`.`genre` AS `Type` 
 FROM `main` AS `m` 
