@@ -1,6 +1,5 @@
 package local.video.constants;
 
-
 public enum Types
 {
 	ALL,

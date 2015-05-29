@@ -3,11 +3,9 @@ package local.video.app;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.TextField;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,19 +19,20 @@ import javax.swing.border.EmptyBorder;
 import local.video.model.ItemToUpdate;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.Font;
-
 
 public class EditorWindow extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField titleInput, genreInput, episodeInput, seasonInput, groupInput;
 	private JComboBox<Object> genreList, groupList;
-	private JLabel locationDisplay, lblTitle, lblGenres, lblEpisodes, lblSeasons, lblGroups, lblLocation;
+	private JLabel lblTitle, lblGenres, lblEpisodes, lblSeasons, lblGroups, lblLocation;
 	private JButton btnSave, btnCancel, btnPrevious, btnNext;
 	private ItemToUpdate item = new ItemToUpdate();
 	private String title, genre, group, location, episode, season;
-	private int id;
 	private String[] genres, groups, episodes, seasons;
 	private JTextArea textArea;
 	private JButton genreAddBtn;
