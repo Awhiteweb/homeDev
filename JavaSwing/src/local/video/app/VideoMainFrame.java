@@ -35,6 +35,11 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
+
 import local.dto.Video;
 import local.dto.VideoProvider;
 import local.models.top.Repos;
@@ -556,25 +561,25 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private void playAction ( String chosen )
 	{
 		
-		VideoProvider video = new VideoProvider( Repos.XML );
+//		VideoProvider video = new VideoProvider( Repos.XML );
 		
 		try
 		{
-			videoList = video.returnVideos( chosen, VideoProvider.TITLE );
+//			videoList = video.returnVideos( chosen, VideoProvider.TITLE );
 
 			File copyFrom =  new File( videoList.get( 0 ).getLocation() );
-			
+//			
 			File copyTo = new File( "/Users/Alex/Desktop/" + copyFrom.getName() );
-		
-			btnPlay.setEnabled( false );
-			progressBar.setStringPainted( true );
-			task = new Task();
-
-			task.source = copyFrom;
-			task.dest = copyTo;
-	        
-			task.addPropertyChangeListener( this );
-	        task.execute();
+					
+//			btnPlay.setEnabled( false );
+//			progressBar.setStringPainted( true );
+//			task = new Task();
+//
+//			task.source = copyFrom;
+//			task.dest = copyTo;
+//	        
+//			task.addPropertyChangeListener( this );
+//	        task.execute();
 	        
 		}
 		catch ( Exception e )
@@ -677,6 +682,65 @@ public class VideoMainFrame implements PropertyChangeListener {
 		@Override
 		protected Void doInBackground() throws Exception
 		{
+			FTPClient ftp = new FTPClient();
+			FTPClientConfig config = new FTPClientConfig();
+			ftp.configure( config );
+			boolean error = false;
+			try 
+			{
+				int reply;
+				ftp.connect("192.168.1.48");
+				ftp.login( "alex", "married" );
+				System.out.println("Connected");
+				System.out.print(ftp.getReplyString());
+//				FTPFile[] s = ftp.listFiles();
+//				for ( int i = 0; i < s.length; i++ )
+//				{
+//					System.out.println( s[i].toString() );
+//				}
+				ftp.changeWorkingDirectory( "Public/Shared Videos/Movies" );
+//				FTPFile[] f = ftp.listFiles();
+//				for ( int i = 0; i < f.length; i++ )
+//				{
+//					System.out.println( f[i].toString() );
+//				}
+
+				// After connection attempt, you should check the reply code to verify
+				// success.
+				reply = ftp.getReplyCode();
+
+				if( !FTPReply.isPositiveCompletion( reply ) )
+				{
+					ftp.disconnect();
+					System.err.println( "FTP server refused connection." );
+					System.exit(1);
+				}
+				// transfer files
+				ftp.logout();
+			} 
+			catch( IOException e )
+			{
+				error = true;
+				e.printStackTrace();
+			} 
+			finally 
+			{
+				if( ftp.isConnected() )
+				{
+					try 
+					{
+						ftp.disconnect();
+					} 
+					catch( IOException ioe )
+					{
+						// do nothing
+					}
+				}
+				System.exit( error ? 1 : 0 );
+			}
+
+			
+			
 			this.check = false;
 			InputStream is = null;
 		    OutputStream os = null;
