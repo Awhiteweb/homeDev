@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
@@ -37,7 +39,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import local.dto.Video;
@@ -567,19 +568,28 @@ public class VideoMainFrame implements PropertyChangeListener {
 		{
 //			videoList = video.returnVideos( chosen, VideoProvider.TITLE );
 
-			File copyFrom =  new File( videoList.get( 0 ).getLocation() );
-//			
-			File copyTo = new File( "/Users/Alex/Desktop/" + copyFrom.getName() );
+			String copyFrom =  videoList.get( 0 ).getLocation();
+			String copyTo;
+			Pattern p = Pattern.compile( "(?:.*\\/)(.*\\.\\w{3,4}$)" );
+			Matcher m = p.matcher( copyFrom );
+			if ( m.find() )
+			{
+				copyTo = "/Users/Alex/Desktop/" + m.group( 1 );
+			}
+			else
+			{
+				copyTo = "/Users/Alex/Desktop/";
+			}
 					
-//			btnPlay.setEnabled( false );
-//			progressBar.setStringPainted( true );
-//			task = new Task();
-//
-//			task.source = copyFrom;
-//			task.dest = copyTo;
-//	        
-//			task.addPropertyChangeListener( this );
-//	        task.execute();
+			btnPlay.setEnabled( false );
+			progressBar.setStringPainted( true );
+			task = new Task();
+
+			task.source = copyFrom;
+			task.dest = copyTo;
+	        
+			task.addPropertyChangeListener( this );
+	        task.execute();
 	        
 		}
 		catch ( Exception e )
@@ -675,8 +685,10 @@ public class VideoMainFrame implements PropertyChangeListener {
 	class Task extends SwingWorker<Void, Void>
 	{
 
-		public File source;
-		public File dest;
+//		public File source;
+//		public File dest;
+		public String source;
+		public String dest;
 		public boolean check;
 		
 		@Override
@@ -698,7 +710,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 //				{
 //					System.out.println( s[i].toString() );
 //				}
-				ftp.changeWorkingDirectory( "Public/Shared Videos/Movies" );
+				
+				ftp.rename( source, dest );
+				
 //				FTPFile[] f = ftp.listFiles();
 //				for ( int i = 0; i < f.length; i++ )
 //				{
@@ -736,56 +750,55 @@ public class VideoMainFrame implements PropertyChangeListener {
 						// do nothing
 					}
 				}
-				System.exit( error ? 1 : 0 );
 			}
 
 			
 			
-			this.check = false;
-			InputStream is = null;
-		    OutputStream os = null;
-
-		    btnPlay.setText( "Copying file" );
-			progressBar.setString( "Copying file" );
-
-			int progress = 0;
-			int length;
-	        int fileSize = ( int ) source.length();
-	        int bufferSize = 1024;
-	        byte[] buffer = new byte[ bufferSize ];
-
-			// Initialize progress property.
-			setProgress(0);
-
-		    try 
-		    {
-		    	
-		        is = new FileInputStream( this.source );
-		        os = new FileOutputStream( this.dest );
-		        
-		        while (( length = is.read( buffer ) ) > 0) {
-		            os.write( buffer, 0, length );
-		            progress += bufferSize;
-		            double percent = ( ( double ) progress / fileSize ) * 100;
-		            if ( ( int ) percent % 5 == 0 )
-		            {
-		            	setProgress( Math.min( ( int ) percent , 100 ) );
-		            }
-		        }
-		    }
-		    catch ( Exception e )
-		    {
-		    	JOptionPane.showMessageDialog(frame,
-					    "Error moving the file " + source.toString() ,
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-		    }
-		    finally 
-		    {
-		        is.close();
-		        os.close();
-		        this.check = true;
-		    }
+//			this.check = false;
+//			InputStream is = null;
+//		    OutputStream os = null;
+//
+//		    btnPlay.setText( "Copying file" );
+//			progressBar.setString( "Copying file" );
+//
+//			int progress = 0;
+//			int length;
+//	        int fileSize = ( int ) source.length();
+//	        int bufferSize = 1024;
+//	        byte[] buffer = new byte[ bufferSize ];
+//
+//			// Initialize progress property.
+//			setProgress(0);
+//
+//		    try 
+//		    {
+//		    	
+//		        is = new FileInputStream( this.source );
+//		        os = new FileOutputStream( this.dest );
+//		        
+//		        while (( length = is.read( buffer ) ) > 0) {
+//		            os.write( buffer, 0, length );
+//		            progress += bufferSize;
+//		            double percent = ( ( double ) progress / fileSize ) * 100;
+//		            if ( ( int ) percent % 5 == 0 )
+//		            {
+//		            	setProgress( Math.min( ( int ) percent , 100 ) );
+//		            }
+//		        }
+//		    }
+//		    catch ( Exception e )
+//		    {
+//		    	JOptionPane.showMessageDialog(frame,
+//					    "Error moving the file " + source.toString() ,
+//					    "Error",
+//					    JOptionPane.ERROR_MESSAGE);
+//		    }
+//		    finally 
+//		    {
+//		        is.close();
+//		        os.close();
+//		        this.check = true;
+//		    }
 
             return null;
 		}
@@ -805,7 +818,7 @@ public class VideoMainFrame implements PropertyChangeListener {
             {
     			try 
     			{
-    		        Desktop.getDesktop().open( this.dest );
+    		        Desktop.getDesktop().open( new File( this.dest ) );
     		    }
     			catch (IOException ex)
     			{
