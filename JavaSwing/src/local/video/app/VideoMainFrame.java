@@ -1,19 +1,14 @@
 package local.video.app;
 
+import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,17 +24,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
@@ -48,15 +38,19 @@ import local.video.constants.Types;
 import local.video.model.ItemToUpdate;
 import net.miginfocom.swing.MigLayout;
 
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPReply;
+
 @SuppressWarnings( { "rawtypes", "unchecked" } )
-public class VideoMainFrame implements PropertyChangeListener {
+public class VideoMainFrame
+{
 
 	private JFrame frame;
 	private JButton btnPlay, btnRefresh, btnUpdateShow, btnRefreshDatabase;
-	private JLabel lblTitle, lblGenre, lblGroup, lblSeriesNumber, lblSeasonNumber;
+	private JLabel lblTitle, lblGenre, lblGroup, lblSeriesNumber, lblSeasonNumber, lblCopying;
 	private JList videos, genres, groups, episode_numbers, season_numbers;
 	private JCheckBox movieCB, tvCB;
-	private JProgressBar progressBar;
 	private DefaultListModel<String> titleList, genreList, groupList;
 	private DefaultListModel<Integer> episodeList, seasonList;
 	private ArrayList<String> locationList, titleArray, genresArray, groupsArray;
@@ -65,6 +59,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private List<Video> videoList;
 	private List<List<Video>> blockbuster = new ArrayList<List<Video>>();
 	private int selections;
+	private Color fcolour, bcolour;
 	
 	/**
 	 * Launch the application.
@@ -118,9 +113,9 @@ public class VideoMainFrame implements PropertyChangeListener {
 	private void initialize() {
 		
 		frame = new JFrame();
-		frame.setBounds(150, 50, 1200, 800);
+		frame.setBounds(150, 0, 1100, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[400px:n,grow][20px][250px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][5px][30px][grow][30px][grow][30px]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[350px:n,grow][20px][150px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][5px][30px][grow][30px][grow][30px]"));
 		
 		try 
 		{
@@ -128,17 +123,21 @@ public class VideoMainFrame implements PropertyChangeListener {
 	    }
 		catch (IOException e) 
 		{
-	     System.out.println( "failed to load icon" );
+			System.out.println( "failed to load icon" );
 	    }
 	
 /* Labels */
 		
-		lblTitle = new JLabel("Select a show");
-		lblTitle.setVerticalAlignment(SwingConstants.TOP);
-		lblGenre = new JLabel("Genre");
-		lblGroup = new JLabel("Group");		
-		lblSeriesNumber = new JLabel("Episode Number");
-		lblSeasonNumber = new JLabel("Season Number");
+		lblTitle = new JLabel( "Select a show" );
+		lblTitle.setVerticalAlignment( SwingConstants.TOP );
+		lblGenre = new JLabel( "Genre" );
+		lblGroup = new JLabel( "Group" );		
+		lblSeriesNumber = new JLabel( "Episode Number" );
+		lblSeasonNumber = new JLabel( "Season Number" );
+		lblCopying = new JLabel( "Copying Video" );
+		fcolour = lblCopying.getForeground();
+		bcolour = lblCopying.getBackground();
+		lblCopying.setForeground( bcolour );
 
 /* Buttons */
 		
@@ -182,10 +181,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 		movieCB = new JCheckBox( "Movies" );
 		tvCB = new JCheckBox( "TV Shows" );
 		
-/* Progress Bar */
-		
-		progressBar = new JProgressBar();
-		
 /* Add components to frame */
 
 		frame.getContentPane().add( lblTitle, "cell 0 0,alignx left,aligny bottom" );
@@ -204,7 +199,7 @@ public class VideoMainFrame implements PropertyChangeListener {
 		frame.getContentPane().add( scrollSeasonPane, "cell 6 5,grow" );
 		frame.getContentPane().add( movieCB, "cell 4 0,alignx right,aligny bottom" );
 		frame.getContentPane().add( tvCB, "cell 6 0,alignx left,aligny bottom" );
-		frame.getContentPane().add( progressBar, "cell 2 0,growx,aligny center" );
+		frame.getContentPane().add( lblCopying, "cell 2 0,growx,aligny center" );
 		
 /* Actions */
 
@@ -561,13 +556,8 @@ public class VideoMainFrame implements PropertyChangeListener {
 	 */
 	private void playAction ( String chosen )
 	{
-		
-//		VideoProvider video = new VideoProvider( Repos.XML );
-		
 		try
 		{
-//			videoList = video.returnVideos( chosen, VideoProvider.TITLE );
-
 			String copyFrom =  videoList.get( 0 ).getLocation();
 			String copyTo;
 			Pattern p = Pattern.compile( "(?:.*\\/)(.*\\.\\w{3,4}$)" );
@@ -582,15 +572,11 @@ public class VideoMainFrame implements PropertyChangeListener {
 			}
 					
 			btnPlay.setEnabled( false );
-			progressBar.setStringPainted( true );
+			lblCopying.setForeground( fcolour );
 			task = new Task();
-
 			task.source = copyFrom;
 			task.dest = copyTo;
-	        
-			task.addPropertyChangeListener( this );
 	        task.execute();
-	        
 		}
 		catch ( Exception e )
 		{
@@ -684,9 +670,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 	
 	class Task extends SwingWorker<Void, Void>
 	{
-
-//		public File source;
-//		public File dest;
 		public String source;
 		public String dest;
 		public boolean check;
@@ -697,28 +680,16 @@ public class VideoMainFrame implements PropertyChangeListener {
 			FTPClient ftp = new FTPClient();
 			FTPClientConfig config = new FTPClientConfig();
 			ftp.configure( config );
-			boolean error = false;
 			try 
 			{
 				int reply;
-				ftp.connect("192.168.1.48");
+				ftp.connect( "192.168.1.48" );
 				ftp.login( "alex", "married" );
-				System.out.println("Connected");
-				System.out.print(ftp.getReplyString());
-//				FTPFile[] s = ftp.listFiles();
-//				for ( int i = 0; i < s.length; i++ )
-//				{
-//					System.out.println( s[i].toString() );
-//				}
+				System.out.println( "Connected" );
+				System.out.print( ftp.getReplyString() );
 				
-				ftp.rename( source, dest );
+//				ftp.rename( source, dest );
 				
-//				FTPFile[] f = ftp.listFiles();
-//				for ( int i = 0; i < f.length; i++ )
-//				{
-//					System.out.println( f[i].toString() );
-//				}
-
 				// After connection attempt, you should check the reply code to verify
 				// success.
 				reply = ftp.getReplyCode();
@@ -734,7 +705,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 			} 
 			catch( IOException e )
 			{
-				error = true;
 				e.printStackTrace();
 			} 
 			finally 
@@ -751,55 +721,6 @@ public class VideoMainFrame implements PropertyChangeListener {
 					}
 				}
 			}
-
-			
-			
-//			this.check = false;
-//			InputStream is = null;
-//		    OutputStream os = null;
-//
-//		    btnPlay.setText( "Copying file" );
-//			progressBar.setString( "Copying file" );
-//
-//			int progress = 0;
-//			int length;
-//	        int fileSize = ( int ) source.length();
-//	        int bufferSize = 1024;
-//	        byte[] buffer = new byte[ bufferSize ];
-//
-//			// Initialize progress property.
-//			setProgress(0);
-//
-//		    try 
-//		    {
-//		    	
-//		        is = new FileInputStream( this.source );
-//		        os = new FileOutputStream( this.dest );
-//		        
-//		        while (( length = is.read( buffer ) ) > 0) {
-//		            os.write( buffer, 0, length );
-//		            progress += bufferSize;
-//		            double percent = ( ( double ) progress / fileSize ) * 100;
-//		            if ( ( int ) percent % 5 == 0 )
-//		            {
-//		            	setProgress( Math.min( ( int ) percent , 100 ) );
-//		            }
-//		        }
-//		    }
-//		    catch ( Exception e )
-//		    {
-//		    	JOptionPane.showMessageDialog(frame,
-//					    "Error moving the file " + source.toString() ,
-//					    "Error",
-//					    JOptionPane.ERROR_MESSAGE);
-//		    }
-//		    finally 
-//		    {
-//		        is.close();
-//		        os.close();
-//		        this.check = true;
-//		    }
-
             return null;
 		}
 
@@ -809,39 +730,27 @@ public class VideoMainFrame implements PropertyChangeListener {
         @Override
         public void done() 
         {
-        	progressBar.setStringPainted( false );
+//        	progressBar.setStringPainted( false );
             btnPlay.setEnabled( true );
             btnPlay.setText( "PLAY" );
+            lblCopying.setForeground( bcolour );
             setProgress( 0 );
             
-            if (Desktop.isDesktopSupported()) 
+            if ( Desktop.isDesktopSupported() ) 
             {
     			try 
     			{
     		        Desktop.getDesktop().open( new File( this.dest ) );
     		    }
-    			catch (IOException ex)
+    			catch ( IOException ex )
     			{
-    				JOptionPane.showMessageDialog(frame,
+    				JOptionPane.showMessageDialog( frame,
     					    "Error opening video",
     					    "Error",
-    					    JOptionPane.ERROR_MESSAGE);
+    					    JOptionPane.ERROR_MESSAGE );
     		    	System.err.println( "unable to open video" );
     		    }
     		}
         }
 	}
-		
-	/**
-     * Invoked when Task's progress property changes.
-     */
-    public void propertyChange( PropertyChangeEvent evt ) 
-    {
-        if ( "progress" == evt.getPropertyName() ) 
-        {
-            int progress = ( Integer ) evt.getNewValue();
-            progressBar.setValue( progress );
-        } 
-    }
-        	
 }
