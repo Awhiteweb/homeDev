@@ -223,6 +223,8 @@ public class VideoMainFrame
 			public void actionPerformed( ActionEvent e ) 
 			{
 				System.out.println( "refresh click" );
+				VideoProvider controller = new VideoProvider( Repos.XML );
+				videoList = controller.returnVideos();
 				updateAll();
 			}
 		});
@@ -300,6 +302,7 @@ public class VideoMainFrame
 					List<Video> data = controller.returnVideos();
 					VideoProvider writer = new VideoProvider( Repos.XML );
 					writer.writeVideos( data );
+					videoList = data;
 				}
 				catch ( Exception ex )
 				{
@@ -340,6 +343,7 @@ public class VideoMainFrame
 		}
 	}
 	
+	// TODO update for better searching, make searchCat a String array and iterate over each one for video
 	private void updateLists( String searchCat, Types type )
 	{
 		List<Video> getter = blockbuster.get( selections );

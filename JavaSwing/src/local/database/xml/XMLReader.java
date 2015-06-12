@@ -106,10 +106,14 @@ public class XMLReader extends DefaultHandler
 			break;
 			
 		case VideoProvider.TITLE:
+			content = content.replace( "&amp;", "&" );
+			content = content.replace( "&apos;", "'" );
 			video.setTitle( content );
 			break;
 		
 		case VideoProvider.LOCATION:
+			content = content.replace( "&amp;", "&" );
+			content = content.replace( "&apos;", "'" );
 			video.setLocation( content );
 			break;			
 			
@@ -118,6 +122,8 @@ public class XMLReader extends DefaultHandler
 			{
 				this.check = true;
 			}
+			content = content.replace( "&amp;", "&" );
+			content = content.replace( "&apos;", "'" );
 			video.setGenre( content );
 			break;
 			
@@ -126,6 +132,8 @@ public class XMLReader extends DefaultHandler
 			{
 				this.check = true;
 			}
+			content = content.replace( "&amp;", "&" );
+			content = content.replace( "&apos;", "'" );
 			video.setGroup( content );
 			break;
 			
