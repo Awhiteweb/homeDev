@@ -413,6 +413,7 @@ public class VideoMainFrame
 		
 	private void setLists( List<Video> videos, int n  )
 	{
+		String[] split;
 		titleList.clear();
 		titleArray.clear();
 		idArray.clear();
@@ -426,20 +427,53 @@ public class VideoMainFrame
 			idArray.add( video.getID() );
 			titleArray.add( video.getTitle() );
 			locationList.add( video.getLocation() );
+
+			// checks for videos with multiple tags
+			if ( video.getGenre().contains( ";" ) )
+			{
+				split = video.getGenre().split( ";" );
+				for ( int i = 0; i < split.length; i++ )
+				{
+					if ( !genresArray.contains( split[i] ) )
+					{
+						genresArray.add( split[i] );
+					}
+				}
+			}
+			else
+			{
+				if ( !genresArray.contains( video.getGenre() ) )
+				{
+					genresArray.add( video.getGenre() );
+				}
+			}
+
+			// checks for videos with multiple tags
+			if ( video.getGroup().contains( ";" ) )
+			{
+				split = video.getGroup().split( ";" );
+				for ( int i = 0; i < split.length; i++ )
+				{
+					if ( !genresArray.contains( split[i] ) )
+					{
+						genresArray.add( split[i] );
+					}
+				}
+			}
+			else
+			{
+				if ( !groupsArray.contains( video.getGroup() ) )
+				{
+					groupsArray.add( video.getGroup() );
+				}
+			}
 			
-			if ( !genresArray.contains( video.getGenre() ) )
-			{
-				genresArray.add( video.getGenre() );
-			}
-			if ( !groupsArray.contains( video.getGroup() ) )
-			{
-				groupsArray.add( video.getGroup() );
-			}
-			if ( !episodesArray.contains( video.getEpisodeN() ) )
+			if ( !episodesArray.contains( video.getEpisodeN() ) && video.getEpisodeN() != 0 )
 			{
 				episodesArray.add( video.getEpisodeN() );
 			}
-			if ( !seasonArray.contains( video.getSeasonN() ) )
+			
+			if ( !seasonArray.contains( video.getSeasonN() ) && video.getSeasonN() != 0  )
 			{
 				seasonArray.add( video.getSeasonN() );				
 			}
