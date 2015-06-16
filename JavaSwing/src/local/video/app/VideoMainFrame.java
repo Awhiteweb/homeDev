@@ -36,6 +36,7 @@ import local.dto.VideoProvider;
 import local.models.top.Repos;
 import local.video.constants.Types;
 import local.video.model.ItemToUpdate;
+import local.video.model.Pair;
 import net.miginfocom.swing.MigLayout;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -56,9 +57,7 @@ public class VideoMainFrame
 	private ArrayList<String> locationList, titleArray, genresArray, groupsArray;
 	private ArrayList<Integer> episodesArray, seasonArray, idArray;
 	private Task task;
-	private List<Video> videoList;
-	private List<List<Video>> blockbuster = new ArrayList<List<Video>>();
-	private int selections;
+	private List<Video> videoList, updateList;
 	private Color fcolour, bcolour;
 	
 	/**
@@ -203,11 +202,11 @@ public class VideoMainFrame
 		
 /* Actions */
 
-		videos.addListSelectionListener( new ListFilter( Types.ALL ) );
-		genres.addListSelectionListener( new ListFilter( Types.GENRE ) );
-		groups.addListSelectionListener( new ListFilter( Types.GROUP ) );
-		episode_numbers.addListSelectionListener( new ListFilter( Types.EPISODE ) );
-		season_numbers.addListSelectionListener( new ListFilter( Types.SEASON ) );
+		videos.addListSelectionListener( new ListFilter() );
+		genres.addListSelectionListener( new ListFilter() );
+		groups.addListSelectionListener( new ListFilter() );
+		episode_numbers.addListSelectionListener( new ListFilter() );
+		season_numbers.addListSelectionListener( new ListFilter() );
 		movieCB.addActionListener( new ActionEventHandler() );
 		tvCB.addActionListener( new ActionEventHandler() );
 
@@ -222,9 +221,9 @@ public class VideoMainFrame
 		btnRefresh.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
-				System.out.println( "refresh click" );
-				VideoProvider controller = new VideoProvider( Repos.XML );
-				videoList = controller.returnVideos();
+//				System.out.println( "refresh click" );
+				movieCB.setSelected( false );
+				tvCB.setSelected( false );
 				updateAll();
 			}
 		});
@@ -232,7 +231,7 @@ public class VideoMainFrame
 		btnUpdateShow.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
-				System.out.println( "update a show click" );
+//				System.out.println( "update a show click" );
 				if ( videos.getSelectedIndex() >= 0 )
 				{
 					ItemToUpdate item = new ItemToUpdate();
@@ -293,7 +292,7 @@ public class VideoMainFrame
 		btnRefreshDatabase.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
-				System.out.println( "\nrefresh DB click" );
+//				System.out.println( "\nrefresh DB click" );
 				movieCB.setSelected( false );
 				tvCB.setSelected( false );
 				VideoProvider controller = new VideoProvider( Repos.MYSQL );
@@ -302,7 +301,6 @@ public class VideoMainFrame
 					List<Video> data = controller.returnVideos();
 					VideoProvider writer = new VideoProvider( Repos.XML );
 					writer.writeVideos( data );
-					videoList = data;
 				}
 				catch ( Exception ex )
 				{
@@ -315,101 +313,104 @@ public class VideoMainFrame
 	
 	private void updateAll() 
 	{
-		blockbuster.clear();
-		blockbuster.add( 0, videoList );
-		selections = 0;
-		System.out.println( "new full list" );
+//		System.out.println( "new full list" );
 		setLists( videoList, 0 );
 	}
 
-	private void typeSelector()
+	private void updateLists()
 	{
-		System.out.println( "type selector called");
+		updateList = new ArrayList<Video>();
+		List<Pair> pair = new ArrayList<Pair>();
+
 		if ( ( tvCB.isSelected() && movieCB.isSelected() ) || ( !tvCB.isSelected() && !movieCB.isSelected() ) )
 		{
-			updateAll();
+			Pair m = new Pair( Types.TYPE, "movie");
+			Pair t = new Pair( Types.TYPE, "tv" );
+			if ( pair.contains( m ) )
+					pair.remove( m );
+			if ( pair.contains( t ) )
+				pair.remove( t );
 		}
-		else if ( !tvCB.isSelected() && movieCB.isSelected() )
-		{
-			updateLists( "movie" , Types.TYPE );
-		}
-		else if ( tvCB.isSelected() && !movieCB.isSelected() )
-		{
-			updateLists( "tv" , Types.TYPE );
-		}
-		else
-		{
-			updateAll();
-		}
-	}
-	
-	// TODO update for better searching, make searchCat a String array and iterate over each one for video
-	private void updateLists( String searchCat, Types type )
-	{
-		List<Video> getter = blockbuster.get( selections );
-		List<Video> tmpList = new ArrayList<Video>();
-		switch ( type )
-		{
-			case TYPE:
-				for ( Video video : getter )
-				{
-					if( video.getType().equals( searchCat ) )
-					{
-						tmpList.add( createTempVideoList( video ) );
-					}
-				}
-				break;
 
-			case GENRE:
-				for ( Video video : getter )
-				{
-					if( video.getGenre().equals( searchCat ) )
-					{
-						tmpList.add( createTempVideoList( video ) );
-					}
-				}
-				break;
+		if ( !tvCB.isSelected() && movieCB.isSelected() )
+			pair.add( new Pair( Types.TYPE, "movie" ) );
 
-			case GROUP:
-				for ( Video video : getter )
-				{
-					if( video.getGroup().equals( searchCat ) )
-					{
-						tmpList.add( createTempVideoList( video ) );
-					}
-				}
-				break;
+		if ( tvCB.isSelected() && !movieCB.isSelected() )
+			pair.add( new Pair( Types.TYPE, "tv" ) );
 
-			case EPISODE:
-				for ( Video video : getter )
-				{
-					if( video.getEpisodeN() == Integer.parseInt( searchCat ) )
-					{
-						tmpList.add( createTempVideoList( video ) );
-					}
-				}
-				break;
-
-			case SEASON:
-				for ( Video video : getter )
-				{
-					if( video.getSeasonN() == Integer.parseInt( searchCat ) )
-					{
-						tmpList.add( createTempVideoList( video ) );
-					}
-				}
-				break;
-
-			default:
-				break;
-		}
+		if ( genres.getSelectedIndex() >= 0 )				
+			pair.add( new Pair( Types.GENRE, genres.getSelectedValue().toString() ) );
 		
-		selections++;
-		blockbuster.add( selections, tmpList );
-		int bSize = blockbuster.size() - 1;
-		setLists( blockbuster.get( bSize ), 1 );
+		if ( groups.getSelectedIndex() >= 0 )
+			pair.add( new Pair( Types.GROUP, groups.getSelectedValue().toString() ) );
+
+		if ( episode_numbers.getSelectedIndex() >= 0 )
+			pair.add( new Pair( Types.EPISODE, episode_numbers.getSelectedValue().toString() ) );
+
+		if ( season_numbers.getSelectedIndex() >= 0 )
+			pair.add( new Pair( Types.SEASON, season_numbers.getSelectedValue().toString() ) );
+		
+		createTmpList( videoList, pair, pair.size() );
+		setLists( updateList, 1 );
 	}
 	
+	private void createTmpList ( List<Video> videos, List<Pair> pairs, int run )
+	{
+		if ( run < 1 )
+		{
+			updateList = videos;
+			return;
+		}
+		run--;
+		List<Video> tmpList = new ArrayList<Video>();
+		Types type = pairs.get( run ).getType();
+		String name = pairs.get( run ).getName();
+		for ( Video video : videos )
+		{		
+			switch ( type )
+			{
+				case TYPE:
+					if( video.getType().equals( name ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+					break;
+
+				case GENRE:
+					if( video.getGenre().equals( name ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+					break;
+
+				case GROUP:
+					if( video.getGroup().equals( name ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+					break;
+
+				case EPISODE:
+					if( video.getEpisodeN() == Integer.parseInt( name ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+					break;
+
+				case SEASON:
+					if( video.getSeasonN() == Integer.parseInt( name ) )
+					{
+						tmpList.add( createTempVideoList( video ) );
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+		createTmpList( tmpList, pairs, run );
+	}
+		
 	private void setLists( List<Video> videos, int n  )
 	{
 		titleList.clear();
@@ -588,79 +589,15 @@ public class VideoMainFrame
 		}
 	}
 
-	private void clearVideoSelection()
-	{
-		if ( videos.getSelectedIndex() >= 0 )
-			videos.clearSelection();
-	}
-	
 	private class ListFilter implements ListSelectionListener
 	{
-		private Types type;
-
-		
-		ListFilter( Types type )
-		{
-			this.type = type;
-		}
 		
 		public void valueChanged( ListSelectionEvent e )
 		{
 			if ( e.getValueIsAdjusting() )
 				return;
 			
-			switch ( type )
-			{
-				case ALL:
-//					System.out.println( "Videos" );
-//					System.out.println( "selected video: " + videos.getSelectedIndex() );
-					if ( videos.getSelectedIndex() >= 0 )
-					{
-						btnPlay.setEnabled( true );
-						btnUpdateShow.setEnabled( true );					
-					}
-					else
-					{
-						btnPlay.setEnabled( false );
-						btnUpdateShow.setEnabled( false );
-					}
-					break;
-				
-				case GENRE:
-					clearVideoSelection();
-//					System.out.println( "Genre" );
-//					System.out.println( genres.getSelectedIndex() );
-					if ( genres.getSelectedIndex() >= 0 )
-						updateLists( genres.getSelectedValue().toString(), Types.GENRE );
-					break;
-					
-				case GROUP:
-					clearVideoSelection();
-//					System.out.println( "Group" );
-//					System.out.println( groups.getSelectedIndex() );
-					if ( groups.getSelectedIndex() >= 0 )
-						updateLists( groups.getSelectedValue().toString(), Types.GROUP );
-					break;
-					
-				case EPISODE:
-					clearVideoSelection();
-//					System.out.println( "Episode" );
-//					System.out.println( episode_numbers.getSelectedIndex() );
-					if ( episode_numbers.getSelectedIndex() >= 0 )
-						updateLists( episode_numbers.getSelectedValue().toString(), Types.EPISODE );
-					break;
-					
-				case SEASON:
-					clearVideoSelection();
-//					System.out.println( "Season" );
-//					System.out.println( season_numbers.getSelectedIndex() );
-					if ( season_numbers.getSelectedIndex() >= 0 )
-						updateLists( season_numbers.getSelectedValue().toString(), Types.SEASON );
-					break;
-					
-				default:
-					break;
-			}
+			updateLists();
 		}	
 	}
 	
@@ -668,7 +605,7 @@ public class VideoMainFrame
 	{
 		public void actionPerformed( ActionEvent e )
 		{
-			typeSelector();
+			updateLists();
 		}
 	}
 	
