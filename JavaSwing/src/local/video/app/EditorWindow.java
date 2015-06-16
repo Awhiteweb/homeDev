@@ -16,6 +16,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import local.dto.Video;
+import local.dto.VideoProvider;
+import local.models.top.Repos;
 import local.video.model.ItemToUpdate;
 import net.miginfocom.swing.MigLayout;
 
@@ -62,6 +65,7 @@ public class EditorWindow extends JDialog {
 	 */
 	public EditorWindow( ItemToUpdate item )
 	{
+		System.out.println( item.getID() );
 		this.item = item;
 		loadsvalues();
 		setSize(600, 400);
@@ -228,7 +232,7 @@ public class EditorWindow extends JDialog {
 					{}
 					else
 					{
-						s = s + ", " + t;
+						s = s + ";" + t;
 						genreInput.setText( s );
 					}
 					
@@ -246,7 +250,7 @@ public class EditorWindow extends JDialog {
 					}
 					else if ( !s.contains( t ) )
 					{
-						s = s + ", " + t;
+						s = s + ";" + t;
 					}
 					else
 					{
@@ -268,31 +272,50 @@ public class EditorWindow extends JDialog {
 		public void actionPerformed( ActionEvent e )
 		{
 			String command = e.getActionCommand();
-			System.out.println( command );
+//			System.out.println( command );
 			
 			if ( command.equals( "Cancel" ) )
 			{
-				System.out.println( "cancel update" );
+//				System.out.println( "cancel update" );
 				dispose();
 			}
 			else if ( command.equals( "Save & Close" ) )
 			{
-				System.out.println( "save and close update" );
+//				System.out.println( "save and close update" );
+				System.out.println( titleInput.getText() );
+				System.out.println( genreInput.getText() );
+				System.out.println( groupInput.getText() );
+				System.out.println( episodeInput.getText() );
+				System.out.println( seasonInput.getText() );
 				dispose();
 			}
 			else if ( command.equals( "Save & Next" ) )
 			{
-				System.out.println( "save & next update" );
+//				System.out.println( "save & next update" );
 			}
 			else if ( command.equals( "Save & Previous" ) )
 			{
-				System.out.println( "save & previous update" );
+//				System.out.println( "save & previous update" );
 			}
 			else
 			{
-				System.out.println( "some other bottom bar button" );
+//				System.out.println( "some other bottom bar button" );
 			}
 		}
 	}
 
+	private void updateVideo()
+	{
+		VideoProvider controller = new VideoProvider( Repos.MYSQL );
+		Video video = new Video();
+		video.setID( item.getID() );
+		video.setType( item.getType() );
+		video.setTitle( titleInput.getText() );
+		video.setGenre( genreInput.getText() );
+		video.setGroup( groupInput.getText() );
+		video.setEpisodeN( Integer.parseInt( episodeInput.getText() ) );
+		video.setSeasonN( Integer.parseInt( seasonInput.getText() ) );
+		if ( !controller.updateVideo( video ) )
+			System.err.println( "failed to update video " + item.getID());
+	}
 }

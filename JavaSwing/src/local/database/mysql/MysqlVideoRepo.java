@@ -175,6 +175,112 @@ public class MysqlVideoRepo implements IVideoRepo
 //			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public boolean updateVideo( Video video )
+	{
+		Video old = getVideoByID( video.getID() );
+		ArrayList<String> updates = new ArrayList<String>();
+		
+		if ( !old.getTitle().equals( video.getTitle() ) )
+		{
+			updates.add( "UPDATE `main` SET `title` = `" + video.getTitle() + "` WHERE `id` = " + video.getID() );
+		}
+		if ( !old.getGenre().equals( video.getGenre() ) )
+		{
+			String[] genres = video.getGenre().split( ";" );
+			List<ResultList> dbGenres = getGenres();
+			for ( int i = 0; i < genres.length; i++ )
+			{
+				boolean exists = false;
+				for ( ResultList rl : dbGenres )
+				{
+					if (rl.equals( genres[i] ) )
+					{
+						exists = true;
+						break;
+					}
+				}
+				if ( !exists )
+				{
+					updates.add( "UPDATE `genres` SET `genre` = " + genres[i] );
+					// select from genres to get id, to update video_genres
+				}
+			}
+		}
+		if ( !old.getGroup().equals( video.getGroup() ) )
+		{
+			updates.add( "UPDATE `video_groups` SET `" );
+		}
+		if ( old.getEpisodeN() != video.getEpisodeN() )
+		{
+			updates.add( "UPDATE `main` SET `series_num` = `" + video.getEpisodeN() + "` WHERE `id` = " + video.getID() );
+		}
+		if ( old.getSeasonN() != video.getSeasonN() )
+		{
+			updates.add( "UPDATE `main` SET `tv_season` = `" + video.getSeasonN() + "` WHERE `id` = " + video.getID() );
+		}
+
+		
+		
+		
+//		String updateTitle = "UPDATE `main` SET `" + Finals.TITLE + "` = `" + title + "` WHERE `" + Finals.ID + "` = " + id ;
+//		String updateGenre = "";
+		return true;
+	}
 
 
+	private List<ResultList> getGenres()
+	{
+		List<ResultList> genres = new ArrayList<ResultList>();
+		try
+		{
+			ResultSet result = this.conn.query( "SELECT video_genres.id, video_genres.genre AS genreID, genres.genre FROM video_genres JOIN genres ON video_genres.genre = genres.id" );
+			while ( result.next() )
+			{
+				genres.add( new ResultList( result.getString( "id" ), result.getString( "genreID" ), result.getString( "genre" ) ) );
+			}
+		}
+		catch ( SQLException e )
+		{
+			System.err.println( "failed to get genres from database" );
+		}
+		
+		return genres;
+	}
+
+	private List<String> getGroups()
+	{
+		List<String> groups = new ArrayList<String>();
+		return groups;
+	}
+
+	private class ResultList
+	{
+		private int videoID;
+		private int gID;
+		private String g;
+		
+		public ResultList( String videoID, String gID, String g )
+		{
+			this.videoID = Integer.parseInt( g );
+			this.gID = Integer.parseInt( gID );
+			this.g = g;
+		}
+		
+		public int getVideoID()
+		{
+			return videoID;
+		}
+		
+		public int getGID()
+		{
+			return gID;
+		}
+		
+		public String getG()
+		{
+			return g;
+		}
+	}
 }
