@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
+import local.models.top.Finals;
 
 public class XMLWriter {
 
@@ -45,38 +46,37 @@ public class XMLWriter {
 		for (Video video : data) 
 		{
 			writer.writeStartElement( "video" );
-			writer.writeAttribute( VideoProvider.ID , Integer.toString(video.getID()) );
+			writer.writeAttribute( Finals.ID , Integer.toString(video.getID()) );
 			
-			writer.writeStartElement( VideoProvider.TYPE );
+			writer.writeStartElement( Finals.TYPE );
 			writer.writeCharacters( video.getType() );
 			writer.writeEndElement();
 
-			writer.writeStartElement( VideoProvider.TITLE );
+			writer.writeStartElement( Finals.TITLE );
 			writer.writeCharacters( video.getTitle() );
 			writer.writeEndElement();
 			
-			writer.writeStartElement( VideoProvider.LOCATION );
+			writer.writeStartElement( Finals.LOCATION );
 			writer.writeCharacters( video.getLocation() );
 			writer.writeEndElement();
 			
-			writer.writeStartElement( VideoProvider.GENRE );
+			writer.writeStartElement( Finals.GENRE );
 			writer.writeCharacters( video.getGenre() );
 			writer.writeEndElement();
 			
-			writer.writeStartElement( VideoProvider.GROUP );
+			writer.writeStartElement( Finals.GROUP );
 			writer.writeCharacters( video.getGroup() );
 			writer.writeEndElement();
 			
-			writer.writeStartElement( VideoProvider.EPISODE_N );
+			writer.writeStartElement( Finals.EPISODE_N );
 			writer.writeCharacters( Integer.toString( video.getEpisodeN() ) );
 			writer.writeEndElement();
 
-			writer.writeStartElement( VideoProvider.SEASON_N );
+			writer.writeStartElement( Finals.SEASON_N );
 			writer.writeCharacters( Integer.toString( video.getSeasonN() ) );
 			writer.writeEndElement();
 
 			writer.writeEndElement();
-	
 		}
 	}
 	

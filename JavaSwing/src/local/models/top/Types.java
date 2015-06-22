@@ -1,5 +1,4 @@
-package local.video.constants;
-
+package local.models.top;
 
 public enum Types
 {

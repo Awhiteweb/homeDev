@@ -1,5 +1,11 @@
 package local.models.top;
 
+/**
+ * Stores string values for creating and reading the xml file and database
+ * 
+ * @author Alex.White
+ *
+ */
 public class Finals
 {
 	public static final String ID = "id",

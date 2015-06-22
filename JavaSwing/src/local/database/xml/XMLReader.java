@@ -97,28 +97,28 @@ public class XMLReader extends DefaultHandler
 		
 		switch ( currentElement )
 		{
-		case VideoProvider.TYPE:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.TYPE.equalsIgnoreCase( this.searchCat ) )
+		case Finals.TYPE:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && Finals.TYPE.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}
 			video.setType( content );
 			break;
 			
-		case VideoProvider.TITLE:
+		case Finals.TITLE:
 			content = content.replace( "&amp;", "&" );
 			content = content.replace( "&apos;", "'" );
 			video.setTitle( content );
 			break;
 		
-		case VideoProvider.LOCATION:
+		case Finals.LOCATION:
 			content = content.replace( "&amp;", "&" );
 			content = content.replace( "&apos;", "'" );
 			video.setLocation( content );
 			break;			
 			
-		case VideoProvider.GENRE:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.GENRE.equalsIgnoreCase( this.searchCat ) )
+		case Finals.GENRE:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && Finals.GENRE.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}
@@ -127,8 +127,8 @@ public class XMLReader extends DefaultHandler
 			video.setGenre( content );
 			break;
 			
-		case VideoProvider.GROUP:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.GROUP.equalsIgnoreCase( this.searchCat ) )
+		case Finals.GROUP:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && Finals.GROUP.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}
@@ -137,16 +137,16 @@ public class XMLReader extends DefaultHandler
 			video.setGroup( content );
 			break;
 			
-		case VideoProvider.EPISODE_N:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.EPISODE_N.equalsIgnoreCase( this.searchCat ) )
+		case Finals.EPISODE_N:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && Finals.EPISODE_N.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}
 			video.setEpisodeN( Integer.parseInt( content ) );
 			break;
 			
-		case VideoProvider.SEASON_N:
-			if ( content.equalsIgnoreCase( this.searchTitle ) && VideoProvider.SEASON_N.equalsIgnoreCase( this.searchCat ) )
+		case Finals.SEASON_N:
+			if ( content.equalsIgnoreCase( this.searchTitle ) && Finals.SEASON_N.equalsIgnoreCase( this.searchCat ) )
 			{
 				this.check = true;
 			}

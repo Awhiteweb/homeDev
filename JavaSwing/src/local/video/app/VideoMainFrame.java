@@ -33,8 +33,9 @@ import javax.swing.event.ListSelectionListener;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
+import local.models.top.CoreData;
 import local.models.top.Repos;
-import local.video.constants.Types;
+import local.models.top.Types;
 import local.video.model.ItemToUpdate;
 import local.video.model.Pair;
 import net.miginfocom.swing.MigLayout;
@@ -66,6 +67,8 @@ public class VideoMainFrame
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				CoreData loadUserData = new CoreData();
+				loadUserData.loadUser();
 				try {
 					VideoMainFrame window = new VideoMainFrame();
 					window.frame.setVisible(true);
@@ -115,15 +118,6 @@ public class VideoMainFrame
 		frame.setBounds(150, 0, 1100, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new MigLayout("", "[350px:n,grow][20px][150px:n,grow][20px][150px:n,grow][20px][100px:n:250px,grow]", "[30px][5px][30px][grow][30px][grow][30px]"));
-		
-		try 
-		{
-	        frame.setIconImage(ImageIO.read(new File("files/icon.png")));
-	    }
-		catch (IOException e) 
-		{
-			System.out.println( "failed to load icon" );
-	    }
 	
 /* Labels */
 		
@@ -224,6 +218,8 @@ public class VideoMainFrame
 //				System.out.println( "refresh click" );
 				movieCB.setSelected( false );
 				tvCB.setSelected( false );
+				btnPlay.setEnabled( false );
+				btnUpdateShow.setEnabled( false );
 				updateAll();
 			}
 		});
@@ -292,9 +288,11 @@ public class VideoMainFrame
 		btnRefreshDatabase.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) 
 			{
-//				System.out.println( "\nrefresh DB click" );
+				System.out.println( "refresh DB click" );
 				movieCB.setSelected( false );
 				tvCB.setSelected( false );
+				btnPlay.setEnabled( false );
+				btnUpdateShow.setEnabled( false );
 				VideoProvider controller = new VideoProvider( Repos.MYSQL );
 				try
 				{
@@ -319,6 +317,13 @@ public class VideoMainFrame
 
 	private void updateLists()
 	{
+		if ( videos.getSelectedIndex() >= 0 )
+		{
+			btnPlay.setEnabled( true );
+			btnUpdateShow.setEnabled( true );
+			return;
+		}
+		
 		updateList = new ArrayList<Video>();
 		List<Pair> pair = new ArrayList<Pair>();
 
@@ -377,14 +382,14 @@ public class VideoMainFrame
 					break;
 
 				case GENRE:
-					if( video.getGenre().equals( name ) )
+					if( video.getGenre().contains( name ) )
 					{
 						tmpList.add( createTempVideoList( video ) );
 					}
 					break;
 
 				case GROUP:
-					if( video.getGroup().equals( name ) )
+					if( video.getGroup().contains( name ) )
 					{
 						tmpList.add( createTempVideoList( video ) );
 					}
@@ -429,9 +434,9 @@ public class VideoMainFrame
 			locationList.add( video.getLocation() );
 
 			// checks for videos with multiple tags
-			if ( video.getGenre().contains( ";" ) )
+			if ( video.getGenre().contains( "," ) )
 			{
-				split = video.getGenre().split( ";" );
+				split = video.getGenre().split( "," );
 				for ( int i = 0; i < split.length; i++ )
 				{
 					if ( !genresArray.contains( split[i] ) )
@@ -449,14 +454,14 @@ public class VideoMainFrame
 			}
 
 			// checks for videos with multiple tags
-			if ( video.getGroup().contains( ";" ) )
+			if ( video.getGroup().contains( "," ) )
 			{
-				split = video.getGroup().split( ";" );
+				split = video.getGroup().split( "," );
 				for ( int i = 0; i < split.length; i++ )
 				{
-					if ( !genresArray.contains( split[i] ) )
+					if ( !groupsArray.contains( split[i] ) )
 					{
-						genresArray.add( split[i] );
+						groupsArray.add( split[i] );
 					}
 				}
 			}

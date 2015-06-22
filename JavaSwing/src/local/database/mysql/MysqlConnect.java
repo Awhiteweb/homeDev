@@ -6,25 +6,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import local.models.top.CoreData;
 
+/*
+ * creates a single connection to a mysql database
+ */
 public class MysqlConnect
 {
-	private static final String USERNAME = "root",
-								PASSWORD = "",
-							 CONN_STRING = "jdbc:mysql://localhost/movie_db";
-	
 	private static Connection conn;
 	private static PreparedStatement preparedStatement = null;
 	private static ResultSet resultSet = null;
-	
 	private static MysqlConnect __me = null;
 	
 	public MysqlConnect()
 	{
 		try
 		{
-			conn = DriverManager.getConnection( CONN_STRING, USERNAME, PASSWORD );
-
+			conn = DriverManager.getConnection( CoreData.CONN_STRING, CoreData.USERNAME, CoreData.PASSWORD );
 //			System.out.println( "connected" );	
 		}
 		catch (SQLException e)
@@ -33,41 +31,44 @@ public class MysqlConnect
 		}
 	}
 
+	/**
+	 * NOT for XML
+	 * 
+	 * sends a mysql database query and gets a ResultSet back
+	 * 
+	 * @param query
+	 * @return ResultSet
+	 * @throws SQLException
+	 */
 	public ResultSet query( String query ) throws SQLException
 	{
-		
-//		String stmt = "SELECT `m`.`id` AS `ID`, "
-//				+ "`m`.`title` AS `Title`, "
-//				+ "`m`.`path` AS `Path`, "
-//				+ "`ge`.`genre` AS `Genre`, "
-//				+ "`gr`.`group` AS `Group`, "
-//				+ "`m`.`series_num` AS `Series Number`, "
-//				+ "`t`.`genre` AS `Type` "
-//				+ "FROM `main` AS `m` "
-//				+ "LEFT JOIN `genres` AS `ge` "
-//				+ "ON `m`.`genre` = `ge`.`id` "
-//				+ "LEFT JOIN `groups` AS `gr` "
-//				+ "ON `m`.`group` = `gr`.`id` "
-//				+ "LEFT JOIN `type` AS `t` "
-//				+ "ON `m`.`type` = `t`.`id` "
-//				+ "WHERE `m`.`type` = 1"
-//				+ "LIMIT 20;";
-		
 		preparedStatement = conn.prepareStatement( query );
 		resultSet = preparedStatement.executeQuery();
-		
-		
 		return resultSet;
 	}
 	
-	public int update( String statement ) throws SQLException
+	/**
+	 * NOT for XML
+	 * 
+	 * sends string statement to mysql database to update.
+	 * 
+	 * @param statement
+	 * @throws SQLException
+	 */
+	public void update( String statement ) throws SQLException
 	{
 		preparedStatement = conn.prepareStatement( statement );
-		return preparedStatement.executeUpdate();
+		if ( preparedStatement.executeUpdate() < 1 )
+		{
+			System.err.println( "nothing updated from statement:\n\t" + statement );
+		}
+		
 	}
 	
 	/**
 	 * creates a single connection to mysql database
+	 * if a connection already exists that connection is returned
+	 * @return Connection
 	 */
 	public static Connection connect()
 	{

@@ -232,7 +232,7 @@ public class EditorWindow extends JDialog {
 					{}
 					else
 					{
-						s = s + ";" + t;
+						s = s + "," + t;
 						genreInput.setText( s );
 					}
 					
@@ -250,7 +250,7 @@ public class EditorWindow extends JDialog {
 					}
 					else if ( !s.contains( t ) )
 					{
-						s = s + ";" + t;
+						s = s + "," + t;
 					}
 					else
 					{
@@ -287,6 +287,7 @@ public class EditorWindow extends JDialog {
 				System.out.println( groupInput.getText() );
 				System.out.println( episodeInput.getText() );
 				System.out.println( seasonInput.getText() );
+				updateVideo();
 				dispose();
 			}
 			else if ( command.equals( "Save & Next" ) )
@@ -318,4 +319,5 @@ public class EditorWindow extends JDialog {
 		if ( !controller.updateVideo( video ) )
 			System.err.println( "failed to update video " + item.getID());
 	}
+	
 }

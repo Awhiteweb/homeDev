@@ -1,6 +1,6 @@
 package local.video.model;
 
-import local.video.constants.Types;
+import local.models.top.Types;
 
 
 public class Pair {

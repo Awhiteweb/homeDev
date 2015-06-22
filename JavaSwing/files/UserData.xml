@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<file>files/file.xml</file>
+	<username>root</username>
+	<password></password>
+	<database>jdbc:mysql://localhost/movie_db</database>
+</data>

@@ -6,6 +6,7 @@ import java.util.List;
 
 import local.dto.Video;
 import local.dto.VideoProvider;
+import local.models.top.CoreData;
 import local.models.top.IVideoRepo;
 import local.models.top.Repos;
 
@@ -30,7 +31,7 @@ public class XMLVideoRepo implements IVideoRepo
 		
 		try
 		{
-			File in = new File("/Users/Alex/HomeVideo/videos.xml");
+			File in = new File( CoreData.XMLFILE );
 			videos = handler.readXML( in );
 		}
 		catch (Exception e)
@@ -44,15 +45,16 @@ public class XMLVideoRepo implements IVideoRepo
 	@Override
 	public void writeVideos( List<Video> videos )
 	{
-		VideoProvider video = new VideoProvider( Repos.MYSQL );
-
+		System.out.println( "get database" );
 		try 
 		{
-			List<Video> data = video.returnVideos();
-
 			XMLWriter creator = new XMLWriter();
-		
-			creator.createDocument( data , "/Users/Alex/HomeVideo/videos.xml" );
+			
+			System.out.println( "writeVideos data size " + videos.size() );
+			videos = concatVideos( videos, 0 );
+			System.out.println( "writeVideos filtered size " + videos.size() );
+			
+			creator.createDocument( videos , CoreData.XMLFILE ); 
 			
 		} catch (Exception e) 
 		{
@@ -60,11 +62,6 @@ public class XMLVideoRepo implements IVideoRepo
 		}
 
 
-	}
-
-	@Override
-	public void updateVideos( List<Video> videos )
-	{		
 	}
 
 	@Override
@@ -76,10 +73,10 @@ public class XMLVideoRepo implements IVideoRepo
 		
 		try
 		{
-			File in = new File("/Users/Alex/HomeVideo/videos.xml");
+			File in = new File( CoreData.XMLFILE );
 			if ( in.exists() )
 			{
-				videos = handler.readXML( in ); // "files/file.xml"
+				videos = handler.readXML( in );
 			}
 			else
 			{
@@ -89,7 +86,7 @@ public class XMLVideoRepo implements IVideoRepo
 					List<Video> data = controller.returnVideos();
 					VideoProvider writer = new VideoProvider( Repos.XML );
 					writer.writeVideos( data );
-					videos = handler.readXML( in ); // "files/file.xml"
+					videos = handler.readXML( in );
 				}
 				catch ( Exception ex )
 				{
@@ -116,8 +113,67 @@ public class XMLVideoRepo implements IVideoRepo
 	public void sendPreparedStatement ( String statement )
 	{
 		// not for XML use
-		
 	}
 
+	@Override
+	public boolean updateVideo( Video video )
+	{
+		// not for XML use
+		return false;
+	}
+	
+	private List<Video> concatVideos( List<Video> data, int index )
+	{
+		if ( data.size() <= index )
+			return data;
+
+		List<Video> filter = data;
+		List<Integer> remove = new ArrayList<Integer>();
+		String updateGenre = filter.get( index ).getGenre();
+		String updateGroup = filter.get( index ).getGroup();
+		for ( Video first : data )
+		{
+			boolean ge = false, gr = false;
+			if ( index != data.indexOf( first ) )
+			{
+//				System.out.println( index + " : " + data.indexOf( first ) );
+				if ( filter.get( index ).getID() == first.getID() )
+				{
+//					System.out.println( index + " : " + data.indexOf( first ) );
+					System.out.println( "match ID: " + first.getID() );
+					
+					if ( filter.get( index ).getGenre() == null && first.getGenre() == null ) { /* do nothing */ }
+					else if ( ( filter.get( index ).getGenre() == null && first.getGenre() != null ) || !filter.get( index ).getGenre().equals( first.getGenre() ) )
+					{
+						ge = true;
+						updateGenre += "," + first.getGenre();
+						filter.get( index ).setGenre( updateGenre );
+//						System.out.println( updateGenre );
+					}
+					
+					if ( filter.get( index ).getGroup() == null && first.getGroup() == null ) { /* do nothing */ }
+					else if ( ( filter.get( index ).getGroup() == null && first.getGroup() != null ) || !filter.get( index ).getGroup().equals( first.getGroup() ) )
+					{
+						gr = true;
+						updateGroup += "," + first.getGroup();
+						filter.get( index ).setGroup( updateGroup );
+//						System.out.println( updateGroup );
+					}
+				}
+				if ( ge || gr )
+				{
+					int i = data.indexOf( first );
+					remove.add( i );
+				}
+			}
+		}
+		for ( Integer i : remove )
+		{
+//			System.out.println( "remove " + i );
+			filter.remove( i.intValue() );
+		}
+		index++;
+		return concatVideos( data, index );
+	}
 
 }

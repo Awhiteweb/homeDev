@@ -8,6 +8,7 @@ import java.util.List;
 import local.dto.Video;
 import local.models.top.Finals;
 import local.models.top.IVideoRepo;
+import local.models.top.Types;
 
 public class MysqlVideoRepo implements IVideoRepo
 {
@@ -45,6 +46,7 @@ public class MysqlVideoRepo implements IVideoRepo
 		List<Video> list = new ArrayList<Video>();
 		try
 		{
+			System.out.println( "start video creation" );
 			while ( resultSet.next() )
 			{
 //				System.out.println( "Group " + resultSet.getString( Finals.GROUP ) );
@@ -88,61 +90,24 @@ public class MysqlVideoRepo implements IVideoRepo
 	}
 	
 	@Override
-	public List<Video> getVideos( int amount )
-	{
-		List<Video> videos = null;
-		
-		try
-		{
-			ResultSet result = this.conn.query( selectFrom + " LIMIT " + amount);
-			videos = MapResultSet( result );
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return videos;
-	}
-	
-	@Override
 	public Video getVideoByID( int id )
 	{
 		List<Video> videos = null;
 		
 		try
 		{
-			ResultSet result = this.conn.query( selectFrom + " WHERE `id`=" + id);
+			String query = selectFrom + " WHERE `m`.`id` = " + id;
+			ResultSet result = this.conn.query( query );
 			videos = MapResultSet( result );
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-		
-		return videos.get( 0 );
 
+		return videos.get( 0 );
 	}
 	
-
-	@Override
-	public List<Video> searchVideos( String search, String category )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void writeVideos( List<Video> videos )
-	{
-		// TODO Auto-generated method stub		
-	}
-
-	@Override
-	public void updateVideos( List<Video> videos )
-	{
-	}
-
 	@Override
 	public List<Video> getVideos()
 	{
@@ -166,93 +131,187 @@ public class MysqlVideoRepo implements IVideoRepo
 	{
 		try
 		{
-			int i = this.conn.update( statement );
-			System.out.println( "rows updated " + i );
+			this.conn.update( statement );
 		}
 		catch ( SQLException e )
 		{
 			System.err.println( "error updating database" );
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public boolean updateVideo( Video video )
 	{
+		// TODO needs to get the video from the xml otherwise with concatenated objects, duplicates will keep getting created.
 		Video old = getVideoByID( video.getID() );
 		ArrayList<String> updates = new ArrayList<String>();
-		
-		if ( !old.getTitle().equals( video.getTitle() ) )
+		try 
 		{
-			updates.add( "UPDATE `main` SET `title` = `" + video.getTitle() + "` WHERE `id` = " + video.getID() );
-		}
-		if ( !old.getGenre().equals( video.getGenre() ) )
-		{
-			String[] genres = video.getGenre().split( ";" );
-			List<ResultList> dbGenres = getGenres();
-			for ( int i = 0; i < genres.length; i++ )
+			if ( !old.getTitle().equals( video.getTitle() ) )
 			{
-				boolean exists = false;
-				for ( ResultList rl : dbGenres )
+				this.conn.update( "UPDATE `main` SET `title` = `" + video.getTitle() + "` WHERE `id` = " + video.getID() );
+			}
+			
+			if ( video.getGenre() != null && video.getGenre().length() > 1 )
+			{
+				if ( old.getGenre() == null || !old.getGenre().equals( video.getGenre() ) )
 				{
-					if (rl.equals( genres[i] ) )
-					{
-						exists = true;
-						break;
-					}
-				}
-				if ( !exists )
-				{
-					updates.add( "UPDATE `genres` SET `genre` = " + genres[i] );
-					// select from genres to get id, to update video_genres
+					compare( video, old, Types.GENRE );
 				}
 			}
+			
+			if ( video.getGroup() != null && video.getGroup().length() > 1 )
+			{
+				if ( old.getGroup() == null || !old.getGroup().equals( video.getGroup() ) )
+				{
+					compare( video, old, Types.GROUP );
+				}
+			}
+			
+			if ( old.getEpisodeN() != video.getEpisodeN() )
+			{
+				this.conn.update( "UPDATE `main` SET `series_num` = `" + video.getEpisodeN() + "` WHERE `id` = " + video.getID() );
+			}
+			if ( old.getSeasonN() != video.getSeasonN() )
+			{
+				this.conn.update( "UPDATE `main` SET `tv_season` = `" + video.getSeasonN() + "` WHERE `id` = " + video.getID() );
+			}
+	
+			
+			for ( String update : updates )
+			{
+				System.out.println( update );
+			}
+			
 		}
-		if ( !old.getGroup().equals( video.getGroup() ) )
+		catch ( SQLException e )
 		{
-			updates.add( "UPDATE `video_groups` SET `" );
+			System.err.println( "error in MYSQL UpdateVideo" );
+			e.printStackTrace();
 		}
-		if ( old.getEpisodeN() != video.getEpisodeN() )
-		{
-			updates.add( "UPDATE `main` SET `series_num` = `" + video.getEpisodeN() + "` WHERE `id` = " + video.getID() );
-		}
-		if ( old.getSeasonN() != video.getSeasonN() )
-		{
-			updates.add( "UPDATE `main` SET `tv_season` = `" + video.getSeasonN() + "` WHERE `id` = " + video.getID() );
-		}
-
-		
-		
-		
-//		String updateTitle = "UPDATE `main` SET `" + Finals.TITLE + "` = `" + title + "` WHERE `" + Finals.ID + "` = " + id ;
-//		String updateGenre = "";
 		return true;
 	}
 
-
-	private List<ResultList> getGenres()
+	private void compare( Video video, Video old, Types type ) throws SQLException
 	{
-		List<ResultList> genres = new ArrayList<ResultList>();
+		String update = "";
+		String table = "", col = "", vItem = "", oItem = "";
+		String[] oItems;
+		
+		switch ( type )
+		{
+			case GENRE:
+				vItem = video.getGenre();
+				oItem = old.getGenre();
+				update = "genres";
+				table = "video_genres";
+				col = "genre";
+				break;
+				
+			case GROUP:
+				vItem = video.getGroup();
+				oItem = old.getGroup();
+				update = "groups";
+				table = "video_groups";
+				col = "group";
+				break;
+				
+			default:
+				break;
+		}
+		
+		String[] vItems = prepString( vItem );
+		if ( oItem != null )
+		{
+			oItems = oItem.split( "," );
+		}
+		else
+		{
+			oItems = new String[1];
+		}
+		
+		List<ResultList> results = getExisting( table, col, update );
+		
+		for ( int i = 0; i < vItems.length; i++ )
+		{
+			boolean exists = false;
+			for ( ResultList rl : results )
+			{
+//				System.out.println( rl.getG() + " : " + vItems[i] );
+				if ( rl.getG().equals( vItems[i] ) )
+				{
+					exists = true;
+					boolean t = false;
+					for ( String o : oItems )
+					{
+						if ( o.equals( rl.getG() ) )
+							t = true;
+					}
+					if ( !t )
+					{
+						System.out.println( "INSERT IGNORE INTO `" + table + "` (`id`, `" + col + "`) VALUES (" + video.getID() + ", " + rl.getGID() + ")" );
+						this.conn.update( "INSERT IGNORE INTO `" + table + "` (`id`, `" + col + "`) VALUES (" + video.getID() + ", " + rl.getGID() + ")" );
+					}
+					break;
+				}
+			}
+			if ( !exists )
+			{
+				System.out.println( "INSERT IGNORE INTO `" + update + "` (`" + col + "`) VALUES (" + vItems[i] + ")" );
+				this.conn.update( "INSERT IGNORE INTO `" + update + "` (`" + col + "`) VALUES (" + vItems[i] + ")" );
+				int id = getNewID( update, col, vItems[i] );
+				this.conn.update( "INSERT IGNORE INTO `" + table + "` (`id`, `" + col + "`) VALUES (" + video.getID() + ", " + id + ")" );
+			}
+		}
+	}
+
+	private List<ResultList> getExisting(String table , String col, String cols )
+	{
+		List<ResultList> items = new ArrayList<ResultList>();
 		try
 		{
-			ResultSet result = this.conn.query( "SELECT video_genres.id, video_genres.genre AS genreID, genres.genre FROM video_genres JOIN genres ON video_genres.genre = genres.id" );
+			ResultSet result = this.conn.query( "SELECT " + table + ".id, " + table + "." + col + " AS gID, " + cols + "." + col + " FROM " + table + " JOIN " + cols + " ON " + table + "." + col + " = " + cols + ".id" );
 			while ( result.next() )
 			{
-				genres.add( new ResultList( result.getString( "id" ), result.getString( "genreID" ), result.getString( "genre" ) ) );
+				items.add( new ResultList( result.getInt( "id" ), result.getInt( "gID" ), result.getString( col ) ) );
 			}
 		}
 		catch ( SQLException e )
 		{
-			System.err.println( "failed to get genres from database" );
-		}
-		
-		return genres;
+			System.err.println( "failed to get " + col + "s from database" );
+		}		
+		return items;
 	}
 
-	private List<String> getGroups()
+	private String[] prepString( String input )
 	{
-		List<String> groups = new ArrayList<String>();
-		return groups;
+		String[] output = input.split( "," );
+		for ( int i = 0; i < output.length; i++ )
+		{
+			output[i] = output[i].replace( "&", "&amp;" );
+			output[i] = output[i].replace( "'", "&apos" );
+		}
+		return output;
+	}
+	
+	private int getNewID( String table, String col, String item )
+	{
+		int id = 0;
+		try
+		{
+			ResultSet result = this.conn.query( "SELECT `id` FROM `" + table + "` WHERE `" + col + "` LIKE '" + item + "'" );
+			while ( result.next() )
+			{
+				id = result.getInt( "id" );
+			}
+		}
+		catch ( SQLException e )
+		{
+			System.err.println( "Error using getNewID query" );
+			id--;
+		}
+		return id;
 	}
 
 	private class ResultList
@@ -261,10 +320,10 @@ public class MysqlVideoRepo implements IVideoRepo
 		private int gID;
 		private String g;
 		
-		public ResultList( String videoID, String gID, String g )
+		public ResultList( int vID, int gID, String g )
 		{
-			this.videoID = Integer.parseInt( g );
-			this.gID = Integer.parseInt( gID );
+			this.videoID = vID ;
+			this.gID = gID;
 			this.g = g;
 		}
 		
@@ -282,5 +341,39 @@ public class MysqlVideoRepo implements IVideoRepo
 		{
 			return g;
 		}
+	}
+
+	public List<Video> getVideos( int amount )
+	{
+		List<Video> videos = null;
+		
+		try
+		{
+			ResultSet result = this.conn.query( selectFrom + " LIMIT " + amount);
+			videos = MapResultSet( result );
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return videos;
+	}
+	
+	/**
+	 * Not for MYSQL use
+	 */
+	@Override
+	public List<Video> searchVideos( String searchTitle, String searchCat )
+	{
+		return null;
+	}
+
+	/**
+	 * Not for MYSQL use
+	 */
+	@Override
+	public void writeVideos( List<Video> videos )
+	{		
 	}
 }
