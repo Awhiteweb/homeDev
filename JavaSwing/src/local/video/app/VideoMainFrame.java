@@ -232,6 +232,7 @@ public class VideoMainFrame
 				{
 					ItemToUpdate item = new ItemToUpdate();
 					int i = videos.getSelectedIndex();
+					String[] split;
 					genresArray.clear();
 					groupsArray.clear();
 					episodesArray.clear();
@@ -250,13 +251,41 @@ public class VideoMainFrame
 							item.setType( v.getType() );
 						}
 
-						if ( !genresArray.contains( v.getGenre() ) )
+						if ( v.getGenre().contains( "," ) )
 						{
-							genresArray.add( v.getGenre() );
+							split = v.getGenre().split( "," );
+							for ( int j = 0; j < split.length; j++ )
+							{
+								if ( !genresArray.contains( split[j] ) )
+								{
+									genresArray.add( split[j] );
+								}
+							}
 						}
-						if ( !groupsArray.contains( v.getGroup() ))
+						else
 						{
-							groupsArray.add( v.getGroup() );
+							if ( !genresArray.contains( v.getGenre() ) )
+							{
+								genresArray.add( v.getGenre() );
+							}
+						}
+						if ( v.getGroup().contains( "," ) )
+						{
+							split = v.getGroup().split( "," );
+							for ( int j = 0; j < split.length; j++ )
+							{
+								if ( !groupsArray.contains( split[j] ) )
+								{
+									groupsArray.add( split[j] );
+								}
+							}
+						}
+						else
+						{
+							if ( !groupsArray.contains( v.getGroup() ) )
+							{
+								groupsArray.add( v.getGroup() );
+							}
 						}
 						if ( !episodesArray.contains( v.getEpisodeN() ) )
 						{

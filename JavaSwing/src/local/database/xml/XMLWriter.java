@@ -32,7 +32,7 @@ public class XMLWriter {
 		
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		
+		"
 		writer.flush();
 		
 		writer.close();
